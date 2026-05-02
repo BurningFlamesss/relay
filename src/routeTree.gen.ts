@@ -10,11 +10,29 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CofounderIndexRouteImport } from './routes/cofounder/index'
+import { Route as AuthenticateIndexRouteImport } from './routes/authenticate/index'
+import { Route as AnalyzeIndexRouteImport } from './routes/analyze/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CofounderIndexRoute = CofounderIndexRouteImport.update({
+  id: '/cofounder/',
+  path: '/cofounder/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticateIndexRoute = AuthenticateIndexRouteImport.update({
+  id: '/authenticate/',
+  path: '/authenticate/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyzeIndexRoute = AnalyzeIndexRouteImport.update({
+  id: '/analyze/',
+  path: '/analyze/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -25,27 +43,50 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analyze/': typeof AnalyzeIndexRoute
+  '/authenticate/': typeof AuthenticateIndexRoute
+  '/cofounder/': typeof CofounderIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analyze': typeof AnalyzeIndexRoute
+  '/authenticate': typeof AuthenticateIndexRoute
+  '/cofounder': typeof CofounderIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analyze/': typeof AnalyzeIndexRoute
+  '/authenticate/': typeof AuthenticateIndexRoute
+  '/cofounder/': typeof CofounderIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/analyze/'
+    | '/authenticate/'
+    | '/cofounder/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/auth/$'
-  id: '__root__' | '/' | '/api/auth/$'
+  to: '/' | '/analyze' | '/authenticate' | '/cofounder' | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/analyze/'
+    | '/authenticate/'
+    | '/cofounder/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyzeIndexRoute: typeof AnalyzeIndexRoute
+  AuthenticateIndexRoute: typeof AuthenticateIndexRoute
+  CofounderIndexRoute: typeof CofounderIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -56,6 +97,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cofounder/': {
+      id: '/cofounder/'
+      path: '/cofounder'
+      fullPath: '/cofounder/'
+      preLoaderRoute: typeof CofounderIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/authenticate/': {
+      id: '/authenticate/'
+      path: '/authenticate'
+      fullPath: '/authenticate/'
+      preLoaderRoute: typeof AuthenticateIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analyze/': {
+      id: '/analyze/'
+      path: '/analyze'
+      fullPath: '/analyze/'
+      preLoaderRoute: typeof AnalyzeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -70,6 +132,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyzeIndexRoute: AnalyzeIndexRoute,
+  AuthenticateIndexRoute: AuthenticateIndexRoute,
+  CofounderIndexRoute: CofounderIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

@@ -29,7 +29,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Relay',
+        "aria-description": "Relay is a semi-autonomous research analyst for developers. It analyzes user signals (pain points), clusters recurring problems into structured domains, and surfaces actionable MVP opportunities to build."
       },
     ],
     links: [

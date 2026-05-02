@@ -1,276 +1,113 @@
-Welcome to your new TanStack Start app! 
+# Relay
 
-# Getting Started
+Relay is a semi-autonomous research analyst for developers. It analyzes user signals (pain points), clusters recurring problems into structured domains, and surfaces actionable MVP opportunities to build.
 
-To run this application:
+![image](https://cdn.hackclub.com/019de946-2a18-75c6-81dd-21b3cab5162f/image.png)
 
-```bash
-npm install
-npm run dev
-```
+## Relay as a CoFounder (RAAC)
 
-# Building For Production
+Relay helps you in finding solution to a problem rather than problem to a solution. Whether it's about starting a entirely new startup or finding pain points faced by the users in your existing startup, Relay helps you in finding the real grounded problem rather than a generic one.
 
-To build this application for production:
+## Why prefer Relay over AI like OpenAI, Claude, Gemini?
 
-```bash
-npm run build
-```
+Relay donot research to find anything generic, add some buzz-words, and try to sell the idea to you adding sugar coated words. Instead Relay helps you find the grounded problem faced by **real humans** as if it wants to start a successful startup and earn in six digits.
 
-## Testing
+## How it works? (SIMPLEX)
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+1. You Enter a generic Topic
+2. Relay scrapes 1000+ posts/articles
+3. AI Clusters
+4. AI Validates 
+5. Gives you a actionable MVP
 
-```bash
-npm run test
-```
+## How it works? (HALF_DUPLEX)
 
-## Styling
+If there a existing idea and you cares about competition analysis and market research, Relay will work from **STEP 10**
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+### STEP 1: Initialization:
+    User enters generic topic with optional filters
+    Frontend sends request to server
 
-### Removing Tailwind CSS
+### STEP 2: Validation
+    Server validates the input checking the rate limits and subscription plan
+    Server assigns JobId, stores initial state in postgresql, and triggers a async background job
 
-If you prefer not to use Tailwind CSS:
+### STEP 3: Seed Idea
+    Server sends the topic, previously failed ideas to AI
+    AI returns 3-5 seed ideas
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
+### STEP 4: Parsing
+    Server converts AI response into structured scraping task
 
-## Linting & Formatting
+### STEP 5: Problem Discovery
+    Scraping Layer extracts the data
+    Streams data into temporary storage
 
+### STEP 6: Preprocessing Layer
+    Server Filters irrevelant content, groups by similarity, and extracts repeated complaints
 
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
+### STEP 7: Problem Validation
+    AI identifies recurring patterns, user types, and problem industry
+    AI classifies real problem among the noise
 
-```bash
-npm run lint
-npm run format
-npm run check
-```
+### STEP 8: Controlled Iteration
+    Server checks max iterations and iterates if necessary in order to get a solid idea to research at
 
+### STEP 9: Store Valid Problem Candidates
+    Server stores those which matters
 
-## Shadcn
+### STEP 10: Analysis Plan
+    Server generates scraping plan for analyzing competition
 
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
+### STEP 11: Competitive Analysis
+    Scraper collects existing products, complaints, and gaps
 
-```bash
-pnpm dlx shadcn@latest add button
-```
+### STEP 12: Preprocessing Layer
+    Server extracts competitor lists, common complaints and feature gaps
 
+### STEP 13: AI Analysis
+    AI evaluates those results
 
-## T3Env
+### STEP 14: Controlled Iteration
+    Server checks max iterations and iterates if necessary in order to get a idea with manageable competition
 
-- You can use T3Env to add type safety to your environment variables.
-- Add Environment variables to the `src/env.mjs` file.
-- Use the environment variables in your code.
+### STEP 15: Store Candidates with Manageable Competition
+    Server stores those which matters
 
-### Usage
+### STEP 16: Market Analysis Plan
+    Server generates Market analysis plan
 
-```ts
-import { env } from "#/env";
+### STEP 17: Market Analysis
+    Scraper helps to know the market size, problem frequency, audience size by collecting intent driven signals
 
-console.log(env.VITE_APP_TITLE);
-```
+### STEP 18: Quantitative Estimation Layer
+    Server computes problem frequency, trends, market size, audience size
 
+### STEP 19: AI Evaluation and Scoring
+    AI process the problem data, competition data and demand metrics to output scoring
 
+### STEP 20: Idea Synthesis
+    AI generates Problem statement, solution, MVP, target audience, pricing postulates
 
+### STEP 21: Database
+    Server stores full research and marks the job as completed
 
+### STEP 22: Retrieval and Action
+    Server fetches the report along with charts, insights, sources
+    User can save, reject, publish, or reiterate the idea
 
-## Setting up Better Auth
 
-1. Generate and set the `BETTER_AUTH_SECRET` environment variable in your `.env.local`:
+## Tools & Tech Stack
 
-   ```bash
-   npx -y @better-auth/cli secret
-   ```
-
-2. Visit the [Better Auth documentation](https://www.better-auth.com) to unlock the full potential of authentication in your app.
-
-### Adding a Database (Optional)
-
-Better Auth can work in stateless mode, but to persist user data, add a database:
-
-```typescript
-// src/lib/auth.ts
-import { betterAuth } from "better-auth";
-import { Pool } from "pg";
-
-export const auth = betterAuth({
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL,
-  }),
-  // ... rest of config
-});
-```
-
-Then run migrations:
-
-```bash
-npx -y @better-auth/cli migrate
-```
-
-
-## Setting up PostHog
-
-1. Create a PostHog account at [posthog.com](https://posthog.com)
-2. Get your Project API Key from [Project Settings](https://app.posthog.com/project/settings)
-3. Set `VITE_POSTHOG_KEY` in your `.env.local`
-
-### Optional Configuration
-
-- `VITE_POSTHOG_HOST` - Set this if you're using PostHog Cloud EU (`https://eu.i.posthog.com`) or self-hosting
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+1. Tanstack Start
+2. Hono
+3. Postgresql
+4. Redis
+5. Pgvector
+6. SSE (instead of ws)
+7. Shadcn
+8. Tailwind CSS
+9. Better Auth
+10. Prisma
+
+*Still deciding...
