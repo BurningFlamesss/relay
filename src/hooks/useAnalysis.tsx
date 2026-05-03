@@ -1,5 +1,6 @@
 import type { AnalyzeSchema } from "#/schema/analyze";
-import { useRef, useState } from "react";
+import { startAnalyzeFn } from "#/server/functions/analyze";
+import { useEffect, useRef, useState } from "react";
 import type { z } from "zod";
 
 type Stage = "idle" | string
@@ -10,56 +11,61 @@ export function useAnalysis() {
     const [stage, setStage] = useState<Stage>("idle")
     const [error, setError] = useState<string | null>(null)
     const [result, setResult] = useState<string | null>(null)
-    const abortRef = useRef<AbortController | null>(null)
+    const esRef = useRef<EventSource | null>(null)
+
+    useEffect(() => {
+        rehydrate()
+
+        return () => esRef.current?.close()
+    }, [])
+
+    const rehydrate = async () => {
+        // TODO: Add rehydrating logic
+
+        // connectSSE("test123")
+    }
+
+    const connectSSE = (jobId: string) => {
+        esRef.current?.close()
+
+        const es = new EventSource(`/api/stream/${jobId}`)
+        esRef.current = es
+
+        es.onmessage = (e) => {
+            const data = JSON.parse(e.data)
+            setStage(data.stage)
+
+            if (data.stage === "done") {
+                setResult(data.result)
+                es.close()
+            }
+        }
+
+        es.onerror = () => {
+            // TODO: Handle errors
+        }
+    }
 
     const run = async (input: Input) => {
-        abortRef.current?.abort()
-        abortRef.current = new AbortController()
-
         setStage("processing")
+        setError(null)
+        setResult(null)
 
         try {
-            
-            const response = await fetch("/api/analyze", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(input),
-                signal: abortRef.current.signal
-            })
 
-            if (!response.ok) {
-                const e = await response.json()
-                setError(e.error ?? "Something went wrong")
-                setStage("error")
-                return
-            }
+            const { jobId } = await startAnalyzeFn({ data: input })
+            connectSSE(jobId)
 
-            const reader = response.body!.getReader()
-            const decoder = new TextDecoder()
-
-            while (true) {
-                const { done, value } = await reader.read()
-                if (done) break
-
-                const lines = decoder.decode()
-
-            }
-
-        } catch (e: any) {
-            if (e.name == "AbortError") return
-            setError("Connection Lost")
+        } catch (e) {
+            setError("Failed to start analysis")
             setStage("error")
         }
     }
 
-    const connectSSE = (jobId: string) => {
 
-    }
 
     const close = () => {
-        abortRef.current?.abort()
+        esRef.current?.close()
         setStage("idle")
     }
 

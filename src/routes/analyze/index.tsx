@@ -1,15 +1,24 @@
+import { useAnalysis } from '#/hooks/useAnalysis'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useRef } from 'react'
 
 export const Route = createFileRoute('/analyze/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { stage, result, error, run, close } = useAnalysis()
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const run = (topic: string) => {
-
-  }
-
-  return <div>Hello "/analyze/"!</div>
+  return (
+    <>
+      <input ref={inputRef} type="text" />
+      <button onClick={() => run({
+        topic: inputRef.current!.value
+      })} type='submit'>Submit</button>
+      <div>
+        {stage}
+      </div>
+    </>
+  )
 }

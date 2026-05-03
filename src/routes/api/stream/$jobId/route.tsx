@@ -1,37 +1,28 @@
-import { AnalyzeSchema } from "#/schema/analyze";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute('/api/stream/$jobId')({
     server: {
         handlers: {
-            POST: async ({ request }) => {
-                const body = await request.json()
-                const result = AnalyzeSchema.safeParse(body)
-
-                if (!result.success) {
-                    return new Response(
-                        JSON.stringify({ error: result.error.flatten().fieldErrors }),
-                        {
-                            status: 400,
-                            headers: {
-                                "Content-Type": "application/json"
-                            }
-                        }
-                    )
-                }
-
+            GET: async ({ request, params }) => {
+                const lastStage = request.headers.get("Last-Event-ID")
+                const encoder = new TextEncoder()
 
                 const stream = new ReadableStream({
                     async start(controller) {
                         const send = (stage: string, meta?: object) => {
                             controller.enqueue(
-                                `data: ${JSON.stringify({ stage, ...meta })}\n\n`
+                                encoder.encode(
+                                    `id: ${stage}\ndata: ${JSON.stringify({ stage, ...meta })}\n\n`
+                                )
                             )
                         }
 
-                        send("Processing")
+                        // TODO: subscribe to process worker
+                        send("Analyzing")
+                        await new Promise((resolve) => setTimeout(resolve, 500))
                         send("Confirmed")
-                        send("Completed", { result: "Finished" })
+                        await new Promise((resolve) => setTimeout(resolve, 500))
+                        send("done", { result: "Finished" })
 
                         controller.close()
                     }
