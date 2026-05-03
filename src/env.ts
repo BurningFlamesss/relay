@@ -36,4 +36,12 @@ export const env = createEnv({
    * explicitly specify this option as true.
    */
   emptyStringAsUndefined: true,
+
+
+  onValidationError(issues) {
+    console.error("Invalid Environment Variable")
+    issues.forEach(issue => console.error(`${issue}`))
+    process.exit(1)
+  },
+
 })

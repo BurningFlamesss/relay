@@ -14,6 +14,7 @@ import { Route as CofounderIndexRouteImport } from './routes/cofounder/index'
 import { Route as AuthenticateIndexRouteImport } from './routes/authenticate/index'
 import { Route as AnalyzeIndexRouteImport } from './routes/analyze/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiStreamJobIdRouteRouteImport } from './routes/api/stream/$jobId/route'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,12 +41,18 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStreamJobIdRouteRoute = ApiStreamJobIdRouteRouteImport.update({
+  id: '/api/stream/$jobId',
+  path: '/api/stream/$jobId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyze/': typeof AnalyzeIndexRoute
   '/authenticate/': typeof AuthenticateIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
+  '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/analyze': typeof AnalyzeIndexRoute
   '/authenticate': typeof AuthenticateIndexRoute
   '/cofounder': typeof CofounderIndexRoute
+  '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -61,6 +69,7 @@ export interface FileRoutesById {
   '/analyze/': typeof AnalyzeIndexRoute
   '/authenticate/': typeof AuthenticateIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
+  '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -70,15 +79,23 @@ export interface FileRouteTypes {
     | '/analyze/'
     | '/authenticate/'
     | '/cofounder/'
+    | '/api/stream/$jobId'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analyze' | '/authenticate' | '/cofounder' | '/api/auth/$'
+  to:
+    | '/'
+    | '/analyze'
+    | '/authenticate'
+    | '/cofounder'
+    | '/api/stream/$jobId'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/analyze/'
     | '/authenticate/'
     | '/cofounder/'
+    | '/api/stream/$jobId'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -87,6 +104,7 @@ export interface RootRouteChildren {
   AnalyzeIndexRoute: typeof AnalyzeIndexRoute
   AuthenticateIndexRoute: typeof AuthenticateIndexRoute
   CofounderIndexRoute: typeof CofounderIndexRoute
+  ApiStreamJobIdRouteRoute: typeof ApiStreamJobIdRouteRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -127,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/stream/$jobId': {
+      id: '/api/stream/$jobId'
+      path: '/api/stream/$jobId'
+      fullPath: '/api/stream/$jobId'
+      preLoaderRoute: typeof ApiStreamJobIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -135,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyzeIndexRoute: AnalyzeIndexRoute,
   AuthenticateIndexRoute: AuthenticateIndexRoute,
   CofounderIndexRoute: CofounderIndexRoute,
+  ApiStreamJobIdRouteRoute: ApiStreamJobIdRouteRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
