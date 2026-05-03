@@ -3,7 +3,7 @@ import { startAnalyzeFn } from "#/server/functions/analyze";
 import { useEffect, useRef, useState } from "react";
 import type { z } from "zod";
 
-type Stage = "idle" | string
+type Stage = "idle" | "processing" | "confirmed" | "thinking" | "researching" | "evaluating" | "stitching" | "done" | "error" | string
 
 type Input = z.infer<typeof AnalyzeSchema>
 
