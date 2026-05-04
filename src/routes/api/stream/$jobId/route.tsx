@@ -18,10 +18,11 @@ export const Route = createFileRoute('/api/stream/$jobId')({
                         }
 
                         // TODO: subscribe to process worker
+                        await new Promise((resolve) => setTimeout(resolve, 500))
                         send("Analyzing")
-                        await new Promise((resolve) => setTimeout(resolve, 500))
+                        await new Promise((resolve) => setTimeout(resolve, 1000))
                         send("Confirmed")
-                        await new Promise((resolve) => setTimeout(resolve, 500))
+                        await new Promise((resolve) => setTimeout(resolve, 1500))
                         send("done", { result: "Finished" })
 
                         controller.close()
