@@ -13,6 +13,7 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import GlobalProvider from '#/provider/GlobalProvider'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -51,7 +52,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <PostHogProvider>
-          {children}
+          <GlobalProvider>
+            {children}
+          </GlobalProvider>
           <TanStackDevtools
             config={{
               position: 'bottom-right',
