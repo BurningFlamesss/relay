@@ -3,7 +3,19 @@ import { getLatestJobFn, startAnalyzeFn } from "#/server/functions/analyze";
 import { useEffect, useRef, useState } from "react";
 import type { z } from "zod";
 
-export type Stage = "idle" | "processing" | "confirmed" | "thinking" | "researching" | "evaluating" | "stitching" | "done" | "error"
+export const STAGES = [
+    "idle",
+    "processing",
+    "confirmed",
+    "thinking",
+    "researching",
+    "evaluating",
+    "stitching",
+    "done",
+    "error"
+] as const
+
+export type Stage = typeof STAGES[number]
 
 type Input = z.infer<typeof AnalyzeSchema>
 
@@ -26,19 +38,7 @@ export function useAnalysis() {
     const esRef = useRef<EventSource | null>(null)
 
     useEffect(() => {
-        // rehydrate()
-
-        const savedJobId = localStorage.getItem("analysisJobId")
-        const savedStage = localStorage.getItem("analysisStage") as Stage | null
-
-        if (savedJobId && savedStage && !["done", "error"].includes(savedStage) ) {
-            setState(prev => ({
-                ...prev,
-                jobId: savedJobId,
-                stage: savedStage
-            }))
-            connectSSE(savedJobId)
-        }
+        rehydrate()
 
         return () => esRef.current?.close()
     }, [])
@@ -47,7 +47,10 @@ export function useAnalysis() {
         try {
             const latest = await getLatestJobFn()
 
-            if (!latest) return
+            if (!latest) {
+                fallbackToLocalStorage()
+                return
+            }
 
             if (latest.status === "complete") {
                 setState(prev => ({
@@ -72,7 +75,7 @@ export function useAnalysis() {
                 localStorage.removeItem("analysisStage")
                 return
             }
-            
+
             if (latest.status === "in_progress") {
                 setState(prev => ({
                     ...prev,
@@ -83,8 +86,7 @@ export function useAnalysis() {
                 return
             }
         } catch (error) {
-            localStorage.removeItem("analysisJobId")
-            localStorage.removeItem("analysisStage")
+            fallbackToLocalStorage()
         }
     }
 
@@ -95,6 +97,8 @@ export function useAnalysis() {
 
         const es = new EventSource(`/api/stream/${jobId}`)
         esRef.current = es
+
+        let retryCount = 0
 
         es.onmessage = (e) => {
             try {
@@ -109,7 +113,7 @@ export function useAnalysis() {
                 }))
 
                 localStorage.setItem("analysisStage", stage)
-    
+
                 if (["error", "done"].includes(data.stage)) {
                     es.close()
                     esRef.current = null
@@ -129,7 +133,16 @@ export function useAnalysis() {
         }
 
         es.onerror = () => {
-            // TODO: Handle errors
+            if (retryCount < 3) {
+                retryCount++
+
+                es.close()
+                esRef.current = null
+
+                setTimeout(() => connectSSE(jobId), 1000 * retryCount)
+                return
+            }
+
             setState(prev => {
                 if (prev.stage === "done") return prev
 
@@ -143,8 +156,8 @@ export function useAnalysis() {
             es.close()
             esRef.current = null
 
-            localStorage.removeItem("analysisJobId")
-            localStorage.removeItem("analysisStage")
+            // localStorage.removeItem("analysisJobId")
+            // localStorage.removeItem("analysisStage")
         }
     }
 
@@ -185,7 +198,25 @@ export function useAnalysis() {
         setState(INITIAL_STATE)
     }
 
+    const fallbackToLocalStorage = () => {
+        const savedJobId = localStorage.getItem("analysisJobId")
+        const savedStage = localStorage.getItem("analysisStage") as Stage | null
+
+        if (savedJobId && savedStage && !["done", "error"].includes(savedStage)) {
+            setState(prev => ({
+                ...prev,
+                jobId: savedJobId,
+                stage: savedStage
+            }))
+            connectSSE(savedJobId)
+        } else {
+            // localStorage.removeItem("analysisJobId")
+            // localStorage.removeItem("analysisStage")
+        }
+    }
+
     return {
         stage: state.stage, result: state.result, error: state.error, jobId: state.jobId, run, reset
     }
 }
+
