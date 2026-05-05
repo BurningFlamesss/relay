@@ -83,41 +83,95 @@ export function useAnalysis() {
         esRef.current = es
 
         es.onmessage = (e) => {
-            const data = JSON.parse(e.data)
-            setState(data.stage)
+            try {
+                const data = JSON.parse(e.data)
+                const stage: Stage = data.stage
 
-            if (data.stage === "done") {
-                setState(data.result)
+                setState(prev => ({
+                    ...prev,
+                    stage,
+                    result: data.result ?? prev.result,
+                    error: data.error ?? prev.error
+                }))
+
+                sessionStorage.setItem("analysisStage", stage)
+    
+                if (["error", "done"].includes(data.stage)) {
+                    es.close()
+                    esRef.current = null
+                    sessionStorage.removeItem("analysisJobId")
+                    sessionStorage.removeItem("analysisStage")
+                }
+
+            } catch (error) {
+                setState(prev => ({
+                    ...prev,
+                    stage: "error",
+                    error: "Failed to parse server response"
+                }))
                 es.close()
+                esRef.current = null
             }
         }
 
         es.onerror = () => {
             // TODO: Handle errors
+            setState(prev => {
+                if (prev.stage === "done") return prev
+
+                return {
+                    ...prev,
+                    stage: "error",
+                    error: "Connection lost. Please try again"
+                }
+            })
+
+            es.close()
+            esRef.current = null
+
+            sessionStorage.removeItem("analysisJobId")
+            sessionStorage.removeItem("analysisStage")
         }
     }
 
     const run = async (input: Input) => {
-        setState("processing")
+        setState(prev => ({
+            ...INITIAL_STATE,
+            stage: "processing"
+        }))
 
         try {
 
             const { jobId } = await startAnalyzeFn({ data: input })
+
+            sessionStorage.setItem("analysisJobId", jobId)
+            sessionStorage.setItem("analysisStage", "processing")
+
+            setState(prev => ({
+                ...prev,
+                jobId
+            }))
+
             connectSSE(jobId)
 
         } catch (e) {
-            setState("error")
+            setState(prev => ({
+                ...INITIAL_STATE,
+                stage: "error",
+                error: "Failed to start analysis. Please try again"
+            }))
         }
     }
 
-
-
-    const close = () => {
+    const reset = () => {
         esRef.current?.close()
-        setState("idle")
+        esRef.current = null
+        sessionStorage.removeItem("analysisJobId")
+        sessionStorage.removeItem("analysisStage")
+        setState(INITIAL_STATE)
     }
 
     return {
-        state, result, error, run, close
+        stage: state.stage, result: state.result, error: state.error, jobId: state.jobId, run, reset
     }
 }

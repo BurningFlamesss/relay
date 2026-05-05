@@ -1,3 +1,4 @@
+import type { Stage } from "#/hooks/useAnalysis.tsx";
 import { getSessionMiddleware } from "#/middleware/auth.middleware.ts";
 import { AnalyzeSchema } from "#/schema/analyze";
 import { createServerFn } from "@tanstack/react-start";
@@ -22,13 +23,16 @@ export const getLatestJobFn = createServerFn()
     .handler(async ({ context }) => {
 
         // TODO: Get the actual data {id, status, lastStage, report}
-
+        const stages: Array<Stage> = ["idle", "processing", "confirmed", "thinking", "researching", "evaluating", "stitching", "done", "error"]
+        const status = ["complete", "failed", "in_progress"]
         const jobId = crypto.randomUUID()
 
-        return {
+        const job = {
             id: jobId,
-            status: "in_progress",
-            lastStage: "idle",
+            status: status[Math.floor(Math.random() * status.length)],
+            lastStage: stages[Math.floor(Math.random() * stages.length)],
             report: ""
         }
+
+        return job
     }) 

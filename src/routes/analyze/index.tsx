@@ -7,15 +7,17 @@ export const Route = createFileRoute('/analyze/')({
 })
 
 function RouteComponent() {
-  const { stage, result, error, run, close } = useAnalysis()
+  const { stage, result, error, run, jobId, reset } = useAnalysis()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   return (
     <>
       <input ref={inputRef} type="text" />
-      <button onClick={() => run({
-        topic: inputRef.current!.value
-      })} type='submit'>Submit</button>
+      <button onClick={() => {
+        const value = inputRef.current?.value.trim()
+        if (!value) return
+        run({ topic: value })
+      }} type='submit'>Submit</button>
       <div>
         {stage}, {error}
       </div>
