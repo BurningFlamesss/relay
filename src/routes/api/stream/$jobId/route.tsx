@@ -50,7 +50,7 @@ export const Route = createFileRoute('/api/stream/$jobId')({
                             await delay(1000)
                             send({ stage: "stitching" })
                             await delay(1200)
-                            send({ stage: "done", result: "Finished" })
+                            send({ stage: "done", result: "No Data to show" })
                             
                         } catch (error) {
                             send({ stage: "error", error: "Pipeline failed" })
