@@ -34,5 +34,5 @@ export const getLatestJobFn = createServerFn()
             report: ""
         }
 
-        return job
+        return null
     }) 

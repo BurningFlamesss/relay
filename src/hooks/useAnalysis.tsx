@@ -216,7 +216,13 @@ export function useAnalysis() {
     }
 
     return {
-        stage: state.stage, result: state.result, error: state.error, jobId: state.jobId, run, reset
+        stage: state.stage,
+        isRunning: !["idle", "done", "error"].includes(state.stage),
+        result: state.result,
+        error: state.error,
+        jobId: state.jobId,
+        run,
+        reset
     }
 }
 
