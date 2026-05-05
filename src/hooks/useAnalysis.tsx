@@ -26,7 +26,19 @@ export function useAnalysis() {
     const esRef = useRef<EventSource | null>(null)
 
     useEffect(() => {
-        rehydrate()
+        // rehydrate()
+
+        const savedJobId = localStorage.getItem("analysisJobId")
+        const savedStage = localStorage.getItem("analysisStage") as Stage | null
+
+        if (savedJobId && savedStage && !["done", "error"].includes(savedStage) ) {
+            setState(prev => ({
+                ...prev,
+                jobId: savedJobId,
+                stage: savedStage
+            }))
+            connectSSE(savedJobId)
+        }
 
         return () => esRef.current?.close()
     }, [])
@@ -44,8 +56,8 @@ export function useAnalysis() {
                     stage: "done",
                     result: latest.report
                 }))
-                sessionStorage.removeItem("analysisJobId")
-                sessionStorage.removeItem("analysisStage")
+                localStorage.removeItem("analysisJobId")
+                localStorage.removeItem("analysisStage")
                 return
             }
 
@@ -56,8 +68,8 @@ export function useAnalysis() {
                     stage: "error",
                     error: "Previous Analysis Failed"
                 }))
-                sessionStorage.removeItem("analysisJobId")
-                sessionStorage.removeItem("analysisStage")
+                localStorage.removeItem("analysisJobId")
+                localStorage.removeItem("analysisStage")
                 return
             }
             
@@ -71,13 +83,15 @@ export function useAnalysis() {
                 return
             }
         } catch (error) {
-            sessionStorage.removeItem("analysisJobId")
-            sessionStorage.removeItem("analysisStage")
+            localStorage.removeItem("analysisJobId")
+            localStorage.removeItem("analysisStage")
         }
     }
 
     const connectSSE = (jobId: string) => {
-        esRef.current?.close()
+        if (esRef.current) return
+
+        // esRef.current?.close()
 
         const es = new EventSource(`/api/stream/${jobId}`)
         esRef.current = es
@@ -94,13 +108,13 @@ export function useAnalysis() {
                     error: data.error ?? prev.error
                 }))
 
-                sessionStorage.setItem("analysisStage", stage)
+                localStorage.setItem("analysisStage", stage)
     
                 if (["error", "done"].includes(data.stage)) {
                     es.close()
                     esRef.current = null
-                    sessionStorage.removeItem("analysisJobId")
-                    sessionStorage.removeItem("analysisStage")
+                    localStorage.removeItem("analysisJobId")
+                    localStorage.removeItem("analysisStage")
                 }
 
             } catch (error) {
@@ -129,8 +143,8 @@ export function useAnalysis() {
             es.close()
             esRef.current = null
 
-            sessionStorage.removeItem("analysisJobId")
-            sessionStorage.removeItem("analysisStage")
+            localStorage.removeItem("analysisJobId")
+            localStorage.removeItem("analysisStage")
         }
     }
 
@@ -144,8 +158,8 @@ export function useAnalysis() {
 
             const { jobId } = await startAnalyzeFn({ data: input })
 
-            sessionStorage.setItem("analysisJobId", jobId)
-            sessionStorage.setItem("analysisStage", "processing")
+            localStorage.setItem("analysisJobId", jobId)
+            localStorage.setItem("analysisStage", "processing")
 
             setState(prev => ({
                 ...prev,
@@ -166,8 +180,8 @@ export function useAnalysis() {
     const reset = () => {
         esRef.current?.close()
         esRef.current = null
-        sessionStorage.removeItem("analysisJobId")
-        sessionStorage.removeItem("analysisStage")
+        localStorage.removeItem("analysisJobId")
+        localStorage.removeItem("analysisStage")
         setState(INITIAL_STATE)
     }
 
