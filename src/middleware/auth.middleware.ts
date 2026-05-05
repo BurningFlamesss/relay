@@ -1,6 +1,6 @@
 import { auth } from "#/lib/auth";
 import type { AppContext } from "#/types/router-context";
-import { createMiddleware } from "@tanstack/react-start";
+import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 
 export const getSessionMiddleware = createMiddleware({ type: "request" }).server(
@@ -11,3 +11,7 @@ export const getSessionMiddleware = createMiddleware({ type: "request" }).server
         return await next({ context: { session: session } satisfies AppContext })
     }
 )
+
+export const getSessionFn = createServerFn()
+    .middleware([getSessionMiddleware])
+    .handler(({context}) => context.session)

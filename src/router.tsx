@@ -7,13 +7,17 @@ import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query
 import TanstackQueryProvider, {
   getContext,
 } from './integrations/tanstack-query/root-provider'
+import type { MyRouterContext } from './types/router-context';
 
 export function getRouter() {
   const context = getContext()
 
   const router = createTanStackRouter({
     routeTree,
-    context,
+    context: {
+      ...context,
+      session: null
+    } satisfies MyRouterContext,
     scrollRestoration: true,
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,

@@ -1,16 +1,28 @@
 import type { AnalyzeSchema } from "#/schema/analyze";
-import { startAnalyzeFn } from "#/server/functions/analyze";
+import { getLatestJobFn, startAnalyzeFn } from "#/server/functions/analyze";
 import { useEffect, useRef, useState } from "react";
 import type { z } from "zod";
 
-type Stage = "idle" | "processing" | "confirmed" | "thinking" | "researching" | "evaluating" | "stitching" | "done" | "error" | string
+export type Stage = "idle" | "processing" | "confirmed" | "thinking" | "researching" | "evaluating" | "stitching" | "done" | "error"
 
 type Input = z.infer<typeof AnalyzeSchema>
 
+interface AnalysisState {
+    stage: Stage;
+    result: any | null;
+    error: string | null;
+    jobId: string | null;
+}
+
+const INITIAL_STATE: AnalysisState = {
+    stage: "idle",
+    result: null,
+    error: null,
+    jobId: null
+}
+
 export function useAnalysis() {
-    const [stage, setStage] = useState<Stage>("idle")
-    const [error, setError] = useState<string | null>(null)
-    const [result, setResult] = useState<string | null>(null)
+    const [state, setState] = useState<AnalysisState>(INITIAL_STATE)
     const esRef = useRef<EventSource | null>(null)
 
     useEffect(() => {
@@ -20,9 +32,48 @@ export function useAnalysis() {
     }, [])
 
     const rehydrate = async () => {
-        // TODO: Add rehydrating logic
+        try {
+            const latest = await getLatestJobFn()
 
-        // connectSSE("test123")
+            if (!latest) return
+
+            if (latest.status === "complete") {
+                setState(prev => ({
+                    ...prev,
+                    jobId: latest.id,
+                    stage: "done",
+                    result: latest.report
+                }))
+                sessionStorage.removeItem("analysisJobId")
+                sessionStorage.removeItem("analysisStage")
+                return
+            }
+
+            if (latest.status === "failed") {
+                setState(prev => ({
+                    ...prev,
+                    jobId: latest.id,
+                    stage: "error",
+                    error: "Previous Analysis Failed"
+                }))
+                sessionStorage.removeItem("analysisJobId")
+                sessionStorage.removeItem("analysisStage")
+                return
+            }
+            
+            if (latest.status === "in_progress") {
+                setState(prev => ({
+                    ...prev,
+                    jobId: latest.id,
+                    stage: latest.lastStage,
+                }))
+                connectSSE(latest.id)
+                return
+            }
+        } catch (error) {
+            sessionStorage.removeItem("analysisJobId")
+            sessionStorage.removeItem("analysisStage")
+        }
     }
 
     const connectSSE = (jobId: string) => {
@@ -33,10 +84,10 @@ export function useAnalysis() {
 
         es.onmessage = (e) => {
             const data = JSON.parse(e.data)
-            setStage(data.stage)
+            setState(data.stage)
 
             if (data.stage === "done") {
-                setResult(data.result)
+                setState(data.result)
                 es.close()
             }
         }
@@ -47,9 +98,7 @@ export function useAnalysis() {
     }
 
     const run = async (input: Input) => {
-        setStage("processing")
-        setError(null)
-        setResult(null)
+        setState("processing")
 
         try {
 
@@ -57,8 +106,7 @@ export function useAnalysis() {
             connectSSE(jobId)
 
         } catch (e) {
-            setError("Failed to start analysis")
-            setStage("error")
+            setState("error")
         }
     }
 
@@ -66,10 +114,10 @@ export function useAnalysis() {
 
     const close = () => {
         esRef.current?.close()
-        setStage("idle")
+        setState("idle")
     }
 
     return {
-        stage, result, error, run, close
+        state, result, error, run, close
     }
 }

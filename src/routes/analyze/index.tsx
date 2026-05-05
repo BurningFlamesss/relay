@@ -17,7 +17,7 @@ function RouteComponent() {
         topic: inputRef.current!.value
       })} type='submit'>Submit</button>
       <div>
-        {stage}
+        {stage}, {error}
       </div>
     </>
   )

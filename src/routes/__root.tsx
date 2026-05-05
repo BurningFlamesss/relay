@@ -12,14 +12,15 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
 
-import type { QueryClient } from '@tanstack/react-query'
 import GlobalProvider from '#/provider/GlobalProvider'
-
-interface MyRouterContext {
-  queryClient: QueryClient
-}
+import { getSessionFn } from '#/middleware/auth.middleware.ts';
+import type { MyRouterContext } from '#/types/router-context.ts';
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  async beforeLoad() {
+    const session = await getSessionFn()
+    return { session }
+  },
   head: () => ({
     meta: [
       {

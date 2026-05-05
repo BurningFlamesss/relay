@@ -1,4 +1,11 @@
+import type { Stage } from "#/hooks/useAnalysis.tsx";
 import { createFileRoute } from "@tanstack/react-router";
+
+export interface StreamEvent {
+    stage: Stage;
+    result?: any;
+    error?: string;
+}
 
 export const Route = createFileRoute('/api/stream/$jobId')({
     server: {
@@ -7,25 +14,51 @@ export const Route = createFileRoute('/api/stream/$jobId')({
                 const lastStage = request.headers.get("Last-Event-ID")
                 const encoder = new TextEncoder()
 
+                // TODO: Verify the jobId matching the user requesting it (userId)
+
                 const stream = new ReadableStream({
                     async start(controller) {
-                        const send = (stage: string, meta?: object) => {
+                        const send = (event: StreamEvent) => {
+
+                            if (request.signal.aborted) return
+
                             controller.enqueue(
                                 encoder.encode(
-                                    `id: ${stage}\ndata: ${JSON.stringify({ stage, ...meta })}\n\n`
+                                    `id: ${event.stage}\ndata: ${JSON.stringify(event)}\n\n`
                                 )
                             )
                         }
 
-                        // TODO: subscribe to process worker
-                        await new Promise((resolve) => setTimeout(resolve, 500))
-                        send("Analyzing")
-                        await new Promise((resolve) => setTimeout(resolve, 1000))
-                        send("Confirmed")
-                        await new Promise((resolve) => setTimeout(resolve, 1500))
-                        send("done", { result: "Finished" })
+                        request.signal.addEventListener("abort", () => {
+                            // TODO: Cancel any running jobs
 
-                        controller.close()
+                            controller.close()
+                        })
+
+                        try {
+                            // TODO: subscribe to process worker
+                            await delay(100)
+                            send({ stage: "processing" })
+                            await delay(200)
+                            send({ stage: "confirmed" })
+                            await delay(400)
+                            send({ stage: "thinking" })
+                            await delay(600)
+                            send({ stage: "researching" })
+                            await delay(800)
+                            send({ stage: "evaluating" })
+                            await delay(1000)
+                            send({ stage: "stitching" })
+                            await delay(1200)
+                            send({ stage: "done", result: "Finished" })
+                            
+                        } catch (error) {
+                            send({ stage: "error", error: "Pipeline failed" })
+                            
+                        } finally {
+                            controller.close()
+                        }
+
                     }
                 })
 
@@ -40,3 +73,5 @@ export const Route = createFileRoute('/api/stream/$jobId')({
         }
     }
 })
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
