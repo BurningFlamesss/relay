@@ -37,20 +37,7 @@ export const Route = createFileRoute('/api/stream/$jobId')({
 
                         try {
                             // TODO: subscribe to process worker
-                            await delay(100)
-                            send({ stage: "processing" })
-                            await delay(200)
-                            send({ stage: "confirmed" })
-                            await delay(400)
-                            send({ stage: "thinking" })
-                            await delay(600)
-                            send({ stage: "researching" })
-                            await delay(800)
-                            send({ stage: "evaluating" })
-                            await delay(1000)
-                            send({ stage: "stitching" })
-                            await delay(1200)
-                            send({ stage: "done", result: "No Data to show" })
+                            
                             
                         } catch (error) {
                             send({ stage: "error", error: "Pipeline failed" })
