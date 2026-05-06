@@ -52,7 +52,7 @@ export function useAnalysis() {
                 return
             }
 
-            if (latest.status === "complete") {
+            if (latest.status === "completed") {
                 setState(prev => ({
                     ...prev,
                     jobId: latest.id,
@@ -85,6 +85,7 @@ export function useAnalysis() {
                 connectSSE(latest.id)
                 return
             }
+
         } catch (error) {
             fallbackToLocalStorage()
         }

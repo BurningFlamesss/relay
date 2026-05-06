@@ -1,4 +1,6 @@
 import type { Stage } from "#/hooks/useAnalysis.tsx";
+import { createSubscriber } from "#/lib/queue/connection.ts";
+import { jobChannel } from "#/lib/queue/queues.ts";
 import { createFileRoute } from "@tanstack/react-router";
 
 export interface StreamEvent {
@@ -11,10 +13,13 @@ export const Route = createFileRoute('/api/stream/$jobId')({
     server: {
         handlers: {
             GET: async ({ request, params }) => {
+                const { jobId } = params
                 const lastStage = request.headers.get("Last-Event-ID")
                 const encoder = new TextEncoder()
 
                 // TODO: Verify the jobId matching the user requesting it (userId)
+
+                const subscriber = createSubscriber()
 
                 const stream = new ReadableStream({
                     async start(controller) {
@@ -29,23 +34,29 @@ export const Route = createFileRoute('/api/stream/$jobId')({
                             )
                         }
 
-                        request.signal.addEventListener("abort", () => {
-                            // TODO: Cancel any running jobs
+                        await subscriber.subscribe(jobChannel(jobId))
 
-                            controller.close()
+                        subscriber.on("message", (channel, message) => {
+                            try {
+                                const parsed = JSON.parse(message)
+                                send(parsed)
+
+                                if (parsed.stage === "done" || parsed.stage === "error") {
+                                    subscriber.quit()
+                                    controller.close()
+                                }
+                            } catch (error) {
+                                send({ stage: "error", error: "Malformed progress event" })
+                                subscriber.quit()
+                                controller.close()
+                            }
                         })
 
-                        try {
-                            // TODO: subscribe to process worker
-                            
-                            
-                        } catch (error) {
-                            send({ stage: "error", error: "Pipeline failed" })
-                            
-                        } finally {
+                        request.signal.addEventListener("abort", () => {
+                            // TODO: Cancel any running jobs
+                            subscriber.quit()
                             controller.close()
-                        }
-
+                        })
                     }
                 })
 

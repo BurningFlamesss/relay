@@ -1,7 +1,7 @@
 import type { Stage } from "#/hooks/useAnalysis.tsx";
+import { connection } from "#/lib/queue/connection.ts";
+import { analyzeQueue } from "#/lib/queue/queues.ts";
 import { getSessionMiddleware } from "#/middleware/auth.middleware.ts";
-import { connection } from "#/queue/connection.ts";
-import { analyzeQueue } from "#/queue/queues.ts";
 import { AnalyzeSchema } from "#/schema/analyze";
 import { createServerFn } from "@tanstack/react-start";
 
