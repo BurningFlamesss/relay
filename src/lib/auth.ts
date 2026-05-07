@@ -11,6 +11,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    revokeSessionsOnPasswordReset: true,
 
     async sendResetPassword({ user, url, token }, request) {
       console.table({user, url, token, request})

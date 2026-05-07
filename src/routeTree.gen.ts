@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CofounderIndexRouteImport } from './routes/cofounder/index'
-import { Route as AuthenticateIndexRouteImport } from './routes/authenticate/index'
 import { Route as AnalyzeIndexRouteImport } from './routes/analyze/index'
+import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
+import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
+import { Route as AuthAuthenticateRouteImport } from './routes/_auth/authenticate'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiStreamJobIdRouteRouteImport } from './routes/api/stream/$jobId/route'
 
@@ -26,14 +28,25 @@ const CofounderIndexRoute = CofounderIndexRouteImport.update({
   path: '/cofounder/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticateIndexRoute = AuthenticateIndexRouteImport.update({
-  id: '/authenticate/',
-  path: '/authenticate/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AnalyzeIndexRoute = AnalyzeIndexRouteImport.update({
   id: '/analyze/',
   path: '/analyze/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/_auth/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRequestResetPasswordRoute =
+  AuthRequestResetPasswordRouteImport.update({
+    id: '/_auth/request-reset-password',
+    path: '/request-reset-password',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthAuthenticateRoute = AuthAuthenticateRouteImport.update({
+  id: '/_auth/authenticate',
+  path: '/authenticate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -49,16 +62,20 @@ const ApiStreamJobIdRouteRoute = ApiStreamJobIdRouteRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/authenticate': typeof AuthAuthenticateRoute
+  '/request-reset-password': typeof AuthRequestResetPasswordRoute
+  '/reset-password': typeof AuthResetPasswordRoute
   '/analyze/': typeof AnalyzeIndexRoute
-  '/authenticate/': typeof AuthenticateIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/authenticate': typeof AuthAuthenticateRoute
+  '/request-reset-password': typeof AuthRequestResetPasswordRoute
+  '/reset-password': typeof AuthResetPasswordRoute
   '/analyze': typeof AnalyzeIndexRoute
-  '/authenticate': typeof AuthenticateIndexRoute
   '/cofounder': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -66,8 +83,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_auth/authenticate': typeof AuthAuthenticateRoute
+  '/_auth/request-reset-password': typeof AuthRequestResetPasswordRoute
+  '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/analyze/': typeof AnalyzeIndexRoute
-  '/authenticate/': typeof AuthenticateIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -76,24 +95,30 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/authenticate'
+    | '/request-reset-password'
+    | '/reset-password'
     | '/analyze/'
-    | '/authenticate/'
     | '/cofounder/'
     | '/api/stream/$jobId'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/analyze'
     | '/authenticate'
+    | '/request-reset-password'
+    | '/reset-password'
+    | '/analyze'
     | '/cofounder'
     | '/api/stream/$jobId'
     | '/api/auth/$'
   id:
     | '__root__'
     | '/'
+    | '/_auth/authenticate'
+    | '/_auth/request-reset-password'
+    | '/_auth/reset-password'
     | '/analyze/'
-    | '/authenticate/'
     | '/cofounder/'
     | '/api/stream/$jobId'
     | '/api/auth/$'
@@ -101,8 +126,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthAuthenticateRoute: typeof AuthAuthenticateRoute
+  AuthRequestResetPasswordRoute: typeof AuthRequestResetPasswordRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AnalyzeIndexRoute: typeof AnalyzeIndexRoute
-  AuthenticateIndexRoute: typeof AuthenticateIndexRoute
   CofounderIndexRoute: typeof CofounderIndexRoute
   ApiStreamJobIdRouteRoute: typeof ApiStreamJobIdRouteRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -124,18 +151,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CofounderIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/authenticate/': {
-      id: '/authenticate/'
-      path: '/authenticate'
-      fullPath: '/authenticate/'
-      preLoaderRoute: typeof AuthenticateIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/analyze/': {
       id: '/analyze/'
       path: '/analyze'
       fullPath: '/analyze/'
       preLoaderRoute: typeof AnalyzeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/reset-password': {
+      id: '/_auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/request-reset-password': {
+      id: '/_auth/request-reset-password'
+      path: '/request-reset-password'
+      fullPath: '/request-reset-password'
+      preLoaderRoute: typeof AuthRequestResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/authenticate': {
+      id: '/_auth/authenticate'
+      path: '/authenticate'
+      fullPath: '/authenticate'
+      preLoaderRoute: typeof AuthAuthenticateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -157,8 +198,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthAuthenticateRoute: AuthAuthenticateRoute,
+  AuthRequestResetPasswordRoute: AuthRequestResetPasswordRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AnalyzeIndexRoute: AnalyzeIndexRoute,
-  AuthenticateIndexRoute: AuthenticateIndexRoute,
   CofounderIndexRoute: CofounderIndexRoute,
   ApiStreamJobIdRouteRoute: ApiStreamJobIdRouteRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
