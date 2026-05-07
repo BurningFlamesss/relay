@@ -1,4 +1,5 @@
 import { prisma } from '#/db'
+import { clientEnv } from '#/env/client.ts';
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
@@ -27,7 +28,7 @@ export const auth = betterAuth({
     },
   },
 
-  baseURL: import.meta.env.BETTER_AUTH_URL,
+  baseURL: clientEnv.VITE_APP_URL,
 
   plugins: [tanstackStartCookies()],
 })

@@ -47,7 +47,7 @@ function RouteComponent() {
       <form onSubmit={handlePasswordReset}>
         New Password: <input type="password" name="newPassword" required /> <br />
         Confirm Password: <input type="password" name="confirmPassword" required /> <br />
-        <button type="submit">Request Reset Password</button> <br />
+        <button type="submit">Reset Password</button> <br />
         <Link to="/authenticate" search={{ type: "signin" }}>Back to signin</Link>
       </form>
     </>

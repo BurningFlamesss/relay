@@ -1,9 +1,10 @@
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { PrismaClient } from './generated/prisma/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { serverEnv } from './env/server.js';
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+  connectionString: serverEnv.DATABASE_URL,
 })
 
 const createPrismaClient = () =>
@@ -18,6 +19,6 @@ declare global {
 export const prisma: ExtendedPrismaClient =
   globalThis.__prisma ?? createPrismaClient()
 
-if (process.env.NODE_ENV !== 'production') {
+if (serverEnv.NODE_ENV !== 'production') {
   globalThis.__prisma = prisma
 }

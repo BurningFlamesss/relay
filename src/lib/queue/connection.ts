@@ -1,6 +1,7 @@
+import { serverEnv } from "#/env/server.ts";
 import { Redis } from "ioredis";
 
-const connectionString = process.env.REDIS_CONNECTION_STRING
+const connectionString = serverEnv.REDIS_CONNECTION_STRING
 
 if (!connectionString) {
     throw new Error("REDIS_CONNECTION_STRING isnot set")

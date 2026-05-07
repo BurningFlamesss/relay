@@ -1,3 +1,4 @@
+import { clientEnv } from '#/env/client.ts';
 import { authClient } from '#/lib/auth-client.ts';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { toast } from 'sonner';
@@ -17,7 +18,7 @@ function RouteComponent() {
         try {
             await authClient.requestPasswordReset({
                 email,
-                redirectTo: `${process.env.BETTER_AUTH_URL}/reset-password`
+                redirectTo: `${clientEnv.VITE_APP_URL}/reset-password`
             })
             toast.success(`Reset password email is sent to ${email}`)
         } catch (error) {
