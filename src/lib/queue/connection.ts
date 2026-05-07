@@ -1,4 +1,3 @@
-import { env } from "#/env.ts";
 import { Redis } from "ioredis";
 
 const connectionString = process.env.REDIS_CONNECTION_STRING
