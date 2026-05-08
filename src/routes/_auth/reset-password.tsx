@@ -24,8 +24,14 @@ function RouteComponent() {
         await authClient.resetPassword({
           newPassword: newPassword,
           token: token,
+        }, {
+          onError: (context) => {
+            toast.error(context.error.message)
+          },
+          onSuccess: () => {
+            toast.success("Successfully reset password")
+          }
         })
-        toast.success("Successfully reset password")
       } catch (error) {
         toast.error(`Something went wrong: ${error}`)
       }

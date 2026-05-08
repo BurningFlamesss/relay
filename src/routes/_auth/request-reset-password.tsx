@@ -19,8 +19,14 @@ function RouteComponent() {
             await authClient.requestPasswordReset({
                 email,
                 redirectTo: `${clientEnv.VITE_APP_URL}/reset-password`
+            }, {
+                onError: (context) => {
+                    toast.error(context.error.message)
+                },
+                onSuccess: () => {
+                    toast.success(`Reset password email is sent to ${email}`)
+                }
             })
-            toast.success(`Reset password email is sent to ${email}`)
         } catch (error) {
             toast.error(`Something went wrong: ${error}`)
         }

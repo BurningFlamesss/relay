@@ -22,9 +22,18 @@ function RouteComponent() {
                 email: formData.get("email") as string,
                 password: formData.get("password") as string,
                 callbackURL: "/"
+            }, {
+                onError: (context) => {
+                    if (context.error.status === 403) {
+                        toast.error("Please verify you email")
+                    } else {
+                        toast.error(context.error.message)
+                    }
+                },
+                onSuccess: () => {
+                    toast.success("Signed In!!!")
+                }
             })
-
-            toast.success("Signed In!!!")
         } catch (error) {
             toast.error(`Something went wrong: ${error}`)
 
@@ -43,12 +52,17 @@ function RouteComponent() {
                 email,
                 password: formData.get("password") as string,
                 callbackURL: "/"
+            }, {
+                onError: (context) => {
+                    toast.error(context.error.message)
+                },
+                onSuccess: () => {
+                    toast.success(`An verification email is sent to ${email}`)
+                }
             })
 
-            toast.success(`An verification email is sent to ${email}`)
         } catch (error) {
             toast.error(`Something went wrong: ${error}`)
-
         }
     }
 
