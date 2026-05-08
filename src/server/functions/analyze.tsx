@@ -3,13 +3,17 @@ import { connection } from "#/lib/queue/connection.ts";
 import { analyzeQueue } from "#/lib/queue/queues.ts";
 import { getSessionMiddleware } from "#/middleware/auth.middleware.ts";
 import { AnalyzeSchema } from "#/schema/analyze";
+import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
 export const startAnalyzeFn = createServerFn()
     .middleware([getSessionMiddleware])
     .inputValidator(AnalyzeSchema)
     .handler(async ({ data, context }) => {
-        // TODO: Redirect to /authentication page if no session
+        
+        if (!context.session) {
+            throw redirect({ to: "/authenticate", search: { type: "signup" } })
+        }
 
         // TODO: Create a real JOB in the database
         const jobId = crypto.randomUUID()
@@ -38,19 +42,10 @@ export const startAnalyzeFn = createServerFn()
 export const getLatestJobFn = createServerFn()
     .middleware([getSessionMiddleware])
     .handler(async ({ context }) => {
-        // TODO: Redirect to /authentication page if no session
 
-        // TODO: Get the actual data {id, status, lastStage, report}
-        // const stages: Array<Stage> = ["idle", "processing", "confirmed", "thinking", "researching", "evaluating", "stitching", "done", "error"]
-        // const status = ["complete", "failed", "in_progress"]
-        // const jobId = crypto.randomUUID()
-
-        // const job = {
-        //     id: jobId,
-        //     status: status[Math.floor(Math.random() * status.length)],
-        //     lastStage: stages[Math.floor(Math.random() * stages.length)],
-        //     report: ""
-        // }
+        if (!context.session) {
+            throw redirect({ to: "/authenticate", search: { type: "signup" } })
+        }
 
         const jobs = await analyzeQueue.getJobs(
             ["active", "completed", "failed", "waiting"],
@@ -58,7 +53,7 @@ export const getLatestJobFn = createServerFn()
         )
 
         const userJobs = jobs
-        // .filter(job => job.data.userId === context.session?.user.id)
+        .filter(job => job.data.userId === context.session?.user.id)
         .sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))
 
         const latest = userJobs[0]

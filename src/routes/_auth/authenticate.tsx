@@ -1,11 +1,16 @@
 import { authClient } from '#/lib/auth-client.ts';
 import { authSearchParam, signinSchema, signupSchema } from '#/schema/auth.tsx';
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import React from 'react';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_auth/authenticate')({
     component: RouteComponent,
+    beforeLoad: ({ context }) => {
+        if (context.session) {
+            throw redirect({ to: "/" })
+        }
+    },
     validateSearch: authSearchParam
 })
 

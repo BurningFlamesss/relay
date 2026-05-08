@@ -1,11 +1,13 @@
 import type { Stage } from '#/hooks/useAnalysis'
 import { useAnalysis } from '#/hooks/useAnalysis'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import React, { useRef } from 'react'
 
 export const Route = createFileRoute('/analyze/')({
   beforeLoad({ context }) {
-    // TODO: Verify the session
+    if (!context.session) {
+      throw redirect({ to: "/authenticate", search: { type: "signup" } })
+    }
   },
   component: RouteComponent,
 })
