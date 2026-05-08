@@ -1,5 +1,6 @@
 import { clientEnv } from '#/env/client.ts';
 import { authClient } from '#/lib/auth-client.ts';
+import { requestResetPasswordSchema } from '#/schema/auth.tsx';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { toast } from 'sonner';
 
@@ -14,10 +15,20 @@ function RouteComponent() {
 
         const formData = new FormData(e.currentTarget)
         const email = formData.get("email") as string
+        const requestResetPasswordData = {
+            email
+        }
+
+        const { success, data, error } = requestResetPasswordSchema.safeParse(requestResetPasswordData)
+
+        if (!success) {
+            Object.values(error.flatten().fieldErrors).forEach(errors => errors.forEach(err => toast.error(err.replaceAll("string", "email"))))
+            return
+        }
 
         try {
             await authClient.requestPasswordReset({
-                email,
+                ...requestResetPasswordData,
                 redirectTo: `${clientEnv.VITE_APP_URL}/reset-password`
             }, {
                 onError: (context) => {
@@ -27,10 +38,9 @@ function RouteComponent() {
                     toast.success(`Reset password email is sent to ${email}`)
                 }
             })
-        } catch (error) {
-            toast.error(`Something went wrong: ${error}`)
+        } catch (err) {
+            toast.error(`Something went wrong: ${err}`)
         }
-
     }
 
     return (

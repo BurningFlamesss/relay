@@ -1,5 +1,5 @@
 import { authClient } from '#/lib/auth-client.ts';
-import { resetPasswordParam } from '#/schema/auth.tsx';
+import { resetPasswordParam, resetPasswordSchema } from '#/schema/auth.tsx';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import type React from 'react';
 import { toast } from 'sonner';
@@ -19,10 +19,19 @@ function RouteComponent() {
     const newPassword = formData.get("newPassword") as string
     const confirmPassword = formData.get("confirmPassword") as string
 
+    const resetPasswordData = { newPassword }
+
+    const { success, data, error } = resetPasswordSchema.safeParse(resetPasswordData)
+
+    if (!success) {
+      Object.values(error.flatten().fieldErrors).forEach(errors => errors.forEach(err => toast.error(err.replaceAll("string", "field"))))
+      return
+    }
+
     if (newPassword === confirmPassword) {
       try {
         await authClient.resetPassword({
-          newPassword: newPassword,
+          ...resetPasswordData,
           token: token,
         }, {
           onError: (context) => {
@@ -32,8 +41,8 @@ function RouteComponent() {
             toast.success("Successfully reset password")
           }
         })
-      } catch (error) {
-        toast.error(`Something went wrong: ${error}`)
+      } catch (err) {
+        toast.error(`Something went wrong: ${err}`)
       }
     } else {
       toast.error("Please make sure both passwords matches each other identically")

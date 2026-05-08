@@ -18,3 +18,11 @@ export const signupSchema = z.object({
     email: z.email(),
     password: z.string().min(8).max(100)
 })
+
+export const requestResetPasswordSchema = z.object({
+    email: z.email()
+})
+
+export const resetPasswordSchema = z.object({
+    newPassword: z.string().min(8).max(100)
+})
