@@ -1,5 +1,5 @@
 import { authClient } from '#/lib/auth-client.ts';
-import { authSearchParam } from '#/schema/auth.tsx';
+import { authSearchParam, signinSchema, signupSchema } from '#/schema/auth.tsx';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import React from 'react';
 import { toast } from 'sonner';
@@ -16,11 +16,23 @@ function RouteComponent() {
         e.preventDefault()
 
         const formData = new FormData(e.currentTarget)
+        const email = formData.get("email") as string
+        const password = formData.get("password") as string
+        const signInData = {
+            email, password
+        }
+
+        const { success, data, error } = signinSchema.safeParse(signInData)
+
+        if (!success) {
+            Object.values(error.flatten().fieldErrors).forEach(errors => errors.forEach(err => toast.error(err.replaceAll("string", "field"))))
+            return
+        }
+
 
         try {
             await authClient.signIn.email({
-                email: formData.get("email") as string,
-                password: formData.get("password") as string,
+                ...signInData,
                 callbackURL: "/"
             }, {
                 onError: (context) => {
@@ -34,8 +46,8 @@ function RouteComponent() {
                     toast.success("Signed In!!!")
                 }
             })
-        } catch (error) {
-            toast.error(`Something went wrong: ${error}`)
+        } catch (err) {
+            toast.error(`Something went wrong: ${err}`)
 
         }
     }
@@ -44,13 +56,23 @@ function RouteComponent() {
         e.preventDefault()
 
         const formData = new FormData(e.currentTarget)
+        const name = formData.get("name") as string
         const email = formData.get("email") as string
+        const password = formData.get("password") as string
+        const signUpData = {
+            name, email, password
+        }
+
+        const { success, data, error } = signupSchema.safeParse(signUpData)
+
+        if (!success) {
+            Object.values(error.flatten().fieldErrors).forEach(errors => errors.forEach(err => toast.error(err.replaceAll("string", "field"))))
+            return
+        }
 
         try {
             await authClient.signUp.email({
-                name: formData.get("name") as string,
-                email,
-                password: formData.get("password") as string,
+                ...signUpData,
                 callbackURL: "/"
             }, {
                 onError: (context) => {
@@ -61,7 +83,7 @@ function RouteComponent() {
                 }
             })
 
-        } catch (error) {
+        } catch (err) {
             toast.error(`Something went wrong: ${error}`)
         }
     }
