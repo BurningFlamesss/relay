@@ -9,7 +9,138 @@
 * 🟢 You can import this file directly.
 */
 
+export const AnalysisTier = {
+  LOW: 'LOW',
+  MID: 'MID',
+  HIGH: 'HIGH'
+} as const
+
+export type AnalysisTier = (typeof AnalysisTier)[keyof typeof AnalysisTier]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const JobStatus = {
+  QUEUED: 'QUEUED',
+  RUNNING: 'RUNNING',
+  ITERATING: 'ITERATING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus]
+
+
+export const PhaseStatus = {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+} as const
+
+export type PhaseStatus = (typeof PhaseStatus)[keyof typeof PhaseStatus]
+
+
+export const PhaseType = {
+  z: 'z'
+} as const
+
+export type PhaseType = (typeof PhaseType)[keyof typeof PhaseType]
+
+
+export const ScrapingSourceType = {
+  REDDIT: 'REDDIT',
+  HACKER_NEWS: 'HACKER_NEWS',
+  CAPTERRA: 'CAPTERRA',
+  TRUSTPILOT: 'TRUSTPILOT',
+  GITHUB: 'GITHUB',
+  GITHUB_ISSUES: 'GITHUB_ISSUES',
+  STACK_OVERFLOW: 'STACK_OVERFLOW',
+  DEV_TO: 'DEV_TO',
+  LINKEDIN_JOBS: 'LINKEDIN_JOBS',
+  PRODUCT_HUNT: 'PRODUCT_HUNT',
+  APP_STORE: 'APP_STORE'
+} as const
+
+export type ScrapingSourceType = (typeof ScrapingSourceType)[keyof typeof ScrapingSourceType]
+
+
+export const SignalIntentLabel = {
+  COMPLAINT: 'COMPLAINT',
+  WORKAROUND: 'WORKAROUND',
+  DEMAND: 'DEMAND',
+  COMPETITOR: 'COMPETITOR',
+  FAILURE_POST: 'FAILURE_POST',
+  FEATURE_REQUEST: 'FEATURE_REQUEST'
+} as const
+
+export type SignalIntentLabel = (typeof SignalIntentLabel)[keyof typeof SignalIntentLabel]
+
+
+export const AuthorType = {
+  DEVELOPER: 'DEVELOPER',
+  BUSINESS_OWNER: 'BUSINESS_OWNER',
+  CONSUMER: 'CONSUMER',
+  STUDENT: 'STUDENT',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type AuthorType = (typeof AuthorType)[keyof typeof AuthorType]
+
+
+export const IdeaStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  HELD: 'HELD',
+  DISCARDED: 'DISCARDED'
+} as const
+
+export type IdeaStatus = (typeof IdeaStatus)[keyof typeof IdeaStatus]
+
+
+export const CandidateStatus = {
+  ACTIVE: 'ACTIVE',
+  ELIMINATED: 'ELIMINATED'
+} as const
+
+export type CandidateStatus = (typeof CandidateStatus)[keyof typeof CandidateStatus]
+
+
+export const CouponType = {
+  CREDITS: 'CREDITS',
+  DISCOUNT: 'DISCOUNT'
+} as const
+
+export type CouponType = (typeof CouponType)[keyof typeof CouponType]
+
+
+export const CouponStatus = {
+  ACTIVE: 'ACTIVE',
+  EXHAUSTED: 'EXHAUSTED',
+  EXPIRED: 'EXPIRED',
+  DISABLED: 'DISABLED'
+} as const
+
+export type CouponStatus = (typeof CouponStatus)[keyof typeof CouponStatus]
+
+
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const CreditTransactionType = {
+  PURCHASE: 'PURCHASE',
+  COUPON_REDEEM: 'COUPON_REDEEM',
+  JOB_RESERVE: 'JOB_RESERVE',
+  JOB_SPEND: 'JOB_SPEND',
+  JOB_REFUND: 'JOB_REFUND'
+} as const
+
+export type CreditTransactionType = (typeof CreditTransactionType)[keyof typeof CreditTransactionType]

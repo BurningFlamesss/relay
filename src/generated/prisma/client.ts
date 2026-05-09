@@ -61,3 +61,43 @@ export type Account = Prisma.AccountModel
  * 
  */
 export type Verification = Prisma.VerificationModel
+/**
+ * Model CreditWallet
+ * 
+ */
+export type CreditWallet = Prisma.CreditWalletModel
+/**
+ * Model CreditTransaction
+ * 
+ */
+export type CreditTransaction = Prisma.CreditTransactionModel
+/**
+ * Model CreditPack
+ * 
+ */
+export type CreditPack = Prisma.CreditPackModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model Coupon
+ * 
+ */
+export type Coupon = Prisma.CouponModel
+/**
+ * Model CouponUse
+ * 
+ */
+export type CouponUse = Prisma.CouponUseModel
+/**
+ * Model AnalysisJob
+ * 
+ */
+export type AnalysisJob = Prisma.AnalysisJobModel
+/**
+ * Model Idea
+ * 
+ */
+export type Idea = Prisma.IdeaModel
