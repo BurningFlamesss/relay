@@ -8,6 +8,34 @@ datasource db {
   provider = "postgresql"
 }
 
+enum AnalysisTier {
+  LOW
+  MID
+  HIGH
+}
+
+enum JobStatus {
+  QUEUED
+  RUNNING
+  ITERATING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PhaseStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  SKIPPED // If Low tier
+}
+
+enum PhaseType {
+  z
+}
+
 model User {
   id            String    @id
   name          String

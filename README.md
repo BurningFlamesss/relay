@@ -12,7 +12,7 @@ Relay helps you in finding solution to a problem rather than problem to a soluti
 
 Relay donot research to find anything generic, add some buzz-words, and try to sell the idea to you adding sugar coated words. Instead Relay helps you find the grounded problem faced by **real humans** as if it wants to start a successful startup and earn in six digits.
 
-## How it works? (SIMPLEX)
+## How it works?
 
 1. You Enter a generic Topic
 2. Relay scrapes 1000+ posts/articles
@@ -20,81 +20,68 @@ Relay donot research to find anything generic, add some buzz-words, and try to s
 4. AI Validates 
 5. Gives you a actionable MVP
 
-## How it works? (HALF_DUPLEX)
+## Workflow
 
-If there a existing idea and you cares about competition analysis and market research, Relay will work from **STEP 10**
+### Phase 0
 
-### STEP 1: Initialization:
-    User enters generic topic with optional filters
-    Frontend sends request to server
+Before delegating the flow to the workers of bullmq. System will:
 
-### STEP 2: Validation
-    Server validates the input checking the rate limits and subscription plan
-    Server assigns JobId, stores initial state in postgresql, and triggers a async background job
+- Vectorically match any identical or near-identical topic (within a time frame). If found, offer that result at 5 credits. 
+- Estimate cost and show to the user so that they can confirm the research.
 
-### STEP 3: Seed Idea
-    Server sends the topic, previously failed ideas to AI
-    AI returns 3-5 seed ideas
+### Phase 1
 
-### STEP 4: Parsing
-    Server converts AI response into structured scraping task
+System generates targetted search queries from the topic. Queries will have intent labels like:
 
-### STEP 5: Problem Discovery
-    Scraping Layer extracts the data
-    Streams data into temporary storage
+- Complaint
+- Workaround
+- Demand signal
+- Competitor
+- Failure signal
 
-### STEP 6: Preprocessing Layer
-    Server Filters irrevelant content, groups by similarity, and extracts repeated complaints
+### Phase 2
 
-### STEP 7: Problem Validation
-    AI identifies recurring patterns, user types, and problem industry
-    AI classifies real problem among the noise
+Based on the search queries, all the sources are scraped simultaneously (parallely) as children of Bullmq jobs:
 
-### STEP 8: Controlled Iteration
-    Server checks max iterations and iterates if necessary in order to get a solid idea to research at
+- Priority 1 (High Signal Density from reddit, hn, capterra, trustpilot)
+- Priority 2 (Technical Signal from github/github issues, stackoverflow, dev posts)
+- Priority 3 (Market Signal from linkedin, product hunt, googleplay/app store reviews)
 
-### STEP 9: Store Valid Problem Candidates
-    Server stores those which matters
+These scrapers sends signals to redis. In a structure which somewhat includes quote, url, source, authorType, date, and sentimentIntensity
 
-### STEP 10: Analysis Plan
-    Server generates scraping plan for analyzing competition
+### Phase 3
 
-### STEP 11: Competitive Analysis
-    Scraper collects existing products, complaints, and gaps
+Filters irrelevant content by:
 
-### STEP 12: Preprocessing Layer
-    Server extracts competitor lists, common complaints and feature gaps
+- Deduplications of urls, content hash
+- Author classification
+- Intensity extraction
+- Demand tags
 
-### STEP 13: AI Analysis
-    AI evaluates those results
+### Phase 4
 
-### STEP 14: Controlled Iteration
-    Server checks max iterations and iterates if necessary in order to get a idea with manageable competition
+AI gets clusters of real data grouped via semantics similarity. Then, it outputs the following per clusters:
 
-### STEP 15: Store Candidates with Manageable Competition
-    Server stores those which matters
+- Problem statement
+- Frequency
+- Intensity
+- Who is affected
+- Failed alternatives people mentioned
+- Evidence (sources)
+- Demand
 
-### STEP 16: Market Analysis Plan
-    Server generates Market analysis plan
+### Phase 5
 
-### STEP 17: Market Analysis
-    Scraper helps to know the market size, problem frequency, audience size by collecting intent driven signals
+Scores every cluster. If top cluster score is below threshold (also, credits are taken into account) then:
 
-### STEP 18: Quantitative Estimation Layer
-    Server computes problem frequency, trends, market size, audience size
+- Generates deeper and more targetted queries scoped to the top cluster (Phase 1)
+- Rescrape with those queries (Phase 2)
+- Merge new signals into existing clusters (Phase 3)
+- Reevaluates (Phase 4)
 
-### STEP 19: AI Evaluation and Scoring
-    AI process the problem data, competition data and demand metrics to output scoring
+until cluster is found above threshold. 
 
-### STEP 20: Idea Synthesis
-    AI generates Problem statement, solution, MVP, target audience, pricing postulates
-
-### STEP 21: Database
-    Server stores full research and marks the job as completed
-
-### STEP 22: Retrieval and Action
-    Server fetches the report along with charts, insights, sources
-    User can save, reject, publish, or reiterate the idea
+### TBD
 
 
 ## Tools & Tech Stack
