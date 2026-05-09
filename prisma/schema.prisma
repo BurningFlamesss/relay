@@ -33,8 +33,84 @@ enum PhaseStatus {
 }
 
 enum PhaseType {
-  z
+  z // TODO: Complete the workflow in README and then add here so no mismatches in the workflow is there
 }
+
+enum ScrapingSourceType {
+  REDDIT
+  HACKER_NEWS
+  CAPTERRA
+  TRUSTPILOT
+  GITHUB
+  GITHUB_ISSUES
+  STACK_OVERFLOW
+  DEV_TO
+  LINKEDIN_JOBS
+  PRODUCT_HUNT
+  APP_STORE
+  // TODO: Add more
+}
+
+enum SignalIntentLabel {
+  COMPLAINT
+  WORKAROUND
+  DEMAND
+  COMPETITOR
+  FAILURE_POST
+  FEATURE_REQUEST
+}
+
+enum AuthorType {
+  DEVELOPER
+  BUSINESS_OWNER
+  CONSUMER
+  STUDENT
+  // TODO: broad it more
+  UNKNOWN
+}
+
+enum IdeaStatus {
+  PENDING
+  APPROVED
+  HELD
+  DISCARDED
+}
+
+enum CandidateStatus {
+  ACTIVE
+  // Maybe also add rejected and retried
+  ELIMINATED
+}
+
+enum CouponType {
+  CREDITS
+  DISCOUNT
+}
+
+enum CouponStatus {
+  ACTIVE
+  EXHAUSTED
+  EXPIRED
+  DISABLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum CreditTransactionType {
+  PURCHASE
+  COUPON_REDEEM
+  JOB_RESERVE
+  JOB_SPEND
+  JOB_REFUND
+  // TODO: maybe also add admin grants
+}
+
+
 
 model User {
   id            String    @id

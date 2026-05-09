@@ -38,6 +38,7 @@ System generates targetted search queries from the topic. Queries will have inte
 - Demand signal
 - Competitor
 - Failure signal
+- Feature request
 
 ### Phase 2
 
