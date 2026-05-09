@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -110,8 +109,6 @@ enum CreditTransactionType {
   // TODO: maybe also add admin grants
 }
 
-
-
 model User {
   id            String    @id
   name          String
@@ -122,6 +119,13 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+
+  creditWallet       CreditWallet?
+  jobs               AnalysisJob[]
+  ideas              Idea[]
+  couponUses         CouponUse[]
+  payments           Payment[]
+  creditTransactions CreditTransaction[]
 
   @@unique([email])
   @@map("user")
@@ -173,4 +177,74 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model CreditWallet {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance        Int      @default(0)
+  reserved       Int      @default(0)
+  lifetimeEarned Int      @default(0)
+  lifetimeSpent  Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("credit_wallet")
+}
+
+model CreditTransaction {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type CreditTransactionType
+  amount Int // +ve means credit, -ve means debited which basics of accountancy
+  balanceAfter Int
+  reservedAfter Int
+  description String?
+  refId String? // Could be jobId, paymentId
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([refId])
+  @@map("credit_transaction")
+}
+
+model CreditPack {
+  id String @id @default(cuid())
+  // TODO: Add the plans
+}
+
+// TODO: Add the exact fields
+model Payment {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+model Coupon {
+  id String @id @default(cuid())
+
+}
+
+model CouponUse {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+model AnalysisJob {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+model Idea {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
 }
