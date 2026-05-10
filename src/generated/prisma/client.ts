@@ -87,17 +87,7 @@ export type Payment = Prisma.PaymentModel
  */
 export type Coupon = Prisma.CouponModel
 /**
- * Model CouponUse
+ * Model CouponUsage
  * 
  */
-export type CouponUse = Prisma.CouponUseModel
-/**
- * Model AnalysisJob
- * 
- */
-export type AnalysisJob = Prisma.AnalysisJobModel
-/**
- * Model Idea
- * 
- */
-export type Idea = Prisma.IdeaModel
+export type CouponUsage = Prisma.CouponUsageModel

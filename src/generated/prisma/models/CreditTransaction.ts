@@ -46,7 +46,7 @@ export type CreditTransactionMinAggregateOutputType = {
   balanceAfter: number | null
   reservedAfter: number | null
   description: string | null
-  refId: string | null
+  referenceId: string | null
   createdAt: Date | null
 }
 
@@ -58,7 +58,7 @@ export type CreditTransactionMaxAggregateOutputType = {
   balanceAfter: number | null
   reservedAfter: number | null
   description: string | null
-  refId: string | null
+  referenceId: string | null
   createdAt: Date | null
 }
 
@@ -70,7 +70,7 @@ export type CreditTransactionCountAggregateOutputType = {
   balanceAfter: number
   reservedAfter: number
   description: number
-  refId: number
+  referenceId: number
   createdAt: number
   _all: number
 }
@@ -96,7 +96,7 @@ export type CreditTransactionMinAggregateInputType = {
   balanceAfter?: true
   reservedAfter?: true
   description?: true
-  refId?: true
+  referenceId?: true
   createdAt?: true
 }
 
@@ -108,7 +108,7 @@ export type CreditTransactionMaxAggregateInputType = {
   balanceAfter?: true
   reservedAfter?: true
   description?: true
-  refId?: true
+  referenceId?: true
   createdAt?: true
 }
 
@@ -120,7 +120,7 @@ export type CreditTransactionCountAggregateInputType = {
   balanceAfter?: true
   reservedAfter?: true
   description?: true
-  refId?: true
+  referenceId?: true
   createdAt?: true
   _all?: true
 }
@@ -219,7 +219,7 @@ export type CreditTransactionGroupByOutputType = {
   balanceAfter: number
   reservedAfter: number
   description: string | null
-  refId: string | null
+  referenceId: string | null
   createdAt: Date
   _count: CreditTransactionCountAggregateOutputType | null
   _avg: CreditTransactionAvgAggregateOutputType | null
@@ -254,7 +254,7 @@ export type CreditTransactionWhereInput = {
   balanceAfter?: Prisma.IntFilter<"CreditTransaction"> | number
   reservedAfter?: Prisma.IntFilter<"CreditTransaction"> | number
   description?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
-  refId?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
+  referenceId?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CreditTransaction"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -267,7 +267,7 @@ export type CreditTransactionOrderByWithRelationInput = {
   balanceAfter?: Prisma.SortOrder
   reservedAfter?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  refId?: Prisma.SortOrderInput | Prisma.SortOrder
+  referenceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -283,7 +283,7 @@ export type CreditTransactionWhereUniqueInput = Prisma.AtLeast<{
   balanceAfter?: Prisma.IntFilter<"CreditTransaction"> | number
   reservedAfter?: Prisma.IntFilter<"CreditTransaction"> | number
   description?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
-  refId?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
+  referenceId?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CreditTransaction"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
@@ -296,7 +296,7 @@ export type CreditTransactionOrderByWithAggregationInput = {
   balanceAfter?: Prisma.SortOrder
   reservedAfter?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  refId?: Prisma.SortOrderInput | Prisma.SortOrder
+  referenceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CreditTransactionCountOrderByAggregateInput
   _avg?: Prisma.CreditTransactionAvgOrderByAggregateInput
@@ -316,7 +316,7 @@ export type CreditTransactionScalarWhereWithAggregatesInput = {
   balanceAfter?: Prisma.IntWithAggregatesFilter<"CreditTransaction"> | number
   reservedAfter?: Prisma.IntWithAggregatesFilter<"CreditTransaction"> | number
   description?: Prisma.StringNullableWithAggregatesFilter<"CreditTransaction"> | string | null
-  refId?: Prisma.StringNullableWithAggregatesFilter<"CreditTransaction"> | string | null
+  referenceId?: Prisma.StringNullableWithAggregatesFilter<"CreditTransaction"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CreditTransaction"> | Date | string
 }
 
@@ -327,7 +327,7 @@ export type CreditTransactionCreateInput = {
   balanceAfter: number
   reservedAfter: number
   description?: string | null
-  refId?: string | null
+  referenceId?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCreditTransactionsInput
 }
@@ -340,7 +340,7 @@ export type CreditTransactionUncheckedCreateInput = {
   balanceAfter: number
   reservedAfter: number
   description?: string | null
-  refId?: string | null
+  referenceId?: string | null
   createdAt?: Date | string
 }
 
@@ -351,7 +351,7 @@ export type CreditTransactionUpdateInput = {
   balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
   reservedAfter?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCreditTransactionsNestedInput
 }
@@ -364,7 +364,7 @@ export type CreditTransactionUncheckedUpdateInput = {
   balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
   reservedAfter?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -376,7 +376,7 @@ export type CreditTransactionCreateManyInput = {
   balanceAfter: number
   reservedAfter: number
   description?: string | null
-  refId?: string | null
+  referenceId?: string | null
   createdAt?: Date | string
 }
 
@@ -387,7 +387,7 @@ export type CreditTransactionUpdateManyMutationInput = {
   balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
   reservedAfter?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -399,7 +399,7 @@ export type CreditTransactionUncheckedUpdateManyInput = {
   balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
   reservedAfter?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -421,7 +421,7 @@ export type CreditTransactionCountOrderByAggregateInput = {
   balanceAfter?: Prisma.SortOrder
   reservedAfter?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  refId?: Prisma.SortOrder
+  referenceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -439,7 +439,7 @@ export type CreditTransactionMaxOrderByAggregateInput = {
   balanceAfter?: Prisma.SortOrder
   reservedAfter?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  refId?: Prisma.SortOrder
+  referenceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -451,7 +451,7 @@ export type CreditTransactionMinOrderByAggregateInput = {
   balanceAfter?: Prisma.SortOrder
   reservedAfter?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  refId?: Prisma.SortOrder
+  referenceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -514,7 +514,7 @@ export type CreditTransactionCreateWithoutUserInput = {
   balanceAfter: number
   reservedAfter: number
   description?: string | null
-  refId?: string | null
+  referenceId?: string | null
   createdAt?: Date | string
 }
 
@@ -525,7 +525,7 @@ export type CreditTransactionUncheckedCreateWithoutUserInput = {
   balanceAfter: number
   reservedAfter: number
   description?: string | null
-  refId?: string | null
+  referenceId?: string | null
   createdAt?: Date | string
 }
 
@@ -566,7 +566,7 @@ export type CreditTransactionScalarWhereInput = {
   balanceAfter?: Prisma.IntFilter<"CreditTransaction"> | number
   reservedAfter?: Prisma.IntFilter<"CreditTransaction"> | number
   description?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
-  refId?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
+  referenceId?: Prisma.StringNullableFilter<"CreditTransaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CreditTransaction"> | Date | string
 }
 
@@ -577,7 +577,7 @@ export type CreditTransactionCreateManyUserInput = {
   balanceAfter: number
   reservedAfter: number
   description?: string | null
-  refId?: string | null
+  referenceId?: string | null
   createdAt?: Date | string
 }
 
@@ -588,7 +588,7 @@ export type CreditTransactionUpdateWithoutUserInput = {
   balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
   reservedAfter?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -599,7 +599,7 @@ export type CreditTransactionUncheckedUpdateWithoutUserInput = {
   balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
   reservedAfter?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -610,7 +610,7 @@ export type CreditTransactionUncheckedUpdateManyWithoutUserInput = {
   balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
   reservedAfter?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  refId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -624,7 +624,7 @@ export type CreditTransactionSelect<ExtArgs extends runtime.Types.Extensions.Int
   balanceAfter?: boolean
   reservedAfter?: boolean
   description?: boolean
-  refId?: boolean
+  referenceId?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["creditTransaction"]>
@@ -637,7 +637,7 @@ export type CreditTransactionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   balanceAfter?: boolean
   reservedAfter?: boolean
   description?: boolean
-  refId?: boolean
+  referenceId?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["creditTransaction"]>
@@ -650,7 +650,7 @@ export type CreditTransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   balanceAfter?: boolean
   reservedAfter?: boolean
   description?: boolean
-  refId?: boolean
+  referenceId?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["creditTransaction"]>
@@ -663,11 +663,11 @@ export type CreditTransactionSelectScalar = {
   balanceAfter?: boolean
   reservedAfter?: boolean
   description?: boolean
-  refId?: boolean
+  referenceId?: boolean
   createdAt?: boolean
 }
 
-export type CreditTransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "amount" | "balanceAfter" | "reservedAfter" | "description" | "refId" | "createdAt", ExtArgs["result"]["creditTransaction"]>
+export type CreditTransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "amount" | "balanceAfter" | "reservedAfter" | "description" | "referenceId" | "createdAt", ExtArgs["result"]["creditTransaction"]>
 export type CreditTransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -691,7 +691,7 @@ export type $CreditTransactionPayload<ExtArgs extends runtime.Types.Extensions.I
     balanceAfter: number
     reservedAfter: number
     description: string | null
-    refId: string | null
+    referenceId: string | null
     createdAt: Date
   }, ExtArgs["result"]["creditTransaction"]>
   composites: {}
@@ -1124,7 +1124,7 @@ export interface CreditTransactionFieldRefs {
   readonly balanceAfter: Prisma.FieldRef<"CreditTransaction", 'Int'>
   readonly reservedAfter: Prisma.FieldRef<"CreditTransaction", 'Int'>
   readonly description: Prisma.FieldRef<"CreditTransaction", 'String'>
-  readonly refId: Prisma.FieldRef<"CreditTransaction", 'String'>
+  readonly referenceId: Prisma.FieldRef<"CreditTransaction", 'String'>
   readonly createdAt: Prisma.FieldRef<"CreditTransaction", 'DateTime'>
 }
     

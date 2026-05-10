@@ -60,9 +60,7 @@ export const ModelName = {
   CreditPack: 'CreditPack',
   Payment: 'Payment',
   Coupon: 'Coupon',
-  CouponUse: 'CouponUse',
-  AnalysisJob: 'AnalysisJob',
-  Idea: 'Idea'
+  CouponUsage: 'CouponUsage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -161,7 +159,7 @@ export const CreditTransactionScalarFieldEnum = {
   balanceAfter: 'balanceAfter',
   reservedAfter: 'reservedAfter',
   description: 'description',
-  refId: 'refId',
+  referenceId: 'referenceId',
   createdAt: 'createdAt'
 } as const
 
@@ -169,7 +167,15 @@ export type CreditTransactionScalarFieldEnum = (typeof CreditTransactionScalarFi
 
 
 export const CreditPackScalarFieldEnum = {
-  id: 'id'
+  id: 'id',
+  name: 'name',
+  credits: 'credits',
+  price: 'price',
+  currency: 'currency',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type CreditPackScalarFieldEnum = (typeof CreditPackScalarFieldEnum)[keyof typeof CreditPackScalarFieldEnum]
@@ -177,41 +183,60 @@ export type CreditPackScalarFieldEnum = (typeof CreditPackScalarFieldEnum)[keyof
 
 export const PaymentScalarFieldEnum = {
   id: 'id',
-  userId: 'userId'
+  userId: 'userId',
+  provider: 'provider',
+  status: 'status',
+  providerTransactionId: 'providerTransactionId',
+  orderId: 'orderId',
+  creditPackId: 'creditPackId',
+  currency: 'currency',
+  subTotal: 'subTotal',
+  discount: 'discount',
+  total: 'total',
+  creditsGranted: 'creditsGranted',
+  couponUsageId: 'couponUsageId',
+  metadata: 'metadata',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const CouponScalarFieldEnum = {
-  id: 'id'
+  id: 'id',
+  code: 'code',
+  type: 'type',
+  status: 'status',
+  credits: 'credits',
+  percentDiscount: 'percentDiscount',
+  fixedDiscount: 'fixedDiscount',
+  maxUses: 'maxUses',
+  usedCount: 'usedCount',
+  perUserLimit: 'perUserLimit',
+  minimumPurchaseAmount: 'minimumPurchaseAmount',
+  startsAt: 'startsAt',
+  expiresAt: 'expiresAt',
+  applicationCreditPackIds: 'applicationCreditPackIds',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type CouponScalarFieldEnum = (typeof CouponScalarFieldEnum)[keyof typeof CouponScalarFieldEnum]
 
 
-export const CouponUseScalarFieldEnum = {
+export const CouponUsageScalarFieldEnum = {
   id: 'id',
-  userId: 'userId'
+  userId: 'userId',
+  couponId: 'couponId',
+  discountApplied: 'discountApplied',
+  creditsGranted: 'creditsGranted',
+  createdAt: 'createdAt'
 } as const
 
-export type CouponUseScalarFieldEnum = (typeof CouponUseScalarFieldEnum)[keyof typeof CouponUseScalarFieldEnum]
-
-
-export const AnalysisJobScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId'
-} as const
-
-export type AnalysisJobScalarFieldEnum = (typeof AnalysisJobScalarFieldEnum)[keyof typeof AnalysisJobScalarFieldEnum]
-
-
-export const IdeaScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId'
-} as const
-
-export type IdeaScalarFieldEnum = (typeof IdeaScalarFieldEnum)[keyof typeof IdeaScalarFieldEnum]
+export type CouponUsageScalarFieldEnum = (typeof CouponUsageScalarFieldEnum)[keyof typeof CouponUsageScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -220,6 +245,14 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -236,4 +269,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

@@ -20,34 +20,108 @@ export type CreditPackModel = runtime.Types.Result.DefaultSelection<Prisma.$Cred
 
 export type AggregateCreditPack = {
   _count: CreditPackCountAggregateOutputType | null
+  _avg: CreditPackAvgAggregateOutputType | null
+  _sum: CreditPackSumAggregateOutputType | null
   _min: CreditPackMinAggregateOutputType | null
   _max: CreditPackMaxAggregateOutputType | null
 }
 
+export type CreditPackAvgAggregateOutputType = {
+  credits: number | null
+  price: number | null
+  sortOrder: number | null
+}
+
+export type CreditPackSumAggregateOutputType = {
+  credits: number | null
+  price: number | null
+  sortOrder: number | null
+}
+
 export type CreditPackMinAggregateOutputType = {
   id: string | null
+  name: string | null
+  credits: number | null
+  price: number | null
+  currency: $Enums.Currency | null
+  isActive: boolean | null
+  sortOrder: number | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type CreditPackMaxAggregateOutputType = {
   id: string | null
+  name: string | null
+  credits: number | null
+  price: number | null
+  currency: $Enums.Currency | null
+  isActive: boolean | null
+  sortOrder: number | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type CreditPackCountAggregateOutputType = {
   id: number
+  name: number
+  credits: number
+  price: number
+  currency: number
+  isActive: number
+  sortOrder: number
+  createdAt: number
+  updatedAt: number
   _all: number
 }
 
 
+export type CreditPackAvgAggregateInputType = {
+  credits?: true
+  price?: true
+  sortOrder?: true
+}
+
+export type CreditPackSumAggregateInputType = {
+  credits?: true
+  price?: true
+  sortOrder?: true
+}
+
 export type CreditPackMinAggregateInputType = {
   id?: true
+  name?: true
+  credits?: true
+  price?: true
+  currency?: true
+  isActive?: true
+  sortOrder?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type CreditPackMaxAggregateInputType = {
   id?: true
+  name?: true
+  credits?: true
+  price?: true
+  currency?: true
+  isActive?: true
+  sortOrder?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type CreditPackCountAggregateInputType = {
   id?: true
+  name?: true
+  credits?: true
+  price?: true
+  currency?: true
+  isActive?: true
+  sortOrder?: true
+  createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -89,6 +163,18 @@ export type CreditPackAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: CreditPackAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: CreditPackSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: CreditPackMinAggregateInputType
@@ -119,13 +205,25 @@ export type CreditPackGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   _count?: CreditPackCountAggregateInputType | true
+  _avg?: CreditPackAvgAggregateInputType
+  _sum?: CreditPackSumAggregateInputType
   _min?: CreditPackMinAggregateInputType
   _max?: CreditPackMaxAggregateInputType
 }
 
 export type CreditPackGroupByOutputType = {
   id: string
+  name: string
+  credits: number
+  price: number
+  currency: $Enums.Currency
+  isActive: boolean
+  sortOrder: number
+  createdAt: Date
+  updatedAt: Date
   _count: CreditPackCountAggregateOutputType | null
+  _avg: CreditPackAvgAggregateOutputType | null
+  _sum: CreditPackSumAggregateOutputType | null
   _min: CreditPackMinAggregateOutputType | null
   _max: CreditPackMaxAggregateOutputType | null
 }
@@ -150,10 +248,28 @@ export type CreditPackWhereInput = {
   OR?: Prisma.CreditPackWhereInput[]
   NOT?: Prisma.CreditPackWhereInput | Prisma.CreditPackWhereInput[]
   id?: Prisma.StringFilter<"CreditPack"> | string
+  name?: Prisma.StringFilter<"CreditPack"> | string
+  credits?: Prisma.IntFilter<"CreditPack"> | number
+  price?: Prisma.IntFilter<"CreditPack"> | number
+  currency?: Prisma.EnumCurrencyFilter<"CreditPack"> | $Enums.Currency
+  isActive?: Prisma.BoolFilter<"CreditPack"> | boolean
+  sortOrder?: Prisma.IntFilter<"CreditPack"> | number
+  createdAt?: Prisma.DateTimeFilter<"CreditPack"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"CreditPack"> | Date | string
+  payments?: Prisma.PaymentListRelationFilter
 }
 
 export type CreditPackOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  credits?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  payments?: Prisma.PaymentOrderByRelationAggregateInput
 }
 
 export type CreditPackWhereUniqueInput = Prisma.AtLeast<{
@@ -161,13 +277,32 @@ export type CreditPackWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CreditPackWhereInput | Prisma.CreditPackWhereInput[]
   OR?: Prisma.CreditPackWhereInput[]
   NOT?: Prisma.CreditPackWhereInput | Prisma.CreditPackWhereInput[]
+  name?: Prisma.StringFilter<"CreditPack"> | string
+  credits?: Prisma.IntFilter<"CreditPack"> | number
+  price?: Prisma.IntFilter<"CreditPack"> | number
+  currency?: Prisma.EnumCurrencyFilter<"CreditPack"> | $Enums.Currency
+  isActive?: Prisma.BoolFilter<"CreditPack"> | boolean
+  sortOrder?: Prisma.IntFilter<"CreditPack"> | number
+  createdAt?: Prisma.DateTimeFilter<"CreditPack"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"CreditPack"> | Date | string
+  payments?: Prisma.PaymentListRelationFilter
 }, "id">
 
 export type CreditPackOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  credits?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.CreditPackCountOrderByAggregateInput
+  _avg?: Prisma.CreditPackAvgOrderByAggregateInput
   _max?: Prisma.CreditPackMaxOrderByAggregateInput
   _min?: Prisma.CreditPackMinOrderByAggregateInput
+  _sum?: Prisma.CreditPackSumOrderByAggregateInput
 }
 
 export type CreditPackScalarWhereWithAggregatesInput = {
@@ -175,73 +310,343 @@ export type CreditPackScalarWhereWithAggregatesInput = {
   OR?: Prisma.CreditPackScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CreditPackScalarWhereWithAggregatesInput | Prisma.CreditPackScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CreditPack"> | string
+  name?: Prisma.StringWithAggregatesFilter<"CreditPack"> | string
+  credits?: Prisma.IntWithAggregatesFilter<"CreditPack"> | number
+  price?: Prisma.IntWithAggregatesFilter<"CreditPack"> | number
+  currency?: Prisma.EnumCurrencyWithAggregatesFilter<"CreditPack"> | $Enums.Currency
+  isActive?: Prisma.BoolWithAggregatesFilter<"CreditPack"> | boolean
+  sortOrder?: Prisma.IntWithAggregatesFilter<"CreditPack"> | number
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"CreditPack"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CreditPack"> | Date | string
 }
 
 export type CreditPackCreateInput = {
   id?: string
+  name: string
+  credits: number
+  price: number
+  currency: $Enums.Currency
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  payments?: Prisma.PaymentCreateNestedManyWithoutCreditPackInput
 }
 
 export type CreditPackUncheckedCreateInput = {
   id?: string
+  name: string
+  credits: number
+  price: number
+  currency: $Enums.Currency
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCreditPackInput
 }
 
 export type CreditPackUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payments?: Prisma.PaymentUpdateManyWithoutCreditPackNestedInput
 }
 
 export type CreditPackUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutCreditPackNestedInput
 }
 
 export type CreditPackCreateManyInput = {
   id?: string
+  name: string
+  credits: number
+  price: number
+  currency: $Enums.Currency
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type CreditPackUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CreditPackUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CreditPackCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  credits?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+}
+
+export type CreditPackAvgOrderByAggregateInput = {
+  credits?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
 }
 
 export type CreditPackMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  credits?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type CreditPackMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  credits?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
+export type CreditPackSumOrderByAggregateInput = {
+  credits?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+}
+
+export type CreditPackScalarRelationFilter = {
+  is?: Prisma.CreditPackWhereInput
+  isNot?: Prisma.CreditPackWhereInput
+}
+
+export type EnumCurrencyFieldUpdateOperationsInput = {
+  set?: $Enums.Currency
+}
+
+export type CreditPackCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.CreditPackCreateWithoutPaymentsInput, Prisma.CreditPackUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.CreditPackCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.CreditPackWhereUniqueInput
+}
+
+export type CreditPackUpdateOneRequiredWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.CreditPackCreateWithoutPaymentsInput, Prisma.CreditPackUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.CreditPackCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.CreditPackUpsertWithoutPaymentsInput
+  connect?: Prisma.CreditPackWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CreditPackUpdateToOneWithWhereWithoutPaymentsInput, Prisma.CreditPackUpdateWithoutPaymentsInput>, Prisma.CreditPackUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type CreditPackCreateWithoutPaymentsInput = {
+  id?: string
+  name: string
+  credits: number
+  price: number
+  currency: $Enums.Currency
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CreditPackUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  name: string
+  credits: number
+  price: number
+  currency: $Enums.Currency
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CreditPackCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.CreditPackWhereUniqueInput
+  create: Prisma.XOR<Prisma.CreditPackCreateWithoutPaymentsInput, Prisma.CreditPackUncheckedCreateWithoutPaymentsInput>
+}
+
+export type CreditPackUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.CreditPackUpdateWithoutPaymentsInput, Prisma.CreditPackUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.CreditPackCreateWithoutPaymentsInput, Prisma.CreditPackUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.CreditPackWhereInput
+}
+
+export type CreditPackUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.CreditPackWhereInput
+  data: Prisma.XOR<Prisma.CreditPackUpdateWithoutPaymentsInput, Prisma.CreditPackUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type CreditPackUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CreditPackUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type CreditPackCountOutputType
+ */
+
+export type CreditPackCountOutputType = {
+  payments: number
+}
+
+export type CreditPackCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  payments?: boolean | CreditPackCountOutputTypeCountPaymentsArgs
+}
+
+/**
+ * CreditPackCountOutputType without action
+ */
+export type CreditPackCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CreditPackCountOutputType
+   */
+  select?: Prisma.CreditPackCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * CreditPackCountOutputType without action
+ */
+export type CreditPackCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
 
 
 export type CreditPackSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
+  credits?: boolean
+  price?: boolean
+  currency?: boolean
+  isActive?: boolean
+  sortOrder?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  payments?: boolean | Prisma.CreditPack$paymentsArgs<ExtArgs>
+  _count?: boolean | Prisma.CreditPackCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["creditPack"]>
 
 export type CreditPackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
+  credits?: boolean
+  price?: boolean
+  currency?: boolean
+  isActive?: boolean
+  sortOrder?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
 }, ExtArgs["result"]["creditPack"]>
 
 export type CreditPackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
+  credits?: boolean
+  price?: boolean
+  currency?: boolean
+  isActive?: boolean
+  sortOrder?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
 }, ExtArgs["result"]["creditPack"]>
 
 export type CreditPackSelectScalar = {
   id?: boolean
+  name?: boolean
+  credits?: boolean
+  price?: boolean
+  currency?: boolean
+  isActive?: boolean
+  sortOrder?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type CreditPackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id", ExtArgs["result"]["creditPack"]>
+export type CreditPackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "credits" | "price" | "currency" | "isActive" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["creditPack"]>
+export type CreditPackInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  payments?: boolean | Prisma.CreditPack$paymentsArgs<ExtArgs>
+  _count?: boolean | Prisma.CreditPackCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type CreditPackIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type CreditPackIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $CreditPackPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CreditPack"
-  objects: {}
+  objects: {
+    payments: Prisma.$PaymentPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    name: string
+    credits: number
+    price: number
+    currency: $Enums.Currency
+    isActive: boolean
+    sortOrder: number
+    createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["creditPack"]>
   composites: {}
 }
@@ -636,6 +1041,7 @@ readonly fields: CreditPackFieldRefs;
  */
 export interface Prisma__CreditPackClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  payments<T extends Prisma.CreditPack$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CreditPack$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -666,6 +1072,14 @@ export interface Prisma__CreditPackClient<T, Null = never, ExtArgs extends runti
  */
 export interface CreditPackFieldRefs {
   readonly id: Prisma.FieldRef<"CreditPack", 'String'>
+  readonly name: Prisma.FieldRef<"CreditPack", 'String'>
+  readonly credits: Prisma.FieldRef<"CreditPack", 'Int'>
+  readonly price: Prisma.FieldRef<"CreditPack", 'Int'>
+  readonly currency: Prisma.FieldRef<"CreditPack", 'Currency'>
+  readonly isActive: Prisma.FieldRef<"CreditPack", 'Boolean'>
+  readonly sortOrder: Prisma.FieldRef<"CreditPack", 'Int'>
+  readonly createdAt: Prisma.FieldRef<"CreditPack", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"CreditPack", 'DateTime'>
 }
     
 
@@ -682,6 +1096,10 @@ export type CreditPackFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the CreditPack
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
   /**
    * Filter, which CreditPack to fetch.
    */
@@ -701,6 +1119,10 @@ export type CreditPackFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
+  /**
    * Filter, which CreditPack to fetch.
    */
   where: Prisma.CreditPackWhereUniqueInput
@@ -718,6 +1140,10 @@ export type CreditPackFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the CreditPack
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
   /**
    * Filter, which CreditPack to fetch.
    */
@@ -767,6 +1193,10 @@ export type CreditPackFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
+  /**
    * Filter, which CreditPack to fetch.
    */
   where?: Prisma.CreditPackWhereInput
@@ -814,6 +1244,10 @@ export type CreditPackFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the CreditPack
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
   /**
    * Filter, which CreditPacks to fetch.
    */
@@ -863,9 +1297,13 @@ export type CreditPackCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
+  /**
    * The data needed to create a CreditPack.
    */
-  data?: Prisma.XOR<Prisma.CreditPackCreateInput, Prisma.CreditPackUncheckedCreateInput>
+  data: Prisma.XOR<Prisma.CreditPackCreateInput, Prisma.CreditPackUncheckedCreateInput>
 }
 
 /**
@@ -910,6 +1348,10 @@ export type CreditPackUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the CreditPack
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
   /**
    * The data needed to update a CreditPack.
    */
@@ -977,6 +1419,10 @@ export type CreditPackUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
+  /**
    * The filter to search for the CreditPack to update in case it exists.
    */
   where: Prisma.CreditPackWhereUniqueInput
@@ -1003,6 +1449,10 @@ export type CreditPackDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
+  /**
    * Filter which CreditPack to delete.
    */
   where: Prisma.CreditPackWhereUniqueInput
@@ -1023,6 +1473,30 @@ export type CreditPackDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * CreditPack.payments
+ */
+export type CreditPack$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
  * CreditPack without action
  */
 export type CreditPackDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1034,4 +1508,8 @@ export type CreditPackDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the CreditPack
    */
   omit?: Prisma.CreditPackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CreditPackInclude<ExtArgs> | null
 }

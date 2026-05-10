@@ -201,9 +201,7 @@ export type UserWhereInput = {
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   creditWallet?: Prisma.XOR<Prisma.CreditWalletNullableScalarRelationFilter, Prisma.CreditWalletWhereInput> | null
-  jobs?: Prisma.AnalysisJobListRelationFilter
-  ideas?: Prisma.IdeaListRelationFilter
-  couponUses?: Prisma.CouponUseListRelationFilter
+  couponUses?: Prisma.CouponUsageListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   creditTransactions?: Prisma.CreditTransactionListRelationFilter
 }
@@ -219,9 +217,7 @@ export type UserOrderByWithRelationInput = {
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   creditWallet?: Prisma.CreditWalletOrderByWithRelationInput
-  jobs?: Prisma.AnalysisJobOrderByRelationAggregateInput
-  ideas?: Prisma.IdeaOrderByRelationAggregateInput
-  couponUses?: Prisma.CouponUseOrderByRelationAggregateInput
+  couponUses?: Prisma.CouponUsageOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
   creditTransactions?: Prisma.CreditTransactionOrderByRelationAggregateInput
 }
@@ -240,9 +236,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   creditWallet?: Prisma.XOR<Prisma.CreditWalletNullableScalarRelationFilter, Prisma.CreditWalletWhereInput> | null
-  jobs?: Prisma.AnalysisJobListRelationFilter
-  ideas?: Prisma.IdeaListRelationFilter
-  couponUses?: Prisma.CouponUseListRelationFilter
+  couponUses?: Prisma.CouponUsageListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   creditTransactions?: Prisma.CreditTransactionListRelationFilter
 }, "id" | "email">
@@ -284,9 +278,7 @@ export type UserCreateInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionCreateNestedManyWithoutUserInput
 }
@@ -302,9 +294,7 @@ export type UserUncheckedCreateInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletUncheckedCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobUncheckedCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaUncheckedCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseUncheckedCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -320,9 +310,7 @@ export type UserUpdateInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUpdateManyWithoutUserNestedInput
 }
@@ -338,9 +326,7 @@ export type UserUncheckedUpdateInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUncheckedUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUncheckedUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUncheckedUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUncheckedUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -510,34 +496,6 @@ export type UserUpdateOneRequiredWithoutCouponUsesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCouponUsesInput, Prisma.UserUpdateWithoutCouponUsesInput>, Prisma.UserUncheckedUpdateWithoutCouponUsesInput>
 }
 
-export type UserCreateNestedOneWithoutJobsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutJobsInput, Prisma.UserUncheckedCreateWithoutJobsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutJobsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutJobsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutJobsInput, Prisma.UserUncheckedCreateWithoutJobsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutJobsInput
-  upsert?: Prisma.UserUpsertWithoutJobsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutJobsInput, Prisma.UserUpdateWithoutJobsInput>, Prisma.UserUncheckedUpdateWithoutJobsInput>
-}
-
-export type UserCreateNestedOneWithoutIdeasInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutIdeasInput, Prisma.UserUncheckedCreateWithoutIdeasInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIdeasInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutIdeasNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutIdeasInput, Prisma.UserUncheckedCreateWithoutIdeasInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIdeasInput
-  upsert?: Prisma.UserUpsertWithoutIdeasInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutIdeasInput, Prisma.UserUpdateWithoutIdeasInput>, Prisma.UserUncheckedUpdateWithoutIdeasInput>
-}
-
 export type UserCreateWithoutSessionsInput = {
   id: string
   name: string
@@ -548,9 +506,7 @@ export type UserCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionCreateNestedManyWithoutUserInput
 }
@@ -565,9 +521,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletUncheckedCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobUncheckedCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaUncheckedCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseUncheckedCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -598,9 +552,7 @@ export type UserUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUpdateManyWithoutUserNestedInput
 }
@@ -615,9 +567,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUncheckedUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUncheckedUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUncheckedUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUncheckedUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -632,9 +582,7 @@ export type UserCreateWithoutAccountsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionCreateNestedManyWithoutUserInput
 }
@@ -649,9 +597,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletUncheckedCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobUncheckedCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaUncheckedCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseUncheckedCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -682,9 +628,7 @@ export type UserUpdateWithoutAccountsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUpdateManyWithoutUserNestedInput
 }
@@ -699,9 +643,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUncheckedUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUncheckedUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUncheckedUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUncheckedUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -716,9 +658,7 @@ export type UserCreateWithoutCreditWalletInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  jobs?: Prisma.AnalysisJobCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionCreateNestedManyWithoutUserInput
 }
@@ -733,9 +673,7 @@ export type UserUncheckedCreateWithoutCreditWalletInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  jobs?: Prisma.AnalysisJobUncheckedCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaUncheckedCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseUncheckedCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -766,9 +704,7 @@ export type UserUpdateWithoutCreditWalletInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUpdateManyWithoutUserNestedInput
 }
@@ -783,9 +719,7 @@ export type UserUncheckedUpdateWithoutCreditWalletInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUncheckedUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUncheckedUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUncheckedUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -801,9 +735,7 @@ export type UserCreateWithoutCreditTransactionsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
 }
 
@@ -818,9 +750,7 @@ export type UserUncheckedCreateWithoutCreditTransactionsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletUncheckedCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobUncheckedCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaUncheckedCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseUncheckedCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -851,9 +781,7 @@ export type UserUpdateWithoutCreditTransactionsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
 }
 
@@ -868,9 +796,7 @@ export type UserUncheckedUpdateWithoutCreditTransactionsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUncheckedUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUncheckedUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUncheckedUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUncheckedUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -885,9 +811,7 @@ export type UserCreateWithoutPaymentsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionCreateNestedManyWithoutUserInput
 }
 
@@ -902,9 +826,7 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletUncheckedCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobUncheckedCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaUncheckedCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseUncheckedCreateNestedManyWithoutUserInput
+  couponUses?: Prisma.CouponUsageUncheckedCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -935,9 +857,7 @@ export type UserUpdateWithoutPaymentsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUpdateManyWithoutUserNestedInput
 }
 
@@ -952,9 +872,7 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUncheckedUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUncheckedUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUncheckedUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUncheckedUpdateManyWithoutUserNestedInput
+  couponUses?: Prisma.CouponUsageUncheckedUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -969,8 +887,6 @@ export type UserCreateWithoutCouponUsesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionCreateNestedManyWithoutUserInput
 }
@@ -986,8 +902,6 @@ export type UserUncheckedCreateWithoutCouponUsesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   creditWallet?: Prisma.CreditWalletUncheckedCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobUncheckedCreateNestedManyWithoutUserInput
-  ideas?: Prisma.IdeaUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
   creditTransactions?: Prisma.CreditTransactionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1019,8 +933,6 @@ export type UserUpdateWithoutCouponUsesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUpdateManyWithoutUserNestedInput
 }
@@ -1036,176 +948,6 @@ export type UserUncheckedUpdateWithoutCouponUsesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   creditWallet?: Prisma.CreditWalletUncheckedUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUncheckedUpdateManyWithoutUserNestedInput
-  ideas?: Prisma.IdeaUncheckedUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
-  creditTransactions?: Prisma.CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutJobsInput = {
-  id: string
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  creditWallet?: Prisma.CreditWalletCreateNestedOneWithoutUserInput
-  ideas?: Prisma.IdeaCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
-  creditTransactions?: Prisma.CreditTransactionCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutJobsInput = {
-  id: string
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  creditWallet?: Prisma.CreditWalletUncheckedCreateNestedOneWithoutUserInput
-  ideas?: Prisma.IdeaUncheckedCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseUncheckedCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
-  creditTransactions?: Prisma.CreditTransactionUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutJobsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutJobsInput, Prisma.UserUncheckedCreateWithoutJobsInput>
-}
-
-export type UserUpsertWithoutJobsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutJobsInput, Prisma.UserUncheckedUpdateWithoutJobsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutJobsInput, Prisma.UserUncheckedCreateWithoutJobsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutJobsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutJobsInput, Prisma.UserUncheckedUpdateWithoutJobsInput>
-}
-
-export type UserUpdateWithoutJobsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  creditWallet?: Prisma.CreditWalletUpdateOneWithoutUserNestedInput
-  ideas?: Prisma.IdeaUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
-  creditTransactions?: Prisma.CreditTransactionUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutJobsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  creditWallet?: Prisma.CreditWalletUncheckedUpdateOneWithoutUserNestedInput
-  ideas?: Prisma.IdeaUncheckedUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUncheckedUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
-  creditTransactions?: Prisma.CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutIdeasInput = {
-  id: string
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  creditWallet?: Prisma.CreditWalletCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
-  creditTransactions?: Prisma.CreditTransactionCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutIdeasInput = {
-  id: string
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  creditWallet?: Prisma.CreditWalletUncheckedCreateNestedOneWithoutUserInput
-  jobs?: Prisma.AnalysisJobUncheckedCreateNestedManyWithoutUserInput
-  couponUses?: Prisma.CouponUseUncheckedCreateNestedManyWithoutUserInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
-  creditTransactions?: Prisma.CreditTransactionUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutIdeasInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutIdeasInput, Prisma.UserUncheckedCreateWithoutIdeasInput>
-}
-
-export type UserUpsertWithoutIdeasInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutIdeasInput, Prisma.UserUncheckedUpdateWithoutIdeasInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutIdeasInput, Prisma.UserUncheckedCreateWithoutIdeasInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutIdeasInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutIdeasInput, Prisma.UserUncheckedUpdateWithoutIdeasInput>
-}
-
-export type UserUpdateWithoutIdeasInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  creditWallet?: Prisma.CreditWalletUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUpdateManyWithoutUserNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
-  creditTransactions?: Prisma.CreditTransactionUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutIdeasInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  creditWallet?: Prisma.CreditWalletUncheckedUpdateOneWithoutUserNestedInput
-  jobs?: Prisma.AnalysisJobUncheckedUpdateManyWithoutUserNestedInput
-  couponUses?: Prisma.CouponUseUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
   creditTransactions?: Prisma.CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1218,8 +960,6 @@ export type UserUncheckedUpdateWithoutIdeasInput = {
 export type UserCountOutputType = {
   sessions: number
   accounts: number
-  jobs: number
-  ideas: number
   couponUses: number
   payments: number
   creditTransactions: number
@@ -1228,8 +968,6 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
-  jobs?: boolean | UserCountOutputTypeCountJobsArgs
-  ideas?: boolean | UserCountOutputTypeCountIdeasArgs
   couponUses?: boolean | UserCountOutputTypeCountCouponUsesArgs
   payments?: boolean | UserCountOutputTypeCountPaymentsArgs
   creditTransactions?: boolean | UserCountOutputTypeCountCreditTransactionsArgs
@@ -1262,22 +1000,8 @@ export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AnalysisJobWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountIdeasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.IdeaWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
 export type UserCountOutputTypeCountCouponUsesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CouponUseWhereInput
+  where?: Prisma.CouponUsageWhereInput
 }
 
 /**
@@ -1306,8 +1030,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   creditWallet?: boolean | Prisma.User$creditWalletArgs<ExtArgs>
-  jobs?: boolean | Prisma.User$jobsArgs<ExtArgs>
-  ideas?: boolean | Prisma.User$ideasArgs<ExtArgs>
   couponUses?: boolean | Prisma.User$couponUsesArgs<ExtArgs>
   payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
   creditTransactions?: boolean | Prisma.User$creditTransactionsArgs<ExtArgs>
@@ -1349,8 +1071,6 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   creditWallet?: boolean | Prisma.User$creditWalletArgs<ExtArgs>
-  jobs?: boolean | Prisma.User$jobsArgs<ExtArgs>
-  ideas?: boolean | Prisma.User$ideasArgs<ExtArgs>
   couponUses?: boolean | Prisma.User$couponUsesArgs<ExtArgs>
   payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
   creditTransactions?: boolean | Prisma.User$creditTransactionsArgs<ExtArgs>
@@ -1365,9 +1085,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     creditWallet: Prisma.$CreditWalletPayload<ExtArgs> | null
-    jobs: Prisma.$AnalysisJobPayload<ExtArgs>[]
-    ideas: Prisma.$IdeaPayload<ExtArgs>[]
-    couponUses: Prisma.$CouponUsePayload<ExtArgs>[]
+    couponUses: Prisma.$CouponUsagePayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
     creditTransactions: Prisma.$CreditTransactionPayload<ExtArgs>[]
   }
@@ -1776,9 +1494,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   creditWallet<T extends Prisma.User$creditWalletArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$creditWalletArgs<ExtArgs>>): Prisma.Prisma__CreditWalletClient<runtime.Types.Result.GetResult<Prisma.$CreditWalletPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  jobs<T extends Prisma.User$jobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$jobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnalysisJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  ideas<T extends Prisma.User$ideasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ideasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IdeaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  couponUses<T extends Prisma.User$couponUsesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$couponUsesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CouponUsePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  couponUses<T extends Prisma.User$couponUsesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$couponUsesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CouponUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.User$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   creditTransactions<T extends Prisma.User$creditTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$creditTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CreditTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2277,75 +1993,27 @@ export type User$creditWalletArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * User.jobs
- */
-export type User$jobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AnalysisJob
-   */
-  select?: Prisma.AnalysisJobSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the AnalysisJob
-   */
-  omit?: Prisma.AnalysisJobOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AnalysisJobInclude<ExtArgs> | null
-  where?: Prisma.AnalysisJobWhereInput
-  orderBy?: Prisma.AnalysisJobOrderByWithRelationInput | Prisma.AnalysisJobOrderByWithRelationInput[]
-  cursor?: Prisma.AnalysisJobWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AnalysisJobScalarFieldEnum | Prisma.AnalysisJobScalarFieldEnum[]
-}
-
-/**
- * User.ideas
- */
-export type User$ideasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Idea
-   */
-  select?: Prisma.IdeaSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Idea
-   */
-  omit?: Prisma.IdeaOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.IdeaInclude<ExtArgs> | null
-  where?: Prisma.IdeaWhereInput
-  orderBy?: Prisma.IdeaOrderByWithRelationInput | Prisma.IdeaOrderByWithRelationInput[]
-  cursor?: Prisma.IdeaWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.IdeaScalarFieldEnum | Prisma.IdeaScalarFieldEnum[]
-}
-
-/**
  * User.couponUses
  */
 export type User$couponUsesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the CouponUse
+   * Select specific fields to fetch from the CouponUsage
    */
-  select?: Prisma.CouponUseSelect<ExtArgs> | null
+  select?: Prisma.CouponUsageSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the CouponUse
+   * Omit specific fields from the CouponUsage
    */
-  omit?: Prisma.CouponUseOmit<ExtArgs> | null
+  omit?: Prisma.CouponUsageOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.CouponUseInclude<ExtArgs> | null
-  where?: Prisma.CouponUseWhereInput
-  orderBy?: Prisma.CouponUseOrderByWithRelationInput | Prisma.CouponUseOrderByWithRelationInput[]
-  cursor?: Prisma.CouponUseWhereUniqueInput
+  include?: Prisma.CouponUsageInclude<ExtArgs> | null
+  where?: Prisma.CouponUsageWhereInput
+  orderBy?: Prisma.CouponUsageOrderByWithRelationInput | Prisma.CouponUsageOrderByWithRelationInput[]
+  cursor?: Prisma.CouponUsageWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.CouponUseScalarFieldEnum | Prisma.CouponUseScalarFieldEnum[]
+  distinct?: Prisma.CouponUsageScalarFieldEnum | Prisma.CouponUsageScalarFieldEnum[]
 }
 
 /**

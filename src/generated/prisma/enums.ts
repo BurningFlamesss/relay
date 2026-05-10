@@ -108,8 +108,9 @@ export type CandidateStatus = (typeof CandidateStatus)[keyof typeof CandidateSta
 
 
 export const CouponType = {
-  CREDITS: 'CREDITS',
-  DISCOUNT: 'DISCOUNT'
+  FIXED_CREDITS: 'FIXED_CREDITS',
+  PERCENT_DISCOUNT: 'PERCENT_DISCOUNT',
+  FIXED_DISCOUNT: 'FIXED_DISCOUNT'
 } as const
 
 export type CouponType = (typeof CouponType)[keyof typeof CouponType]
@@ -126,10 +127,14 @@ export type CouponStatus = (typeof CouponStatus)[keyof typeof CouponStatus]
 
 
 export const PaymentStatus = {
+  CREATED: 'CREATED',
   PENDING: 'PENDING',
+  REQUIRES_ACTION: 'REQUIRES_ACTION',
   SUCCEEDED: 'SUCCEEDED',
   FAILED: 'FAILED',
-  REFUNDED: 'REFUNDED'
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED'
 } as const
 
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
@@ -137,10 +142,33 @@ export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 export const CreditTransactionType = {
   PURCHASE: 'PURCHASE',
-  COUPON_REDEEM: 'COUPON_REDEEM',
+  COUPON: 'COUPON',
   JOB_RESERVE: 'JOB_RESERVE',
   JOB_SPEND: 'JOB_SPEND',
-  JOB_REFUND: 'JOB_REFUND'
+  JOB_RELEASE: 'JOB_RELEASE',
+  JOB_REFUND: 'JOB_REFUND',
+  ADMIN_GRANT: 'ADMIN_GRANT',
+  PAYMENT_REFUND: 'PAYMENT_REFUND',
+  ADJUSTMENT: 'ADJUSTMENT'
 } as const
 
 export type CreditTransactionType = (typeof CreditTransactionType)[keyof typeof CreditTransactionType]
+
+
+export const Currency = {
+  USD: 'USD',
+  NPR: 'NPR',
+  EUR: 'EUR'
+} as const
+
+export type Currency = (typeof Currency)[keyof typeof Currency]
+
+
+export const PaymentProvider = {
+  STRIPE: 'STRIPE',
+  PAYPAL: 'PAYPAL',
+  ESEWA: 'ESEWA',
+  MANUAL: 'MANUAL'
+} as const
+
+export type PaymentProvider = (typeof PaymentProvider)[keyof typeof PaymentProvider]

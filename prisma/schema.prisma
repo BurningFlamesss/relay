@@ -82,8 +82,9 @@ enum CandidateStatus {
 }
 
 enum CouponType {
-  CREDITS
-  DISCOUNT
+  FIXED_CREDITS
+  PERCENT_DISCOUNT
+  FIXED_DISCOUNT
 }
 
 enum CouponStatus {
@@ -94,19 +95,39 @@ enum CouponStatus {
 }
 
 enum PaymentStatus {
+  CREATED
   PENDING
+  REQUIRES_ACTION
   SUCCEEDED
   FAILED
+  CANCELLED
   REFUNDED
+  PARTIALLY_REFUNDED
 }
 
 enum CreditTransactionType {
   PURCHASE
-  COUPON_REDEEM
+  COUPON
   JOB_RESERVE
   JOB_SPEND
+  JOB_RELEASE
   JOB_REFUND
-  // TODO: maybe also add admin grants
+  ADMIN_GRANT
+  PAYMENT_REFUND
+  ADJUSTMENT
+}
+
+enum Currency {
+  USD
+  NPR
+  EUR
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  ESEWA
+  MANUAL
 }
 
 model User {
@@ -121,14 +142,14 @@ model User {
   accounts      Account[]
 
   creditWallet       CreditWallet?
-  jobs               AnalysisJob[]
-  ideas              Idea[]
-  couponUses         CouponUse[]
+  // jobs               AnalysisJob[]
+  // ideas              Idea[]
+  couponUses         CouponUsage[]
   payments           Payment[]
   creditTransactions CreditTransaction[]
 
   @@unique([email])
-  @@map("user")
+  @@map("users")
 }
 
 model Session {
@@ -190,61 +211,114 @@ model CreditWallet {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  @@map("credit_wallet")
+  @@map("credit_wallets")
 }
 
 model CreditTransaction {
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type CreditTransactionType
-  amount Int // +ve means credit, -ve means debited which basics of accountancy
-  balanceAfter Int
+  id            String                @id @default(cuid())
+  userId        String
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          CreditTransactionType
+  amount        Int // +ve means credit, -ve means debited which basics of accountancy
+  balanceAfter  Int
   reservedAfter Int
-  description String?
-  refId String? // Could be jobId, paymentId
-  createdAt DateTime @default(now())
+  description   String?
+  referenceId   String? // Could be jobId, paymentId
+  createdAt     DateTime              @default(now())
 
   @@index([userId])
-  @@index([refId])
-  @@map("credit_transaction")
+  @@index([referenceId])
+  @@map("credit_transactions")
 }
 
 model CreditPack {
-  id String @id @default(cuid())
-  // TODO: Add the plans
+  id        String    @id @default(cuid())
+  name      String
+  credits   Int
+  price     Int
+  currency  Currency
+  isActive  Boolean   @default(true)
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  payments  Payment[]
+
+  @@map("credit_packs")
 }
 
-// TODO: Add the exact fields
 model Payment {
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String          @id @default(cuid())
+  userId                String
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider              PaymentProvider
+  status                PaymentStatus   @default(PENDING)
+  providerTransactionId String?
+  orderId               Int             @unique
+  creditPackId          String
+  creditPack            CreditPack      @relation(fields: [creditPackId], references: [id])
+  currency              Currency
+  subTotal              Int
+  discount              Int             @default(0)
+  total                 Int
+  creditsGranted        Int
+  couponUsageId         String?         @unique
+  couponUsage           CouponUsage?    @relation(fields: [couponUsageId], references: [id])
+  metadata              Json?
+  paidAt                DateTime?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
 
+  @@index([userId])
+  @@map("payments")
 }
 
 model Coupon {
-  id String @id @default(cuid())
+  id                       String        @id @default(cuid())
+  code                     String        @unique
+  type                     CouponType
+  status                   CouponStatus  @default(ACTIVE)
+  credits                  Int?
+  percentDiscount          Int?
+  fixedDiscount            Int?
+  maxUses                  Int? // null means unlimited
+  usedCount                Int           @default(0)
+  perUserLimit             Int           @default(1)
+  minimumPurchaseAmount    Int?
+  startsAt                 DateTime?
+  expiresAt                DateTime? // null means forever
+  applicationCreditPackIds String[]
+  metadata                 String?
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+  uses                     CouponUsage[]
 
+  @@map("coupons")
 }
 
-model CouponUse {
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model CouponUsage {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  couponId        String
+  coupon          Coupon   @relation(fields: [couponId], references: [id])
+  payment         Payment?
+  discountApplied Int?
+  creditsGranted  Int?
+  createdAt       DateTime @default(now())
 
+  @@unique([couponId, userId])
+  @@index([userId])
+  @@map("coupon_usages")
 }
 
-model AnalysisJob {
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+// model AnalysisJob {
+//   id     String @id @default(cuid())
+//   userId String
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }
 
-}
-
-model Idea {
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-}
+// model Idea {
+//   id     String @id @default(cuid())
+//   userId String
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }
