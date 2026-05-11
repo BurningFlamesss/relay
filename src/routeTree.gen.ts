@@ -16,8 +16,8 @@ import { Route as PaymentPricingRouteImport } from './routes/_payment/pricing'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
 import { Route as AuthAuthenticateRouteImport } from './routes/_auth/authenticate'
-import { Route as PaymentBillingIndexRouteImport } from './routes/_payment/billing/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as PaymentBillingPackIdRouteImport } from './routes/_payment/billing/$packId'
 import { Route as ApiStreamJobIdRouteRouteImport } from './routes/api/stream/$jobId/route'
 
 const IndexRoute = IndexRouteImport.update({
@@ -56,14 +56,14 @@ const AuthAuthenticateRoute = AuthAuthenticateRouteImport.update({
   path: '/authenticate',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PaymentBillingIndexRoute = PaymentBillingIndexRouteImport.update({
-  id: '/_payment/billing/',
-  path: '/billing/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentBillingPackIdRoute = PaymentBillingPackIdRouteImport.update({
+  id: '/_payment/billing/$packId',
+  path: '/billing/$packId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiStreamJobIdRouteRoute = ApiStreamJobIdRouteRouteImport.update({
@@ -81,8 +81,8 @@ export interface FileRoutesByFullPath {
   '/analyze/': typeof AnalyzeIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
+  '/billing/$packId': typeof PaymentBillingPackIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/billing/': typeof PaymentBillingIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -93,8 +93,8 @@ export interface FileRoutesByTo {
   '/analyze': typeof AnalyzeIndexRoute
   '/cofounder': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
+  '/billing/$packId': typeof PaymentBillingPackIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/billing': typeof PaymentBillingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,8 +106,8 @@ export interface FileRoutesById {
   '/analyze/': typeof AnalyzeIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
+  '/_payment/billing/$packId': typeof PaymentBillingPackIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/_payment/billing/': typeof PaymentBillingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,8 +120,8 @@ export interface FileRouteTypes {
     | '/analyze/'
     | '/cofounder/'
     | '/api/stream/$jobId'
+    | '/billing/$packId'
     | '/api/auth/$'
-    | '/billing/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -132,8 +132,8 @@ export interface FileRouteTypes {
     | '/analyze'
     | '/cofounder'
     | '/api/stream/$jobId'
+    | '/billing/$packId'
     | '/api/auth/$'
-    | '/billing'
   id:
     | '__root__'
     | '/'
@@ -144,8 +144,8 @@ export interface FileRouteTypes {
     | '/analyze/'
     | '/cofounder/'
     | '/api/stream/$jobId'
+    | '/_payment/billing/$packId'
     | '/api/auth/$'
-    | '/_payment/billing/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -157,8 +157,8 @@ export interface RootRouteChildren {
   AnalyzeIndexRoute: typeof AnalyzeIndexRoute
   CofounderIndexRoute: typeof CofounderIndexRoute
   ApiStreamJobIdRouteRoute: typeof ApiStreamJobIdRouteRoute
+  PaymentBillingPackIdRoute: typeof PaymentBillingPackIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  PaymentBillingIndexRoute: typeof PaymentBillingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,18 +212,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthenticateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_payment/billing/': {
-      id: '/_payment/billing/'
-      path: '/billing'
-      fullPath: '/billing/'
-      preLoaderRoute: typeof PaymentBillingIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_payment/billing/$packId': {
+      id: '/_payment/billing/$packId'
+      path: '/billing/$packId'
+      fullPath: '/billing/$packId'
+      preLoaderRoute: typeof PaymentBillingPackIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/stream/$jobId': {
@@ -245,8 +245,8 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyzeIndexRoute: AnalyzeIndexRoute,
   CofounderIndexRoute: CofounderIndexRoute,
   ApiStreamJobIdRouteRoute: ApiStreamJobIdRouteRoute,
+  PaymentBillingPackIdRoute: PaymentBillingPackIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  PaymentBillingIndexRoute: PaymentBillingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

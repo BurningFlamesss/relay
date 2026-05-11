@@ -30,6 +30,7 @@ function RouteComponent() {
             <h1>{pack.name}</h1>
             <p>{formatPrice(pack.price, pack.currency)}</p>
             <p>{pack.credits} credits   ~{estimateIdeas(pack.credits)} analyzes</p>
+            <br />
           </React.Fragment>
         )
       })}
