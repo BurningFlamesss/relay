@@ -1,18 +1,11 @@
-import { prisma } from '#/db.ts';
+import { getCreditPacks } from '#/server/billing/pricing.ts';
 import { createFileRoute } from '@tanstack/react-router'
 import React from 'react';
 
 export const Route = createFileRoute('/_payment/pricing')({
   component: RouteComponent,
   loader: async () => {
-    return await prisma.creditPack.findMany({
-      where: {
-        isActive: true
-      },
-      orderBy: {
-        sortOrder: "desc"
-      }
-    })
+    return getCreditPacks()
   }
 })
 
@@ -29,7 +22,7 @@ function RouteComponent() {
 
   return (
     <>
-      {packs?.map(pack => {
+      {packs.map(pack => {
         return (
           <React.Fragment key={pack.id}>
             <h1>{pack.name}</h1>
