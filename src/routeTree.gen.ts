@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CofounderIndexRouteImport } from './routes/cofounder/index'
 import { Route as AnalyzeIndexRouteImport } from './routes/analyze/index'
+import { Route as PaymentPricingRouteImport } from './routes/_payment/pricing'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
 import { Route as AuthAuthenticateRouteImport } from './routes/_auth/authenticate'
+import { Route as PaymentBillingIndexRouteImport } from './routes/_payment/billing/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiStreamJobIdRouteRouteImport } from './routes/api/stream/$jobId/route'
 
@@ -33,6 +35,11 @@ const AnalyzeIndexRoute = AnalyzeIndexRouteImport.update({
   path: '/analyze/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PaymentPricingRoute = PaymentPricingRouteImport.update({
+  id: '/_payment/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/_auth/reset-password',
   path: '/reset-password',
@@ -47,6 +54,11 @@ const AuthRequestResetPasswordRoute =
 const AuthAuthenticateRoute = AuthAuthenticateRouteImport.update({
   id: '/_auth/authenticate',
   path: '/authenticate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentBillingIndexRoute = PaymentBillingIndexRouteImport.update({
+  id: '/_payment/billing/',
+  path: '/billing/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -65,20 +77,24 @@ export interface FileRoutesByFullPath {
   '/authenticate': typeof AuthAuthenticateRoute
   '/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/pricing': typeof PaymentPricingRoute
   '/analyze/': typeof AnalyzeIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/billing/': typeof PaymentBillingIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/authenticate': typeof AuthAuthenticateRoute
   '/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/pricing': typeof PaymentPricingRoute
   '/analyze': typeof AnalyzeIndexRoute
   '/cofounder': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/billing': typeof PaymentBillingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,10 +102,12 @@ export interface FileRoutesById {
   '/_auth/authenticate': typeof AuthAuthenticateRoute
   '/_auth/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/_payment/pricing': typeof PaymentPricingRoute
   '/analyze/': typeof AnalyzeIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_payment/billing/': typeof PaymentBillingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -98,30 +116,36 @@ export interface FileRouteTypes {
     | '/authenticate'
     | '/request-reset-password'
     | '/reset-password'
+    | '/pricing'
     | '/analyze/'
     | '/cofounder/'
     | '/api/stream/$jobId'
     | '/api/auth/$'
+    | '/billing/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/authenticate'
     | '/request-reset-password'
     | '/reset-password'
+    | '/pricing'
     | '/analyze'
     | '/cofounder'
     | '/api/stream/$jobId'
     | '/api/auth/$'
+    | '/billing'
   id:
     | '__root__'
     | '/'
     | '/_auth/authenticate'
     | '/_auth/request-reset-password'
     | '/_auth/reset-password'
+    | '/_payment/pricing'
     | '/analyze/'
     | '/cofounder/'
     | '/api/stream/$jobId'
     | '/api/auth/$'
+    | '/_payment/billing/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -129,10 +153,12 @@ export interface RootRouteChildren {
   AuthAuthenticateRoute: typeof AuthAuthenticateRoute
   AuthRequestResetPasswordRoute: typeof AuthRequestResetPasswordRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  PaymentPricingRoute: typeof PaymentPricingRoute
   AnalyzeIndexRoute: typeof AnalyzeIndexRoute
   CofounderIndexRoute: typeof CofounderIndexRoute
   ApiStreamJobIdRouteRoute: typeof ApiStreamJobIdRouteRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  PaymentBillingIndexRoute: typeof PaymentBillingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -158,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyzeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_payment/pricing': {
+      id: '/_payment/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PaymentPricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth/reset-password': {
       id: '/_auth/reset-password'
       path: '/reset-password'
@@ -177,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/authenticate'
       fullPath: '/authenticate'
       preLoaderRoute: typeof AuthAuthenticateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_payment/billing/': {
+      id: '/_payment/billing/'
+      path: '/billing'
+      fullPath: '/billing/'
+      preLoaderRoute: typeof PaymentBillingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -201,10 +241,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthAuthenticateRoute: AuthAuthenticateRoute,
   AuthRequestResetPasswordRoute: AuthRequestResetPasswordRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
+  PaymentPricingRoute: PaymentPricingRoute,
   AnalyzeIndexRoute: AnalyzeIndexRoute,
   CofounderIndexRoute: CofounderIndexRoute,
   ApiStreamJobIdRouteRoute: ApiStreamJobIdRouteRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  PaymentBillingIndexRoute: PaymentBillingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
