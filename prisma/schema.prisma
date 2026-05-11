@@ -243,6 +243,7 @@ model CreditPack {
   updatedAt DateTime  @updatedAt
   payments  Payment[]
 
+  @@index([isActive, sortOrder])
   @@map("credit_packs")
 }
 

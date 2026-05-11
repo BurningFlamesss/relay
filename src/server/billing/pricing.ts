@@ -2,6 +2,7 @@ import type { CreditPackGetPayload } from './../../generated/prisma/models/Credi
 import { prisma } from "#/db.ts";
 
 let cache: { data: Array<CreditPacksType>, expires: number } | undefined
+let pending: Promise<Array<CreditPacksType>> | null = null
 
 type CreditPacksType = CreditPackGetPayload<{
     select: {
@@ -22,7 +23,11 @@ export async function getCreditPacks() {
         return cache.data
     }
 
-    const packs = await prisma.creditPack.findMany({
+    if (pending) {
+        return pending
+    }
+
+    pending = prisma.creditPack.findMany({
         where: {
             isActive: true
         },
@@ -38,10 +43,14 @@ export async function getCreditPacks() {
         }
     })
 
+    const packs = await pending
+
     cache = {
         data: packs,
         expires: now + TTL
     }
+
+    pending = null
 
     return packs
 }
