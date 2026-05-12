@@ -41,6 +41,7 @@ function RouteComponent() {
         <button>
           Pay with Esewa
         </button>
+        <br />
         <button>
           Pay with Stripe
         </button>
