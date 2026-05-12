@@ -1,6 +1,6 @@
 import { getCreditPacks } from '#/server/billing/pricing.ts';
 import { estimateIdeas, formatPrice } from '#/utils/index.ts';
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import React from 'react';
 
 export const Route = createFileRoute('/_payment/pricing')({
@@ -8,7 +8,8 @@ export const Route = createFileRoute('/_payment/pricing')({
   loader: async () => {
     return getCreditPacks()
   },
-  gcTime: 1000 * 60 * 5
+  gcTime: 1000 * 60 * 15,
+  staleTime: 1000 * 60 * 10
 })
 
 function RouteComponent() {
@@ -29,7 +30,8 @@ function RouteComponent() {
           <React.Fragment key={pack.id}>
             <h1>{pack.name}</h1>
             <p>{formatPrice(pack.price, pack.currency)}</p>
-            <p>{pack.credits} credits   ~{estimateIdeas(pack.credits)} analyzes</p>
+            <p>{pack.creditAmount} credits   ~{estimateIdeas(pack.creditAmount)} analyzes</p>
+            <Link to="/billing/$packId" params={{ packId: pack.id }}>Continue</Link>
             <br />
           </React.Fragment>
         )

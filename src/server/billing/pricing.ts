@@ -1,12 +1,12 @@
 import type { CreditPackGetPayload } from './../../generated/prisma/models/CreditPack';
 import { prisma } from "#/db.ts";
+import type { MemoryCache } from './cache';
+import { isCacheValid } from './cache';
 
-let cache: { data: Array<CreditPacksType>, expires: number } | undefined
-let pending: Promise<Array<CreditPacksType>> | null = null
 
-type CreditPacksType = CreditPackGetPayload<{
+export type CreditPacksType = CreditPackGetPayload<{
     select: {
-        credits: true,
+        creditAmount: true,
         currency: true,
         name: true,
         price: true,
@@ -16,11 +16,13 @@ type CreditPacksType = CreditPackGetPayload<{
 
 const TTL = 1000 * 60 * 5
 
-export async function getCreditPacks() {
-    const now = Date.now()
+let pricingCache: MemoryCache<Array<CreditPacksType>> | undefined
+let pending: Promise<Array<CreditPacksType>> | null = null
 
-    if (cache && cache.expires > now) {
-        return cache.data
+export async function getCreditPacks() {
+
+    if (isCacheValid(pricingCache)) {
+        return pricingCache!.data
     }
 
     if (pending) {
@@ -32,10 +34,10 @@ export async function getCreditPacks() {
             isActive: true
         },
         orderBy: {
-            sortOrder: "desc"
+            sortOrder: "asc"
         },
         select: {
-            credits: true,
+            creditAmount: true,
             currency: true,
             name: true,
             price: true,
@@ -43,14 +45,38 @@ export async function getCreditPacks() {
         }
     })
 
-    const packs = await pending
-
-    cache = {
-        data: packs,
-        expires: now + TTL
+    try {
+        const packs = await pending
+    
+        pricingCache = {
+            data: packs,
+            expires: Date.now() + TTL
+        }
+        
+        return packs
+    } finally {
+        pending = null
+        
     }
+}
 
-    pending = null
 
-    return packs
+
+export async function getBillingPack(packId: string) {
+    return await prisma.creditPack.findFirst({
+        where: {
+            id: packId,
+            isActive: true,
+        },
+        orderBy: {
+            sortOrder: "asc"
+        },
+        select: {
+            creditAmount: true,
+            currency: true,
+            name: true,
+            price: true,
+            id: true
+        }
+    })
 }

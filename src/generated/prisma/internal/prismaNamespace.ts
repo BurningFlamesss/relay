@@ -1273,6 +1273,7 @@ export const CreditTransactionScalarFieldEnum = {
   reservedAfter: 'reservedAfter',
   description: 'description',
   referenceId: 'referenceId',
+  source: 'source',
   createdAt: 'createdAt'
 } as const
 
@@ -1282,7 +1283,7 @@ export type CreditTransactionScalarFieldEnum = (typeof CreditTransactionScalarFi
 export const CreditPackScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  credits: 'credits',
+  creditAmount: 'creditAmount',
   price: 'price',
   currency: 'currency',
   isActive: 'isActive',
@@ -1321,8 +1322,9 @@ export const CouponScalarFieldEnum = {
   id: 'id',
   code: 'code',
   type: 'type',
+  redemptionType: 'redemptionType',
   status: 'status',
-  credits: 'credits',
+  creditAmount: 'creditAmount',
   percentDiscount: 'percentDiscount',
   fixedDiscount: 'fixedDiscount',
   maxUses: 'maxUses',
@@ -1529,6 +1531,20 @@ export type EnumCouponTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prism
  * Reference to a field of type 'CouponType[]'
  */
 export type ListEnumCouponTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CouponType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CouponRedemptionType'
+ */
+export type EnumCouponRedemptionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CouponRedemptionType'>
+    
+
+
+/**
+ * Reference to a field of type 'CouponRedemptionType[]'
+ */
+export type ListEnumCouponRedemptionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CouponRedemptionType[]'>
     
 
 

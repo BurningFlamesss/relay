@@ -27,7 +27,7 @@ export type AggregateCoupon = {
 }
 
 export type CouponAvgAggregateOutputType = {
-  credits: number | null
+  creditAmount: number | null
   percentDiscount: number | null
   fixedDiscount: number | null
   maxUses: number | null
@@ -37,7 +37,7 @@ export type CouponAvgAggregateOutputType = {
 }
 
 export type CouponSumAggregateOutputType = {
-  credits: number | null
+  creditAmount: number | null
   percentDiscount: number | null
   fixedDiscount: number | null
   maxUses: number | null
@@ -50,8 +50,9 @@ export type CouponMinAggregateOutputType = {
   id: string | null
   code: string | null
   type: $Enums.CouponType | null
+  redemptionType: $Enums.CouponRedemptionType | null
   status: $Enums.CouponStatus | null
-  credits: number | null
+  creditAmount: number | null
   percentDiscount: number | null
   fixedDiscount: number | null
   maxUses: number | null
@@ -69,8 +70,9 @@ export type CouponMaxAggregateOutputType = {
   id: string | null
   code: string | null
   type: $Enums.CouponType | null
+  redemptionType: $Enums.CouponRedemptionType | null
   status: $Enums.CouponStatus | null
-  credits: number | null
+  creditAmount: number | null
   percentDiscount: number | null
   fixedDiscount: number | null
   maxUses: number | null
@@ -88,8 +90,9 @@ export type CouponCountAggregateOutputType = {
   id: number
   code: number
   type: number
+  redemptionType: number
   status: number
-  credits: number
+  creditAmount: number
   percentDiscount: number
   fixedDiscount: number
   maxUses: number
@@ -107,7 +110,7 @@ export type CouponCountAggregateOutputType = {
 
 
 export type CouponAvgAggregateInputType = {
-  credits?: true
+  creditAmount?: true
   percentDiscount?: true
   fixedDiscount?: true
   maxUses?: true
@@ -117,7 +120,7 @@ export type CouponAvgAggregateInputType = {
 }
 
 export type CouponSumAggregateInputType = {
-  credits?: true
+  creditAmount?: true
   percentDiscount?: true
   fixedDiscount?: true
   maxUses?: true
@@ -130,8 +133,9 @@ export type CouponMinAggregateInputType = {
   id?: true
   code?: true
   type?: true
+  redemptionType?: true
   status?: true
-  credits?: true
+  creditAmount?: true
   percentDiscount?: true
   fixedDiscount?: true
   maxUses?: true
@@ -149,8 +153,9 @@ export type CouponMaxAggregateInputType = {
   id?: true
   code?: true
   type?: true
+  redemptionType?: true
   status?: true
-  credits?: true
+  creditAmount?: true
   percentDiscount?: true
   fixedDiscount?: true
   maxUses?: true
@@ -168,8 +173,9 @@ export type CouponCountAggregateInputType = {
   id?: true
   code?: true
   type?: true
+  redemptionType?: true
   status?: true
-  credits?: true
+  creditAmount?: true
   percentDiscount?: true
   fixedDiscount?: true
   maxUses?: true
@@ -275,8 +281,9 @@ export type CouponGroupByOutputType = {
   id: string
   code: string
   type: $Enums.CouponType
+  redemptionType: $Enums.CouponRedemptionType
   status: $Enums.CouponStatus
-  credits: number | null
+  creditAmount: number | null
   percentDiscount: number | null
   fixedDiscount: number | null
   maxUses: number | null
@@ -318,8 +325,9 @@ export type CouponWhereInput = {
   id?: Prisma.StringFilter<"Coupon"> | string
   code?: Prisma.StringFilter<"Coupon"> | string
   type?: Prisma.EnumCouponTypeFilter<"Coupon"> | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeFilter<"Coupon"> | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusFilter<"Coupon"> | $Enums.CouponStatus
-  credits?: Prisma.IntNullableFilter<"Coupon"> | number | null
+  creditAmount?: Prisma.IntNullableFilter<"Coupon"> | number | null
   percentDiscount?: Prisma.IntNullableFilter<"Coupon"> | number | null
   fixedDiscount?: Prisma.IntNullableFilter<"Coupon"> | number | null
   maxUses?: Prisma.IntNullableFilter<"Coupon"> | number | null
@@ -339,8 +347,9 @@ export type CouponOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  redemptionType?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  credits?: Prisma.SortOrderInput | Prisma.SortOrder
+  creditAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   percentDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   fixedDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   maxUses?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -363,8 +372,9 @@ export type CouponWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CouponWhereInput[]
   NOT?: Prisma.CouponWhereInput | Prisma.CouponWhereInput[]
   type?: Prisma.EnumCouponTypeFilter<"Coupon"> | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeFilter<"Coupon"> | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusFilter<"Coupon"> | $Enums.CouponStatus
-  credits?: Prisma.IntNullableFilter<"Coupon"> | number | null
+  creditAmount?: Prisma.IntNullableFilter<"Coupon"> | number | null
   percentDiscount?: Prisma.IntNullableFilter<"Coupon"> | number | null
   fixedDiscount?: Prisma.IntNullableFilter<"Coupon"> | number | null
   maxUses?: Prisma.IntNullableFilter<"Coupon"> | number | null
@@ -384,8 +394,9 @@ export type CouponOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  redemptionType?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  credits?: Prisma.SortOrderInput | Prisma.SortOrder
+  creditAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   percentDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   fixedDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   maxUses?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -412,8 +423,9 @@ export type CouponScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Coupon"> | string
   code?: Prisma.StringWithAggregatesFilter<"Coupon"> | string
   type?: Prisma.EnumCouponTypeWithAggregatesFilter<"Coupon"> | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeWithAggregatesFilter<"Coupon"> | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusWithAggregatesFilter<"Coupon"> | $Enums.CouponStatus
-  credits?: Prisma.IntNullableWithAggregatesFilter<"Coupon"> | number | null
+  creditAmount?: Prisma.IntNullableWithAggregatesFilter<"Coupon"> | number | null
   percentDiscount?: Prisma.IntNullableWithAggregatesFilter<"Coupon"> | number | null
   fixedDiscount?: Prisma.IntNullableWithAggregatesFilter<"Coupon"> | number | null
   maxUses?: Prisma.IntNullableWithAggregatesFilter<"Coupon"> | number | null
@@ -432,8 +444,9 @@ export type CouponCreateInput = {
   id?: string
   code: string
   type: $Enums.CouponType
+  redemptionType: $Enums.CouponRedemptionType
   status?: $Enums.CouponStatus
-  credits?: number | null
+  creditAmount?: number | null
   percentDiscount?: number | null
   fixedDiscount?: number | null
   maxUses?: number | null
@@ -453,8 +466,9 @@ export type CouponUncheckedCreateInput = {
   id?: string
   code: string
   type: $Enums.CouponType
+  redemptionType: $Enums.CouponRedemptionType
   status?: $Enums.CouponStatus
-  credits?: number | null
+  creditAmount?: number | null
   percentDiscount?: number | null
   fixedDiscount?: number | null
   maxUses?: number | null
@@ -474,8 +488,9 @@ export type CouponUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumCouponTypeFieldUpdateOperationsInput | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeFieldUpdateOperationsInput | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusFieldUpdateOperationsInput | $Enums.CouponStatus
-  credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  creditAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   percentDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fixedDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxUses?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -495,8 +510,9 @@ export type CouponUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumCouponTypeFieldUpdateOperationsInput | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeFieldUpdateOperationsInput | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusFieldUpdateOperationsInput | $Enums.CouponStatus
-  credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  creditAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   percentDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fixedDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxUses?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -516,8 +532,9 @@ export type CouponCreateManyInput = {
   id?: string
   code: string
   type: $Enums.CouponType
+  redemptionType: $Enums.CouponRedemptionType
   status?: $Enums.CouponStatus
-  credits?: number | null
+  creditAmount?: number | null
   percentDiscount?: number | null
   fixedDiscount?: number | null
   maxUses?: number | null
@@ -536,8 +553,9 @@ export type CouponUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumCouponTypeFieldUpdateOperationsInput | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeFieldUpdateOperationsInput | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusFieldUpdateOperationsInput | $Enums.CouponStatus
-  credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  creditAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   percentDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fixedDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxUses?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -556,8 +574,9 @@ export type CouponUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumCouponTypeFieldUpdateOperationsInput | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeFieldUpdateOperationsInput | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusFieldUpdateOperationsInput | $Enums.CouponStatus
-  credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  creditAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   percentDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fixedDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxUses?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -584,8 +603,9 @@ export type CouponCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  redemptionType?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   percentDiscount?: Prisma.SortOrder
   fixedDiscount?: Prisma.SortOrder
   maxUses?: Prisma.SortOrder
@@ -601,7 +621,7 @@ export type CouponCountOrderByAggregateInput = {
 }
 
 export type CouponAvgOrderByAggregateInput = {
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   percentDiscount?: Prisma.SortOrder
   fixedDiscount?: Prisma.SortOrder
   maxUses?: Prisma.SortOrder
@@ -614,8 +634,9 @@ export type CouponMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  redemptionType?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   percentDiscount?: Prisma.SortOrder
   fixedDiscount?: Prisma.SortOrder
   maxUses?: Prisma.SortOrder
@@ -633,8 +654,9 @@ export type CouponMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  redemptionType?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   percentDiscount?: Prisma.SortOrder
   fixedDiscount?: Prisma.SortOrder
   maxUses?: Prisma.SortOrder
@@ -649,7 +671,7 @@ export type CouponMinOrderByAggregateInput = {
 }
 
 export type CouponSumOrderByAggregateInput = {
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   percentDiscount?: Prisma.SortOrder
   fixedDiscount?: Prisma.SortOrder
   maxUses?: Prisma.SortOrder
@@ -669,6 +691,10 @@ export type CouponCreateapplicationCreditPackIdsInput = {
 
 export type EnumCouponTypeFieldUpdateOperationsInput = {
   set?: $Enums.CouponType
+}
+
+export type EnumCouponRedemptionTypeFieldUpdateOperationsInput = {
+  set?: $Enums.CouponRedemptionType
 }
 
 export type EnumCouponStatusFieldUpdateOperationsInput = {
@@ -706,8 +732,9 @@ export type CouponCreateWithoutUsesInput = {
   id?: string
   code: string
   type: $Enums.CouponType
+  redemptionType: $Enums.CouponRedemptionType
   status?: $Enums.CouponStatus
-  credits?: number | null
+  creditAmount?: number | null
   percentDiscount?: number | null
   fixedDiscount?: number | null
   maxUses?: number | null
@@ -726,8 +753,9 @@ export type CouponUncheckedCreateWithoutUsesInput = {
   id?: string
   code: string
   type: $Enums.CouponType
+  redemptionType: $Enums.CouponRedemptionType
   status?: $Enums.CouponStatus
-  credits?: number | null
+  creditAmount?: number | null
   percentDiscount?: number | null
   fixedDiscount?: number | null
   maxUses?: number | null
@@ -762,8 +790,9 @@ export type CouponUpdateWithoutUsesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumCouponTypeFieldUpdateOperationsInput | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeFieldUpdateOperationsInput | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusFieldUpdateOperationsInput | $Enums.CouponStatus
-  credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  creditAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   percentDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fixedDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxUses?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -782,8 +811,9 @@ export type CouponUncheckedUpdateWithoutUsesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumCouponTypeFieldUpdateOperationsInput | $Enums.CouponType
+  redemptionType?: Prisma.EnumCouponRedemptionTypeFieldUpdateOperationsInput | $Enums.CouponRedemptionType
   status?: Prisma.EnumCouponStatusFieldUpdateOperationsInput | $Enums.CouponStatus
-  credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  creditAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   percentDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fixedDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxUses?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -833,8 +863,9 @@ export type CouponSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   code?: boolean
   type?: boolean
+  redemptionType?: boolean
   status?: boolean
-  credits?: boolean
+  creditAmount?: boolean
   percentDiscount?: boolean
   fixedDiscount?: boolean
   maxUses?: boolean
@@ -855,8 +886,9 @@ export type CouponSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   code?: boolean
   type?: boolean
+  redemptionType?: boolean
   status?: boolean
-  credits?: boolean
+  creditAmount?: boolean
   percentDiscount?: boolean
   fixedDiscount?: boolean
   maxUses?: boolean
@@ -875,8 +907,9 @@ export type CouponSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   code?: boolean
   type?: boolean
+  redemptionType?: boolean
   status?: boolean
-  credits?: boolean
+  creditAmount?: boolean
   percentDiscount?: boolean
   fixedDiscount?: boolean
   maxUses?: boolean
@@ -895,8 +928,9 @@ export type CouponSelectScalar = {
   id?: boolean
   code?: boolean
   type?: boolean
+  redemptionType?: boolean
   status?: boolean
-  credits?: boolean
+  creditAmount?: boolean
   percentDiscount?: boolean
   fixedDiscount?: boolean
   maxUses?: boolean
@@ -911,7 +945,7 @@ export type CouponSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CouponOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "type" | "status" | "credits" | "percentDiscount" | "fixedDiscount" | "maxUses" | "usedCount" | "perUserLimit" | "minimumPurchaseAmount" | "startsAt" | "expiresAt" | "applicationCreditPackIds" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["coupon"]>
+export type CouponOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "type" | "redemptionType" | "status" | "creditAmount" | "percentDiscount" | "fixedDiscount" | "maxUses" | "usedCount" | "perUserLimit" | "minimumPurchaseAmount" | "startsAt" | "expiresAt" | "applicationCreditPackIds" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["coupon"]>
 export type CouponInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uses?: boolean | Prisma.Coupon$usesArgs<ExtArgs>
   _count?: boolean | Prisma.CouponCountOutputTypeDefaultArgs<ExtArgs>
@@ -928,8 +962,9 @@ export type $CouponPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     code: string
     type: $Enums.CouponType
+    redemptionType: $Enums.CouponRedemptionType
     status: $Enums.CouponStatus
-    credits: number | null
+    creditAmount: number | null
     percentDiscount: number | null
     fixedDiscount: number | null
     maxUses: number | null
@@ -1369,8 +1404,9 @@ export interface CouponFieldRefs {
   readonly id: Prisma.FieldRef<"Coupon", 'String'>
   readonly code: Prisma.FieldRef<"Coupon", 'String'>
   readonly type: Prisma.FieldRef<"Coupon", 'CouponType'>
+  readonly redemptionType: Prisma.FieldRef<"Coupon", 'CouponRedemptionType'>
   readonly status: Prisma.FieldRef<"Coupon", 'CouponStatus'>
-  readonly credits: Prisma.FieldRef<"Coupon", 'Int'>
+  readonly creditAmount: Prisma.FieldRef<"Coupon", 'Int'>
   readonly percentDiscount: Prisma.FieldRef<"Coupon", 'Int'>
   readonly fixedDiscount: Prisma.FieldRef<"Coupon", 'Int'>
   readonly maxUses: Prisma.FieldRef<"Coupon", 'Int'>

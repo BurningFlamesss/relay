@@ -7,6 +7,6 @@ export function formatPrice(amount: number, currency: string) {
     }).format(amount / 100)
 }
 
-export function estimateIdeas(credits: number) {
-    return Math.ceil(credits / 10)
+export function estimateIdeas(creditAmount: number) {
+    return Math.ceil(creditAmount / 10)
 }

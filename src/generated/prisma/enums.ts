@@ -116,6 +116,14 @@ export const CouponType = {
 export type CouponType = (typeof CouponType)[keyof typeof CouponType]
 
 
+export const CouponRedemptionType = {
+  DIRECT_REDEEM: 'DIRECT_REDEEM',
+  CHECKOUT: 'CHECKOUT'
+} as const
+
+export type CouponRedemptionType = (typeof CouponRedemptionType)[keyof typeof CouponRedemptionType]
+
+
 export const CouponStatus = {
   ACTIVE: 'ACTIVE',
   EXHAUSTED: 'EXHAUSTED',

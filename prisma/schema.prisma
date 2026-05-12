@@ -87,6 +87,11 @@ enum CouponType {
   FIXED_DISCOUNT
 }
 
+enum CouponRedemptionType {
+  DIRECT_REDEEM
+  CHECKOUT
+}
+
 enum CouponStatus {
   ACTIVE
   EXHAUSTED
@@ -224,6 +229,7 @@ model CreditTransaction {
   reservedAfter Int
   description   String?
   referenceId   String? // Could be jobId, paymentId
+  source        String?
   createdAt     DateTime              @default(now())
 
   @@index([userId])
@@ -232,16 +238,16 @@ model CreditTransaction {
 }
 
 model CreditPack {
-  id        String    @id @default(cuid())
-  name      String
-  credits   Int
-  price     Int
-  currency  Currency
-  isActive  Boolean   @default(true)
-  sortOrder Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  payments  Payment[]
+  id           String    @id @default(cuid())
+  name         String
+  creditAmount Int
+  price        Int
+  currency     Currency
+  isActive     Boolean   @default(true)
+  sortOrder    Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  payments     Payment[]
 
   @@index([isActive, sortOrder])
   @@map("credit_packs")
@@ -274,23 +280,24 @@ model Payment {
 }
 
 model Coupon {
-  id                       String        @id @default(cuid())
-  code                     String        @unique
+  id                       String               @id @default(cuid())
+  code                     String               @unique
   type                     CouponType
-  status                   CouponStatus  @default(ACTIVE)
-  credits                  Int?
+  redemptionType           CouponRedemptionType
+  status                   CouponStatus         @default(ACTIVE)
+  creditAmount             Int?
   percentDiscount          Int?
   fixedDiscount            Int?
   maxUses                  Int? // null means unlimited
-  usedCount                Int           @default(0)
-  perUserLimit             Int           @default(1)
+  usedCount                Int                  @default(0)
+  perUserLimit             Int                  @default(1)
   minimumPurchaseAmount    Int?
   startsAt                 DateTime?
   expiresAt                DateTime? // null means forever
   applicationCreditPackIds String[]
   metadata                 String?
-  createdAt                DateTime      @default(now())
-  updatedAt                DateTime      @updatedAt
+  createdAt                DateTime             @default(now())
+  updatedAt                DateTime             @updatedAt
   uses                     CouponUsage[]
 
   @@map("coupons")

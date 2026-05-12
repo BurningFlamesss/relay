@@ -27,13 +27,13 @@ export type AggregateCreditPack = {
 }
 
 export type CreditPackAvgAggregateOutputType = {
-  credits: number | null
+  creditAmount: number | null
   price: number | null
   sortOrder: number | null
 }
 
 export type CreditPackSumAggregateOutputType = {
-  credits: number | null
+  creditAmount: number | null
   price: number | null
   sortOrder: number | null
 }
@@ -41,7 +41,7 @@ export type CreditPackSumAggregateOutputType = {
 export type CreditPackMinAggregateOutputType = {
   id: string | null
   name: string | null
-  credits: number | null
+  creditAmount: number | null
   price: number | null
   currency: $Enums.Currency | null
   isActive: boolean | null
@@ -53,7 +53,7 @@ export type CreditPackMinAggregateOutputType = {
 export type CreditPackMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  credits: number | null
+  creditAmount: number | null
   price: number | null
   currency: $Enums.Currency | null
   isActive: boolean | null
@@ -65,7 +65,7 @@ export type CreditPackMaxAggregateOutputType = {
 export type CreditPackCountAggregateOutputType = {
   id: number
   name: number
-  credits: number
+  creditAmount: number
   price: number
   currency: number
   isActive: number
@@ -77,13 +77,13 @@ export type CreditPackCountAggregateOutputType = {
 
 
 export type CreditPackAvgAggregateInputType = {
-  credits?: true
+  creditAmount?: true
   price?: true
   sortOrder?: true
 }
 
 export type CreditPackSumAggregateInputType = {
-  credits?: true
+  creditAmount?: true
   price?: true
   sortOrder?: true
 }
@@ -91,7 +91,7 @@ export type CreditPackSumAggregateInputType = {
 export type CreditPackMinAggregateInputType = {
   id?: true
   name?: true
-  credits?: true
+  creditAmount?: true
   price?: true
   currency?: true
   isActive?: true
@@ -103,7 +103,7 @@ export type CreditPackMinAggregateInputType = {
 export type CreditPackMaxAggregateInputType = {
   id?: true
   name?: true
-  credits?: true
+  creditAmount?: true
   price?: true
   currency?: true
   isActive?: true
@@ -115,7 +115,7 @@ export type CreditPackMaxAggregateInputType = {
 export type CreditPackCountAggregateInputType = {
   id?: true
   name?: true
-  credits?: true
+  creditAmount?: true
   price?: true
   currency?: true
   isActive?: true
@@ -214,7 +214,7 @@ export type CreditPackGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type CreditPackGroupByOutputType = {
   id: string
   name: string
-  credits: number
+  creditAmount: number
   price: number
   currency: $Enums.Currency
   isActive: boolean
@@ -249,7 +249,7 @@ export type CreditPackWhereInput = {
   NOT?: Prisma.CreditPackWhereInput | Prisma.CreditPackWhereInput[]
   id?: Prisma.StringFilter<"CreditPack"> | string
   name?: Prisma.StringFilter<"CreditPack"> | string
-  credits?: Prisma.IntFilter<"CreditPack"> | number
+  creditAmount?: Prisma.IntFilter<"CreditPack"> | number
   price?: Prisma.IntFilter<"CreditPack"> | number
   currency?: Prisma.EnumCurrencyFilter<"CreditPack"> | $Enums.Currency
   isActive?: Prisma.BoolFilter<"CreditPack"> | boolean
@@ -262,7 +262,7 @@ export type CreditPackWhereInput = {
 export type CreditPackOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   price?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -278,7 +278,7 @@ export type CreditPackWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CreditPackWhereInput[]
   NOT?: Prisma.CreditPackWhereInput | Prisma.CreditPackWhereInput[]
   name?: Prisma.StringFilter<"CreditPack"> | string
-  credits?: Prisma.IntFilter<"CreditPack"> | number
+  creditAmount?: Prisma.IntFilter<"CreditPack"> | number
   price?: Prisma.IntFilter<"CreditPack"> | number
   currency?: Prisma.EnumCurrencyFilter<"CreditPack"> | $Enums.Currency
   isActive?: Prisma.BoolFilter<"CreditPack"> | boolean
@@ -291,7 +291,7 @@ export type CreditPackWhereUniqueInput = Prisma.AtLeast<{
 export type CreditPackOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   price?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -311,7 +311,7 @@ export type CreditPackScalarWhereWithAggregatesInput = {
   NOT?: Prisma.CreditPackScalarWhereWithAggregatesInput | Prisma.CreditPackScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CreditPack"> | string
   name?: Prisma.StringWithAggregatesFilter<"CreditPack"> | string
-  credits?: Prisma.IntWithAggregatesFilter<"CreditPack"> | number
+  creditAmount?: Prisma.IntWithAggregatesFilter<"CreditPack"> | number
   price?: Prisma.IntWithAggregatesFilter<"CreditPack"> | number
   currency?: Prisma.EnumCurrencyWithAggregatesFilter<"CreditPack"> | $Enums.Currency
   isActive?: Prisma.BoolWithAggregatesFilter<"CreditPack"> | boolean
@@ -323,7 +323,7 @@ export type CreditPackScalarWhereWithAggregatesInput = {
 export type CreditPackCreateInput = {
   id?: string
   name: string
-  credits: number
+  creditAmount: number
   price: number
   currency: $Enums.Currency
   isActive?: boolean
@@ -336,7 +336,7 @@ export type CreditPackCreateInput = {
 export type CreditPackUncheckedCreateInput = {
   id?: string
   name: string
-  credits: number
+  creditAmount: number
   price: number
   currency: $Enums.Currency
   isActive?: boolean
@@ -349,7 +349,7 @@ export type CreditPackUncheckedCreateInput = {
 export type CreditPackUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  creditAmount?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -362,7 +362,7 @@ export type CreditPackUpdateInput = {
 export type CreditPackUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  creditAmount?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -375,7 +375,7 @@ export type CreditPackUncheckedUpdateInput = {
 export type CreditPackCreateManyInput = {
   id?: string
   name: string
-  credits: number
+  creditAmount: number
   price: number
   currency: $Enums.Currency
   isActive?: boolean
@@ -387,7 +387,7 @@ export type CreditPackCreateManyInput = {
 export type CreditPackUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  creditAmount?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -399,7 +399,7 @@ export type CreditPackUpdateManyMutationInput = {
 export type CreditPackUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  creditAmount?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -411,7 +411,7 @@ export type CreditPackUncheckedUpdateManyInput = {
 export type CreditPackCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   price?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -421,7 +421,7 @@ export type CreditPackCountOrderByAggregateInput = {
 }
 
 export type CreditPackAvgOrderByAggregateInput = {
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   price?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
@@ -429,7 +429,7 @@ export type CreditPackAvgOrderByAggregateInput = {
 export type CreditPackMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   price?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -441,7 +441,7 @@ export type CreditPackMaxOrderByAggregateInput = {
 export type CreditPackMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   price?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -451,7 +451,7 @@ export type CreditPackMinOrderByAggregateInput = {
 }
 
 export type CreditPackSumOrderByAggregateInput = {
-  credits?: Prisma.SortOrder
+  creditAmount?: Prisma.SortOrder
   price?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
@@ -482,7 +482,7 @@ export type CreditPackUpdateOneRequiredWithoutPaymentsNestedInput = {
 export type CreditPackCreateWithoutPaymentsInput = {
   id?: string
   name: string
-  credits: number
+  creditAmount: number
   price: number
   currency: $Enums.Currency
   isActive?: boolean
@@ -494,7 +494,7 @@ export type CreditPackCreateWithoutPaymentsInput = {
 export type CreditPackUncheckedCreateWithoutPaymentsInput = {
   id?: string
   name: string
-  credits: number
+  creditAmount: number
   price: number
   currency: $Enums.Currency
   isActive?: boolean
@@ -522,7 +522,7 @@ export type CreditPackUpdateToOneWithWhereWithoutPaymentsInput = {
 export type CreditPackUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  creditAmount?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -534,7 +534,7 @@ export type CreditPackUpdateWithoutPaymentsInput = {
 export type CreditPackUncheckedUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  credits?: Prisma.IntFieldUpdateOperationsInput | number
+  creditAmount?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -577,7 +577,7 @@ export type CreditPackCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.T
 export type CreditPackSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  credits?: boolean
+  creditAmount?: boolean
   price?: boolean
   currency?: boolean
   isActive?: boolean
@@ -591,7 +591,7 @@ export type CreditPackSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type CreditPackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  credits?: boolean
+  creditAmount?: boolean
   price?: boolean
   currency?: boolean
   isActive?: boolean
@@ -603,7 +603,7 @@ export type CreditPackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type CreditPackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  credits?: boolean
+  creditAmount?: boolean
   price?: boolean
   currency?: boolean
   isActive?: boolean
@@ -615,7 +615,7 @@ export type CreditPackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type CreditPackSelectScalar = {
   id?: boolean
   name?: boolean
-  credits?: boolean
+  creditAmount?: boolean
   price?: boolean
   currency?: boolean
   isActive?: boolean
@@ -624,7 +624,7 @@ export type CreditPackSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CreditPackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "credits" | "price" | "currency" | "isActive" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["creditPack"]>
+export type CreditPackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "creditAmount" | "price" | "currency" | "isActive" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["creditPack"]>
 export type CreditPackInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   payments?: boolean | Prisma.CreditPack$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.CreditPackCountOutputTypeDefaultArgs<ExtArgs>
@@ -640,7 +640,7 @@ export type $CreditPackPayload<ExtArgs extends runtime.Types.Extensions.Internal
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    credits: number
+    creditAmount: number
     price: number
     currency: $Enums.Currency
     isActive: boolean
@@ -1073,7 +1073,7 @@ export interface Prisma__CreditPackClient<T, Null = never, ExtArgs extends runti
 export interface CreditPackFieldRefs {
   readonly id: Prisma.FieldRef<"CreditPack", 'String'>
   readonly name: Prisma.FieldRef<"CreditPack", 'String'>
-  readonly credits: Prisma.FieldRef<"CreditPack", 'Int'>
+  readonly creditAmount: Prisma.FieldRef<"CreditPack", 'Int'>
   readonly price: Prisma.FieldRef<"CreditPack", 'Int'>
   readonly currency: Prisma.FieldRef<"CreditPack", 'Currency'>
   readonly isActive: Prisma.FieldRef<"CreditPack", 'Boolean'>
