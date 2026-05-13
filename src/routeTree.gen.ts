@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CofounderIndexRouteImport } from './routes/cofounder/index'
 import { Route as AnalyzeIndexRouteImport } from './routes/analyze/index'
+import { Route as SettingsCreditsRouteImport } from './routes/settings/credits'
 import { Route as PaymentRedeemRouteImport } from './routes/_payment/redeem'
 import { Route as PaymentPricingRouteImport } from './routes/_payment/pricing'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
@@ -34,6 +35,11 @@ const CofounderIndexRoute = CofounderIndexRouteImport.update({
 const AnalyzeIndexRoute = AnalyzeIndexRouteImport.update({
   id: '/analyze/',
   path: '/analyze/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsCreditsRoute = SettingsCreditsRouteImport.update({
+  id: '/settings/credits',
+  path: '/settings/credits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaymentRedeemRoute = PaymentRedeemRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof AuthResetPasswordRoute
   '/pricing': typeof PaymentPricingRoute
   '/redeem': typeof PaymentRedeemRoute
+  '/settings/credits': typeof SettingsCreditsRoute
   '/analyze/': typeof AnalyzeIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof AuthResetPasswordRoute
   '/pricing': typeof PaymentPricingRoute
   '/redeem': typeof PaymentRedeemRoute
+  '/settings/credits': typeof SettingsCreditsRoute
   '/analyze': typeof AnalyzeIndexRoute
   '/cofounder': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_payment/pricing': typeof PaymentPricingRoute
   '/_payment/redeem': typeof PaymentRedeemRoute
+  '/settings/credits': typeof SettingsCreditsRoute
   '/analyze/': typeof AnalyzeIndexRoute
   '/cofounder/': typeof CofounderIndexRoute
   '/api/stream/$jobId': typeof ApiStreamJobIdRouteRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/pricing'
     | '/redeem'
+    | '/settings/credits'
     | '/analyze/'
     | '/cofounder/'
     | '/api/stream/$jobId'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/pricing'
     | '/redeem'
+    | '/settings/credits'
     | '/analyze'
     | '/cofounder'
     | '/api/stream/$jobId'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/_auth/reset-password'
     | '/_payment/pricing'
     | '/_payment/redeem'
+    | '/settings/credits'
     | '/analyze/'
     | '/cofounder/'
     | '/api/stream/$jobId'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   PaymentPricingRoute: typeof PaymentPricingRoute
   PaymentRedeemRoute: typeof PaymentRedeemRoute
+  SettingsCreditsRoute: typeof SettingsCreditsRoute
   AnalyzeIndexRoute: typeof AnalyzeIndexRoute
   CofounderIndexRoute: typeof CofounderIndexRoute
   ApiStreamJobIdRouteRoute: typeof ApiStreamJobIdRouteRoute
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/analyze'
       fullPath: '/analyze/'
       preLoaderRoute: typeof AnalyzeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/credits': {
+      id: '/settings/credits'
+      path: '/settings/credits'
+      fullPath: '/settings/credits'
+      preLoaderRoute: typeof SettingsCreditsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_payment/redeem': {
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   PaymentPricingRoute: PaymentPricingRoute,
   PaymentRedeemRoute: PaymentRedeemRoute,
+  SettingsCreditsRoute: SettingsCreditsRoute,
   AnalyzeIndexRoute: AnalyzeIndexRoute,
   CofounderIndexRoute: CofounderIndexRoute,
   ApiStreamJobIdRouteRoute: ApiStreamJobIdRouteRoute,
