@@ -1,7 +1,7 @@
 import type { CreditPackGetPayload } from './../../generated/prisma/models/CreditPack';
-import { prisma } from "#/db.ts";
 import type { MemoryCache } from './cache';
 import { isCacheValid } from './cache';
+import { createServerFn } from '@tanstack/react-start';
 
 export type CreditPacksType = CreditPackGetPayload<{
     select: {
@@ -18,7 +18,8 @@ const TTL = 1000 * 60 * 5
 let pricingCache: MemoryCache<Array<CreditPacksType>> | undefined
 let pending: Promise<Array<CreditPacksType>> | null = null
 
-export async function getCreditPacks() {
+export const getCreditPacks = createServerFn()
+    .handler(async () => {
 
     if (isCacheValid(pricingCache)) {
         return pricingCache!.data
@@ -27,6 +28,8 @@ export async function getCreditPacks() {
     if (pending) {
         return pending
     }
+
+    const { prisma } = await import("#/db.ts")
 
     pending = prisma.creditPack.findMany({
         where: {
@@ -57,11 +60,14 @@ export async function getCreditPacks() {
         pending = null
         
     }
-}
+})
 
 
 
-export async function getBillingPack(packId: string) {
+export const getBillingPack = createServerFn()
+    .inputValidator((packId: string) => packId)
+    .handler(async ({ data: packId }) => {
+    const { prisma } = await import("#/db.ts")
     return await prisma.creditPack.findFirst({
         where: {
             id: packId,
@@ -78,4 +84,4 @@ export async function getBillingPack(packId: string) {
             id: true
         }
     })
-}
+})

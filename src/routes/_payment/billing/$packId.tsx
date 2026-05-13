@@ -5,7 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 export const Route = createFileRoute('/_payment/billing/$packId')({
   component: RouteComponent,
   loader: async ({ params }) => {
-    return await getBillingPack(params.packId)
+    return await getBillingPack({ data: params.packId })
   },
   staleTime: 1000 * 60 * 5,
   gcTime: 1000 * 60 * 10

@@ -14,6 +14,6 @@ export type AnalyzeJobProgress = {
     error?: string;
 }
 
-export const analyzeQueue = new Queue<AnalyzeJobData>("analyze", { connection })
+export const analyzeQueue = new Queue<AnalyzeJobData>("analyze", { connection, skipVersionCheck: true })
 
 export const jobChannel = (jobId: string) => `job:${jobId}:progress`

@@ -2,13 +2,14 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  Link,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+// import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+// import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import PostHogProvider from '../integrations/posthog/provider'
+// import PostHogProvider from '../integrations/posthog/provider'
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
+// import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
 
@@ -20,6 +21,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   async beforeLoad() {
     const session = await getSessionFn()
     return { session }
+  },
+  notFoundComponent: () => {
+    return (
+      <div>
+        <p>This is the notFoundComponent configured on root route</p>
+        <Link to="/">Start Over</Link>
+      </div>
+    )
   },
   head: () => ({
     meta: [
@@ -52,11 +61,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <PostHogProvider>
+        {/* <PostHogProvider> */}
           <GlobalProvider>
             {children}
           </GlobalProvider>
-          <TanStackDevtools
+          {/* <TanStackDevtools
             config={{
               position: 'bottom-right',
             }}
@@ -67,8 +76,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               },
               TanStackQueryDevtools,
             ]}
-          />
-        </PostHogProvider>
+          /> */}
+        {/* </PostHogProvider> */}
         <Scripts />
       </body>
     </html>

@@ -1,6 +1,5 @@
-import { prisma } from "#/db.ts";
-
 export async function getRecentTransaction(userId: string) {
+    const { prisma } = await import("#/db.ts")
     return prisma.creditTransaction.findMany({
         where: {
             userId

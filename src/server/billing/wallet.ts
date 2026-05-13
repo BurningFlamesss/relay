@@ -1,6 +1,5 @@
-import { prisma } from "#/db.ts";
-
 export async function getWalletSummary(userId: string) {
+    const { prisma } = await import("#/db.ts")
     return prisma.creditWallet.findUnique({
         where: {
             userId

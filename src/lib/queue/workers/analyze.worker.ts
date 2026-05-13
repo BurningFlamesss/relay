@@ -44,7 +44,7 @@ export const analyzeWorker = new Worker("analyze", async (job) => {
         throw error
     }
 
-}, { connection })
+}, { connection, skipVersionCheck: true  })
 
 analyzeWorker.on("failed", (job, error) => {
     console.error(`[AnalyzeWorker] JobId: ${job?.id} is failed: `, error)

@@ -1,6 +1,4 @@
 import type { Stage } from "#/hooks/useAnalysis.tsx";
-import { createSubscriber } from "#/lib/queue/connection.ts";
-import { jobChannel } from "#/lib/queue/queues.ts";
 import { createFileRoute } from "@tanstack/react-router";
 
 export interface StreamEvent {
@@ -13,15 +11,17 @@ export const Route = createFileRoute('/api/stream/$jobId')({
     server: {
         handlers: {
             GET: async ({ request, params }) => {
-                const { jobId } = params
-                const lastStage = request.headers.get("Last-Event-ID")
-                const encoder = new TextEncoder()
+        const { jobId } = params
+        const lastStage = request.headers.get("Last-Event-ID")
+        const encoder = new TextEncoder()
 
-                // TODO: Verify the jobId matching the user requesting it (userId)
+        // TODO: Verify the jobId matching the user requesting it (userId)
 
-                const subscriber = createSubscriber()
+        const { createSubscriber } = await import("#/lib/queue/connection.ts");
+        const { jobChannel } = await import("#/lib/queue/queues.ts");
+        const subscriber = createSubscriber()
 
-                const stream = new ReadableStream({
+        const stream = new ReadableStream({
                     async start(controller) {
                         const send = (event: StreamEvent) => {
 

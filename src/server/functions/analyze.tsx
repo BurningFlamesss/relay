@@ -1,6 +1,4 @@
 import type { Stage } from "#/hooks/useAnalysis.tsx";
-import { connection } from "#/lib/queue/connection.ts";
-import { analyzeQueue } from "#/lib/queue/queues.ts";
 import { getSessionMiddleware } from "#/middleware/auth.middleware.ts";
 import { AnalyzeSchema } from "#/schema/analyze";
 import { redirect } from "@tanstack/react-router";
@@ -14,6 +12,8 @@ export const startAnalyzeFn = createServerFn()
         if (!context.session) {
             throw redirect({ to: "/authenticate", search: { type: "signup" } })
         }
+
+        const { analyzeQueue } = await import("#/lib/queue/queues.ts");
 
         // TODO: Create a real JOB in the database
         const jobId = crypto.randomUUID()
@@ -47,6 +47,7 @@ export const getLatestJobFn = createServerFn()
             throw redirect({ to: "/authenticate", search: { type: "signup" } })
         }
 
+        const { analyzeQueue } = await import("#/lib/queue/queues.ts");
         const jobs = await analyzeQueue.getJobs(
             ["active", "completed", "failed", "waiting"],
             0, 10
@@ -64,6 +65,7 @@ export const getLatestJobFn = createServerFn()
         const progress = latest.progress as {stage?: Stage} | null
 
         if (state === "completed") {
+            const { connection } = await import("#/lib/queue/connection.ts");
             const stored = await connection.get(`job:${latest.data.jobId}:result`)
             const parse = stored ? JSON.parse(stored) : null
 
