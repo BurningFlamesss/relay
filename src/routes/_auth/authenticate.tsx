@@ -52,7 +52,7 @@ function RouteComponent() {
                 }
             })
         } catch (err) {
-            toast.error(`Something went wrong: ${err}`)
+            toast.error(`Something went wrong: ${String(err)}`)
 
         }
     }
@@ -78,7 +78,7 @@ function RouteComponent() {
         try {
             await authClient.signUp.email({
                 ...signUpData,
-                callbackURL: "/"
+                // callbackURL: "/"
             }, {
                 onError: (context) => {
                     toast.error(context.error.message)
@@ -89,7 +89,7 @@ function RouteComponent() {
             })
 
         } catch (err) {
-            toast.error(`Something went wrong: ${error}`)
+            toast.error(`Something went wrong: ${String(err)}`)
         }
     }
 
@@ -97,15 +97,15 @@ function RouteComponent() {
         <>
             {
                 type === "signin" ? (
-                    <form onSubmit={handleSignIn}>
+                    <form onSubmit={handleSignIn} action={"#"} method={"post"}>
                         Email: <input type="email" name="email" required /> <br />
                         Password: <input type="password" name="password" required /> <br />
                         <Link to="/request-reset-password">Forget Password?</Link> <br />
                         <button type="submit">SignIn</button>
                     </form>
                 ) : (
-                    <form onSubmit={handleSignUp}>
-                        Name: <input type="name" name="name" required /> <br />
+                    <form onSubmit={handleSignUp} action={"#"} method={"post"}>
+                        Name: <input type="text" name="name" required /> <br />
                         Email: <input type="email" name="email" required /> <br />
                         Password: <input type="password" name="password" required /> <br />
                         <button type="submit">SignUp</button>

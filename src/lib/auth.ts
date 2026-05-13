@@ -1,5 +1,5 @@
 import { prisma } from '#/db'
-import { clientEnv } from '#/env/client.ts';
+import { serverEnv } from '#/env/server.ts';
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
@@ -37,7 +37,7 @@ export const auth = betterAuth({
     expiresIn: 1000 * 60 * 20
   },
 
-  baseURL: clientEnv.VITE_APP_URL,
+  baseURL: serverEnv.BETTER_AUTH_URL,
 
   plugins: [tanstackStartCookies()],
 })
