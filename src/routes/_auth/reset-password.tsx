@@ -59,7 +59,7 @@ function RouteComponent() {
 
   return (
     <>
-      <form onSubmit={handlePasswordReset}>
+      <form onSubmit={handlePasswordReset} method="post" action={"#"}>
         New Password: <input type="password" name="newPassword" required /> <br />
         Confirm Password: <input type="password" name="confirmPassword" required /> <br />
         <button type="submit">Reset Password</button> <br />
