@@ -12,8 +12,6 @@ export const Route = createFileRoute('/_payment/redeem')({
 })
 
 function RouteComponent() {
-    const { session } = Route.useRouteContext()
-
     const handleCodeRedemption = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
@@ -24,7 +22,6 @@ function RouteComponent() {
             const { credits, success } = await redeemCouponService({
                 data: {
                     code,
-                    userId: session?.user.id ?? ""
                 }
             })
 
