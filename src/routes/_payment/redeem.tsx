@@ -22,8 +22,10 @@ function RouteComponent() {
 
         try {
             const { credits, success } = await redeemCouponService({
-                code,
-                userId: session?.user.id ?? ""
+                data: {
+                    code,
+                    userId: session?.user.id ?? ""
+                }
             })
 
             if (success) {
