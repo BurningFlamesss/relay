@@ -41,7 +41,7 @@ function RouteComponent() {
         {transactions.map(transaction => (
           <div key={transaction.id}>
             <p>{transaction.description}</p>
-            <p>{transaction.amount}</p>
+            <p>"{transaction.amount}" credits</p>
           </div>
         ))}
       </div>

@@ -26,7 +26,7 @@ function RouteComponent() {
             })
 
             if (success) {
-                toast.success(`Successfully redeemed ${credits} to your account`)
+                toast.success(`Successfully redeemed '${credits}' credits to your account`)
             }
         } catch (error) {
             toast.error(`Failed to redeem because: ${String(error)}`)
