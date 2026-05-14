@@ -247,7 +247,6 @@ export type CouponUsageOrderByWithRelationInput = {
 
 export type CouponUsageWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  couponId_userId?: Prisma.CouponUsageCouponIdUserIdCompoundUniqueInput
   AND?: Prisma.CouponUsageWhereInput | Prisma.CouponUsageWhereInput[]
   OR?: Prisma.CouponUsageWhereInput[]
   NOT?: Prisma.CouponUsageWhereInput | Prisma.CouponUsageWhereInput[]
@@ -259,7 +258,7 @@ export type CouponUsageWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   coupon?: Prisma.XOR<Prisma.CouponScalarRelationFilter, Prisma.CouponWhereInput>
   payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
-}, "id" | "couponId_userId">
+}, "id">
 
 export type CouponUsageOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -365,11 +364,6 @@ export type CouponUsageOrderByRelationAggregateInput = {
 export type CouponUsageNullableScalarRelationFilter = {
   is?: Prisma.CouponUsageWhereInput | null
   isNot?: Prisma.CouponUsageWhereInput | null
-}
-
-export type CouponUsageCouponIdUserIdCompoundUniqueInput = {
-  couponId: string
-  userId: string
 }
 
 export type CouponUsageCountOrderByAggregateInput = {

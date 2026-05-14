@@ -314,8 +314,7 @@ model CouponUsage {
   creditsGranted  Int?
   createdAt       DateTime @default(now())
 
-  @@unique([couponId, userId])
-  @@index([userId])
+  @@index([couponId, userId])
   @@map("coupon_usages")
 }
 
