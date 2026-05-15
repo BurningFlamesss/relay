@@ -16,7 +16,7 @@ export const auth = betterAuth({
     revokeSessionsOnPasswordReset: true,
 
     async sendResetPassword({ user, url, token }, request) {
-      console.table({ user, url, token, request })
+      console.table({ user, url, token })
     },
     resetPasswordTokenExpiresIn: 1000 * 60 * 20,
 
@@ -33,7 +33,7 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     sendOnSignUp: true,
     async sendVerificationEmail({ user, url, token }, request) {
-      console.table({ user, url, token, request })
+      console.table({ user, url, token })
     },
     expiresIn: 1000 * 60 * 20
   },

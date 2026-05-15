@@ -163,10 +163,10 @@ export function useAnalysis() {
     }
 
     const run = async (input: Input) => {
-        setState(prev => ({
+        setState({
             ...INITIAL_STATE,
             stage: "processing"
-        }))
+        })
 
         try {
 
@@ -183,11 +183,11 @@ export function useAnalysis() {
             connectSSE(jobId)
 
         } catch (e) {
-            setState(prev => ({
+            setState({
                 ...INITIAL_STATE,
                 stage: "error",
                 error: "Failed to start analysis. Please try again"
-            }))
+            })
         }
     }
 
