@@ -1,4 +1,4 @@
-import { redeemCouponService } from '#/server/billing/redeem.ts';
+import { redeemCouponService } from '#/server/billing/_coupon/redeem.ts';
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { toast } from 'sonner';
 
