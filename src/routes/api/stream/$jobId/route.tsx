@@ -36,7 +36,8 @@ export const Route = createFileRoute('/api/stream/$jobId')({
 
                         await subscriber.subscribe(jobChannel(jobId))
 
-                        subscriber.on("message", (channel, message) => {
+                        subscriber.on("message", (_channel, message) => {
+                            void _channel
                             try {
                                 const parsed = JSON.parse(message)
                                 send(parsed)
