@@ -1,25 +1,9 @@
 import { getSessionMiddleware } from "#/middleware/auth.middleware.ts";
 import { redeemCodeSchema } from "#/schema/billing.tsx";
+import type { InspectResult } from "#/types/billing.ts";
 import { createServerFn } from "@tanstack/react-start";
 
-type InspectResult = {
-    valid: boolean;
-    redeemable: boolean;
-    reason?: string;
-    redemptionType?: "DIRECT_REDEEM" | "CHECKOUT";
-    remainingUses?: number;
-    perUserRemaining?: number;
-    creditsPreview?: number | null;
-    applicablePacks?: Array<{
-        id: string;
-        name: string;
-        creditAmount: number;
-        price: number;
-        currency: string;
-    }>
-}
-
-export const inspectCouponServer = createServerFn()
+export const inspectCouponService = createServerFn()
     .middleware([getSessionMiddleware])
     .inputValidator(redeemCodeSchema)
     .handler(async ({ data, context }): Promise<InspectResult> => {
@@ -122,7 +106,7 @@ export const inspectCouponServer = createServerFn()
         return {
             valid: true,
             redeemable,
-            redemptionType: "DIRECT_REDEEM",
+            redemptionType: coupon.redemptionType,
             applicablePacks,
             creditsPreview: coupon.creditAmount ?? null,
             perUserRemaining,

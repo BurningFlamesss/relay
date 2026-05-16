@@ -10,3 +10,9 @@ export function formatPrice(amount: number, currency: string) {
 export function estimateIdeas(creditAmount: number) {
     return Math.ceil(creditAmount / 10)
 }
+
+export const formatError = (error: unknown) => error instanceof Error ? error.message : "Unknown Error"
+
+export function normalizeCouponCode(value: string) {
+    return value.trim().toUpperCase()
+}
