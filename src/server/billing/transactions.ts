@@ -1,6 +1,19 @@
 export async function getRecentTransaction(userId: string) {
     const { prisma } = await import("#/db.ts")
-    return prisma.creditTransaction.findMany({
+    const { cacheGet, cacheSet } = await import("#/lib/cache")
+
+    const cacheKey = `transaction:${userId}`
+
+    try {
+        const cached = await cacheGet(cacheKey)
+        if (cached) {
+            return JSON.parse(cached)
+        }
+    } catch (error) {
+        
+    }
+
+    const transactions = prisma.creditTransaction.findMany({
         where: {
             userId
         },
@@ -17,4 +30,12 @@ export async function getRecentTransaction(userId: string) {
             createdAt: true
         }
     })
+
+    try {
+        await cacheSet(cacheKey, JSON.stringify(transactions), 5)
+    } catch (error) {
+        
+    }
+
+    return transactions
 }

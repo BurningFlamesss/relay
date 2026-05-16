@@ -14,7 +14,7 @@ export async function getWalletSummary(userId: string) {
 
     }
 
-    const wallet = prisma.creditWallet.upsert({
+    const wallet = await prisma.creditWallet.upsert({
         where: {
             userId
         },
