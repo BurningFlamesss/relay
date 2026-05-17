@@ -1,4 +1,9 @@
-export async function getWalletSummary(userId: string) {
+type Wallet = {
+    balance: number;
+    lifetimeSpent: number;
+}
+
+export async function getWalletSummary(userId: string): Promise<Wallet> {
     const { prisma } = await import("#/db.ts")
     const { cacheGet, cacheSet } = await import("#/lib/cache")
 

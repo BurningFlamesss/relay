@@ -1,6 +1,9 @@
 import { getRecentTransaction } from '#/server/billing/transactions.ts';
 import { getWalletSummary } from '#/server/billing/wallet.ts';
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { useEffect, useState } from 'react';
+
+type RecentTransaction = Awaited<ReturnType<typeof getRecentTransaction>>[number]
 
 export const Route = createFileRoute('/settings/credits')({
   component: RouteComponent,
@@ -22,6 +25,23 @@ export const Route = createFileRoute('/settings/credits')({
 
 function RouteComponent() {
   const { wallet, transactions } = Route.useLoaderData()
+  const [optimisticDelta, setOptimisticDelta] = useState(0)
+
+  useEffect(() => {
+    try {
+      const pending = +(sessionStorage.getItem("pendingCredits") || 0)
+
+      if (!Number.isNaN(pending) && pending > 0) {
+        setOptimisticDelta(pending)
+        sessionStorage.removeItem("pendingCredits")
+      }
+    } catch (error) {
+      
+    }
+  }, [])
+
+  const displayedBalance = (wallet.balance ?? 0) + optimisticDelta
+  
 
   return (
     <>
@@ -31,14 +51,14 @@ function RouteComponent() {
         </h1>
 
         <p>
-          {wallet?.balance ?? 0} credits
+          {displayedBalance} credits
         </p>
 
         <br />
 
         <h1>Recent Activity</h1>
 
-        {transactions.map(transaction => (
+        {transactions.map((transaction: RecentTransaction) => (
           <div key={transaction.id}>
             <p>{transaction.description}</p>
             <p>"{transaction.amount}" credits</p>

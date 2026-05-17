@@ -1,4 +1,21 @@
-export async function getRecentTransaction(userId: string) {
+import type { CreditTransactionType } from "#/generated/prisma/client.ts";
+import type { AcceleratePromise } from "@prisma/extension-accelerate";
+
+type Transactions = AcceleratePromise<{
+    id: string;
+    userId: string;
+    type: CreditTransactionType;
+    amount: number;
+    balanceAfter: number;
+    reservedAfter: number;
+    description: string | null;
+    referenceId: string | null;
+    source: string | null;
+    createdAt: Date;
+}[]>
+
+
+export async function getRecentTransaction(userId: string): Promise<Transactions> {
     const { prisma } = await import("#/db.ts")
     const { cacheGet, cacheSet } = await import("#/lib/cache")
 
@@ -10,7 +27,7 @@ export async function getRecentTransaction(userId: string) {
             return JSON.parse(cached)
         }
     } catch (error) {
-        
+
     }
 
     const transactions = prisma.creditTransaction.findMany({
@@ -34,7 +51,7 @@ export async function getRecentTransaction(userId: string) {
     try {
         await cacheSet(cacheKey, JSON.stringify(transactions), 5)
     } catch (error) {
-        
+
     }
 
     return transactions
