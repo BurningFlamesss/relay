@@ -17,8 +17,8 @@ export const Route = createFileRoute('/api/stream/$jobId')({
 
         // TODO: Verify the jobId matching the user requesting it (userId)
 
-        const { createSubscriber } = await import("#/lib/queue/connection.ts");
-        const { jobChannel } = await import("#/lib/queue/queues.ts");
+        const { createSubscriber } = await import("#/core/connection");
+        const { jobChannel } = await import("#/core/queues");
         const subscriber = createSubscriber()
 
         const stream = new ReadableStream({

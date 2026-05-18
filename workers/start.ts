@@ -3,6 +3,6 @@ import { expand } from "dotenv-expand";
 
 expand(config({ path: ".env.local" }))
 
-await import("../src/lib/queue/workers/analyze.worker")
+await import("../src/core/workers/analyze/analyze.worker")
 
 console.log("[workers] Analyze Worker started")

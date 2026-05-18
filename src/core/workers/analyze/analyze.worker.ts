@@ -1,7 +1,7 @@
 import { Worker } from "bullmq";
-import { connection } from "../connection";
-import type { AnalyzeJobProgress } from "../queues";
-import { jobChannel } from "../queues";
+import { connection } from "../../connection";
+import type { AnalyzeJobProgress } from "../../queues";
+import { jobChannel } from "../../queues";
 
 
 export const analyzeWorker = new Worker("analyze", async (job) => {
