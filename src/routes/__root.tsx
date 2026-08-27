@@ -3,6 +3,8 @@ import {
   Scripts,
   createRootRouteWithContext,
   Link,
+  useNavigate,
+  useLocation,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -16,6 +18,10 @@ import appCss from '../styles.css?url'
 import GlobalProvider from '#/provider/GlobalProvider'
 import { getSessionFn } from '#/middleware/auth.middleware.ts';
 import type { MyRouterContext } from '#/types/router-context.ts';
+import { VoiceButton } from '#/components/global/voiceButton.tsx';
+import type { VoiceCommandContext } from '#/types/voice.ts';
+import { z } from 'zod';
+import { createExecutor, executeAll } from '#/features/voice/executor.ts';
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   async beforeLoad() {
@@ -54,7 +60,29 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   shellComponent: RootDocument,
 })
 
+const voiceContext: VoiceCommandContext = {
+  language: "ne",
+  routes: [
+    { path: "/", name: "Landing" },
+    { path: "/download", name: "Download" }
+  ],
+  actions: {
+    current_route: z.object({}).describe("Log the current route")
+  }
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+
+  const executor = createExecutor({
+    navigate: (path) => navigate({ to: path }),
+    forms: {
+    },
+    actions: {
+      current_route: () => console.log("Current route is: ", pathname)
+    }
+  })
   return (
     <html lang="en">
       <head>
@@ -62,21 +90,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {/* <PostHogProvider> */}
-          <GlobalProvider>
-            {children}
-          </GlobalProvider>
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              TanStackQueryDevtools,
-            ]}
-          />
+        <GlobalProvider>
+          {children}
+          <VoiceButton className="absolute bottom-0 right-0 p-4" context={voiceContext} onCommand={async (result) => await executeAll(result.command, executor)} />
+        </GlobalProvider>
+        <TanStackDevtools
+          config={{
+            position: 'bottom-left',
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            TanStackQueryDevtools,
+          ]}
+        />
         {/* </PostHogProvider> */}
         <Scripts />
       </body>
