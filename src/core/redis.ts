@@ -1,8 +1,6 @@
 import { serverEnv } from "#/env/server.ts";
-import { preprocess } from "better-auth";
 import IORedis from "ioredis";
 import type { Redis, RedisOptions } from "ioredis";
-import { Signal } from "lucide-react";
 
 const BASE_OPTIONS: RedisOptions = {
     maxRetriesPerRequest: null,
@@ -49,7 +47,7 @@ export const redisKeys = {
 export async function publishProgress(event) {
     await getPubConnection()
         .publish(redisKeys.progressChannel(event.jobId), JSON.stringify(event))
-        .catch()
+        .catch(() => { })
 }
 
 export async function bufferSignals(jobId: string, source: string, signals) {
