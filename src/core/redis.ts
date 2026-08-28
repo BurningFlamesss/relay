@@ -1,6 +1,7 @@
 import { serverEnv } from "#/env/server.ts";
 import IORedis from "ioredis";
 import type { Redis, RedisOptions } from "ioredis";
+import type { RawSignal } from "./types";
 
 const BASE_OPTIONS: RedisOptions = {
     maxRetriesPerRequest: null,
@@ -15,13 +16,16 @@ let _pub: Redis | null = null
 let _sub: Redis | null = null
 const _dedicated: Array<Redis> = []
 
-function make(label) {
+function make(label: string): Redis {
     const connection = new IORedis(serverEnv.REDIS_CONNECTION_STRING, BASE_OPTIONS)
+    connection.on("error", (error) => console.error(`[REDIS:${label}`, error.message))
+    connection.on("connect", () => console.log(`[REDIS:${label} connected`))
+    connection.on("reconnecting", () => console.warn(`[REDIS:${label} reconnecting...`))
 
     return connection
 }
 
-export function createDedicatedConnection(label: string) {
+export function createDedicatedConnection(label: string): Redis {
     const connection = make(`dedicated:${label}`)
     _dedicated.push(connection)
 
@@ -44,13 +48,15 @@ export const redisKeys = {
     preprocessLock: (jobId: string, index: number) => `job:${jobId}:preprocess:${index}`
 }
 
-export async function publishProgress(event) {
+export async function publishProgress(event: ProgressEvent): Promise<void> {
     await getPubConnection()
         .publish(redisKeys.progressChannel(event.jobId), JSON.stringify(event))
-        .catch(() => { })
+        .catch((error) => {
+            console.error("[REDIS] publishProgress failed: ", error.message)
+        })
 }
 
-export async function bufferSignals(jobId: string, source: string, signals) {
+export async function bufferSignals(jobId: string, source: string, signals: Array<RawSignal>): Promise<void> {
     if (signals.length === 0) {
         return
     }
@@ -66,7 +72,7 @@ export async function bufferSignals(jobId: string, source: string, signals) {
         .exec()
 }
 
-export async function drainSignalBuffer(jobId: string, source: string) {
+export async function drainSignalBuffer(jobId: string, source: string): Promise<Array<RawSignal>> {
     const key = redisKeys.signals(jobId, source)
 
     const results = await getUtilityConnection().pipeline().lrange(key, 0, -1).del(key).exec()
@@ -75,10 +81,11 @@ export async function drainSignalBuffer(jobId: string, source: string) {
         return []
     }
 
-    const [lrangeResult] = results
+    const [lrangeResult] = results as Array<[Error | null, unknown]>
     const [error, items] = lrangeResult
 
     if (error) {
+        console.error(`[REDIS] drainSignalBuffer error for ${key}: `, error.message)
         return []
     }
 
@@ -91,13 +98,13 @@ export async function drainSignalBuffer(jobId: string, source: string) {
     }).filter(signal => signal !== null)
 }
 
-export async function getTotalSignalCount(jobId: string) {
+export async function getTotalSignalCount(jobId: string): Promise<number> {
     const raw = await getUtilityConnection().get(redisKeys.signalCount(jobId))
 
     return raw ? parseInt(raw, 10) : 0
 }
 
-export async function closeAllConnections() {
+export async function closeAllConnections(): Promise<void> {
     const _singletons = [_worker, _utility, _pub, _sub].filter((connection) => connection !== null)
 
     await Promise.all([..._singletons, ..._dedicated].map(connection => connection.quit().catch(() => { })))
