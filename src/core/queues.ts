@@ -1,9 +1,8 @@
-import { preprocess } from 'better-auth';
-import { FlowProducer, Queue, QueueEvents, type JobsOptions } from "bullmq";
+import { FlowProducer, Job, Queue, QueueEvents, type JobsOptions } from "bullmq";
 import { connection } from "./connection";
 import type { Stage } from "#/hooks/useAnalysis.tsx";
 import { createDedicatedConnection, getUtilityConnection } from "./redis";
-import { QUEUE } from "./types";
+import { PREPROCESS_BATCH_SIZE, QUEUE, type AIJobData, type OrchestratorJobData, type PreprocessBatchResult, type PreprocessJobData, type ScoringJobData, type ScraperJobData, type ScraperResult } from "./types";
 
 export type AnalyzeJobData = {
     jobId: string;
@@ -45,7 +44,7 @@ const CRITICAL: JobsOptions = {
     priority: 1
 }
 
-function makeQueue(name, options?: JobsOptions) {
+function makeQueue(name: string, options?: JobsOptions) {
     return new Queue(name, {
         connection: getUtilityConnection(),
         defaultJobOptions: options ?? BASE
@@ -54,26 +53,26 @@ function makeQueue(name, options?: JobsOptions) {
 
 // Queues
 
-export const orchestratorQueue = makeQueue(QUEUE.ORCHESTRATOR, CRITICAL)
-export const scraperQueue = makeQueue(QUEUE.SCRAPER, {
+export const orchestratorQueue = makeQueue<OrchestratorJobData>(QUEUE.ORCHESTRATOR, CRITICAL)
+export const scraperQueue = makeQueue<ScraperJobData, ScraperResult>(QUEUE.SCRAPER, {
     ...BASE,
     attempts: 4,
     backoff: { type: "exponential", delay: 1000 }
 })
-export const preprocessQueue = makeQueue(QUEUE.PREPROCESS, {
+export const preprocessQueue = makeQueue<PreprocessJobData, PreprocessBatchResult>(QUEUE.PREPROCESS, {
     ...BASE,
     backoff: { type: "fixed", delay: 1000 }
 })
-export const aiQueue = makeQueue(QUEUE.AI, {
+export const aiQueue = makeQueue<AIJobData>(QUEUE.AI, {
     ...CRITICAL,
     attempts: 4,
     backoff: { type: "exponential", delay: 5000 }
 })
-export const scoringQueue = makeQueue(QUEUE.SCORING, {
+export const scoringQueue = makeQueue<ScoringJobData>(QUEUE.SCORING, {
     ...BASE,
     backoff: { type: "fixed", delay: 500 }
 })
-export const dlQueue = makeQueue(QUEUE.DLQ, {
+export const dlQueue = makeQueue<{ originalQueue: string; jobData: unknown; error: string }>(QUEUE.DLQ, {
     removeOnComplete: false,
     removeOnFail: false,
     attempts: 1
@@ -97,14 +96,17 @@ export const flowProducer = new FlowProducer({
     connection: createDedicatedConnection("flow-producer")
 })
 
-export async function enqueueAnalysis(data) {
+export async function enqueueAnalysis(data: OrchestratorJobData): Promise<Job<OrchestratorJobData>> {
     return orchestratorQueue.add(`analysis:${data.topic.slice(0, 40)}`, data, {
         jobId: data.jobId,
         priority: data.tier === "HIGH" ? 1 : data.tier === "MID" ? 5 : 10
     })
 }
 
-export async function enqueueScrapers(jobs) {
+export async function enqueueScrapers(jobs: Array<{
+    name: string;
+    data: ScraperJobData
+}>): Promise<Job<ScraperJobData, Array<ScraperResult>>> {
     return scraperQueue.addBulk(jobs.map((job) => ({
         name: job.name,
         data: job.data,
@@ -122,7 +124,7 @@ export async function enqueueScrapers(jobs) {
     })))
 }
 
-export async function enqueuePreprocessingBatches(jobId, signalIds, batchSize) {
+export async function enqueuePreprocessingBatches(jobId: string, signalIds: Array<string>, batchSize = PREPROCESS_BATCH_SIZE): Promise<Job<PreprocessJobData, Array<PreprocessBatchResult>>> {
     const batches: Array<Array<string>> = []
 
     for (let index = 0; index < signalIds.length; index += batchSize) {
@@ -140,7 +142,7 @@ export async function enqueuePreprocessingBatches(jobId, signalIds, batchSize) {
     })))
 }
 
-export async function enqueueAITask(data) {
+export async function enqueueAITask(data: AIJobData): Promise<Job<AIJobData>> {
     const dedupJobId = data.cacheKey ? `ai:cache:${data.cacheKey}` : `ai:${data.jobId}:${data.task}:${Date.now()}`
 
     return aiQueue.add(`ai:${data.task}`, data, {
@@ -148,7 +150,7 @@ export async function enqueueAITask(data) {
     })
 }
 
-export async function drainAndCloseQueues() {
+export async function drainAndCloseQueues(): Promise<void> {
     await Promise.all([
         scraperQueue,
         preprocessQueue,
