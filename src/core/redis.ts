@@ -91,4 +91,19 @@ export async function drainSignalBuffer(jobId: string, source: string) {
             return null
         }
     }).filter(signal => signal !== null)
-} 
+}
+
+export async function getTotalSignalCount(jobId: string) {
+    const raw = await getUtilityConnection().get(redisKeys.signalCount(jobId))
+
+    return raw ? parseInt(raw, 10) : 0
+}
+
+export async function closeAllConnections() {
+    const _singletons = [_worker, _utility, _pub, _sub].filter((connection) => connection !== null)
+
+    await Promise.all([..._singletons, ..._dedicated].map(connection => connection.quit().catch(() => { })))
+
+    _worker = _utility = _pub = _sub = null
+    _dedicated.length = 0
+}
