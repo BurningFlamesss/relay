@@ -28,7 +28,7 @@ enum PhaseStatus {
   RUNNING
   COMPLETED
   FAILED
-  SKIPPED // If Low tier
+  SKIPPED
 }
 
 enum PhaseType {
@@ -59,7 +59,6 @@ enum ScrapingSourceType {
   LINKEDIN_JOBS
   PRODUCT_HUNT
   APP_STORE
-  // TODO: Add more
 }
 
 enum SignalIntentLabel {
@@ -76,7 +75,6 @@ enum AuthorType {
   BUSINESS_OWNER
   CONSUMER
   STUDENT
-  // TODO: broad it more
   UNKNOWN
 }
 
@@ -149,26 +147,27 @@ enum PaymentProvider {
 }
 
 model User {
-  id            String    @id
+  id            String   @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean  @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
 
   creditWallet       CreditWallet?
-  // jobs               AnalysisJob[]
-  // ideas              Idea[]
+  jobs               AnalysisJob[]
+  ideas              Idea[]
   couponUses         CouponUsage[]
   payments           Payment[]
   creditTransactions CreditTransaction[]
-  analysisJobs       AnalysisJob[]
-  ideas              Idea[]
-  ideaCandidates     IdeaCandidate[]
-  ideaCandidates     IdeaCandidate[]
+  notifications      Notification[]
+
+  ideaCandidates    IdeaCandidate[] @relation("CandidateOwner")
+  stashedCandidates IdeaCandidate[] @relation("StashedByUser")
 
   @@unique([email])
   @@map("users")
@@ -183,7 +182,8 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@index([userId])
@@ -195,7 +195,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -205,6 +204,8 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -241,11 +242,11 @@ model CreditTransaction {
   userId        String
   user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   type          CreditTransactionType
-  amount        Int // +ve means credit, -ve means debited which basics of accountancy
+  amount        Int
   balanceAfter  Int
   reservedAfter Int
   description   String?
-  referenceId   String? // Could be jobId, paymentId
+  referenceId   String?
   source        String?
   createdAt     DateTime              @default(now())
 
@@ -255,16 +256,17 @@ model CreditTransaction {
 }
 
 model CreditPack {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String
   creditAmount Int
   price        Int
   currency     Currency
-  isActive     Boolean   @default(true)
-  sortOrder    Int       @default(0)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  payments     Payment[]
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  payments Payment[]
 
   @@index([isActive, sortOrder])
   @@map("credit_packs")
@@ -305,17 +307,18 @@ model Coupon {
   creditAmount             Int?
   percentDiscount          Int?
   fixedDiscount            Int?
-  maxUses                  Int? // null means unlimited
+  maxUses                  Int?
   usedCount                Int                  @default(0)
   perUserLimit             Int                  @default(1)
   minimumPurchaseAmount    Int?
   startsAt                 DateTime?
-  expiresAt                DateTime? // null means forever
+  expiresAt                DateTime?
   applicationCreditPackIds String[]
   metadata                 String?
   createdAt                DateTime             @default(now())
   updatedAt                DateTime             @updatedAt
-  uses                     CouponUsage[]
+
+  uses CouponUsage[]
 
   @@map("coupons")
 }
@@ -358,14 +361,13 @@ model AnalysisJob {
 
   topic     String
   topicHash String
-
-  filters Json?
+  filters   Json?
 
   tier          AnalysisTier
   maxIterations Int          @default(1)
 
   fromCandidateId String?
-  fromCandidate   IdeaCandidate? @relation(fields: [fromCandidateId], references: [id])
+  fromCandidate   IdeaCandidate? @relation("CandidatePromotion", fields: [fromCandidateId], references: [id])
 
   servedFromCacheId String?
 
@@ -382,8 +384,9 @@ model AnalysisJob {
   phases     JobPhase[]
   scrapeJobs ScrapeJob[]
   signals    Signal[]
-  candidates IdeaCandidate[]
-  idea       Idea?           @relation(fields: [ideaId], references: [id])
+  candidates IdeaCandidate[] @relation("JobCandidates")
+
+  idea Idea?
 
   isRerun     Boolean       @default(false)
   parentJobId String?
@@ -393,11 +396,11 @@ model AnalysisJob {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   completedAt DateTime?
-  ideaId      String?
 
   @@index([userId])
   @@index([status])
   @@index([topicHash])
+  @@index([fromCandidateId])
   @@map("analysis_job")
 }
 
@@ -444,9 +447,10 @@ model ScrapeJob {
 }
 
 model Signal {
-  id    String       @id @default(cuid())
+  id    String @id @default(cuid())
   JobId String
-  Job   AnalysisJob? @relation(fields: [JobId], references: [id])
+
+  Job AnalysisJob @relation(fields: [JobId], references: [id], onDelete: Cascade)
 
   source       ScrapingSourceType
   url          String
@@ -474,33 +478,42 @@ model Signal {
 }
 
 model SignalCluster {
-  id                String         @id @default(cuid())
+  id                String @id @default(cuid())
   jobId             String
   label             String
   frequency         Int
   intensityScore    Float
-  demandSignalCount Int            @default(0)
+  demandSignalCount Int    @default(0)
   personaSketches   Json
   failedWorkarounds Json
   evidenceChain     Json
-  compositeScore    Float          @default(0)
-  signals           Signal[]
-  candidate         IdeaCandidate? @relation(fields: [ideaCandidateId], references: [id])
+  compositeScore    Float  @default(0)
 
-  createdAt       DateTime @default(now())
-  ideaCandidateId String?
+  signals    Signal[]
+  candidates IdeaCandidate[] @relation("ClusterCandidate")
+  createdAt  DateTime        @default(now())
 
   @@index([jobId])
   @@map("signal_cluster")
 }
 
 model IdeaCandidate {
-  id    String      @id @default(cuid())
+  id String @id @default(cuid())
+
   jobId String
-  job   AnalysisJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job   AnalysisJob @relation("JobCandidates", fields: [jobId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation("CandidateOwner", fields: [userId], references: [id])
+
+  stashedByUserId String?
+  stashedByUser   User?     @relation("StashedByUser", fields: [stashedByUserId], references: [id])
+  stashedAt       DateTime?
+
+  promotedJobs AnalysisJob[] @relation("CandidatePromotion")
 
   clusterId String?
-  cluster   SignalCluster? @relation(fields: [clusterId], references: [id])
+  cluster   SignalCluster? @relation("ClusterCandidate", fields: [clusterId], references: [id])
 
   problemLabel   String
   problemSummary String
@@ -523,47 +536,45 @@ model IdeaCandidate {
   compositeScore   Float?
   scoringBreakdown Json?
 
-  status          CandidateStatus @default(ACTIVE)
-  stashedByUserId String?
-  stashedByUser   User?           @relation("StashedByUser", fields: [stashedByUserId], references: [id])
-  stashedAt       DateTime?
+  status CandidateStatus @default(ACTIVE)
 
-  promotedToJobId String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  promotedJobs AnalysisJob[]
-  user         User?         @relation(fields: [userId], references: [id])
-  userId       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([jobId])
+  @@index([userId])
   @@index([status])
   @@index([compositeScore])
+  @@index([clusterId])
   @@map("idea_candidate")
 }
 
 model Idea {
-  id                   String      @id @default(cuid())
-  jobId                String      @unique
-  job                  AnalysisJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  userId               String
-  user                 User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id    String      @id @default(cuid())
+  jobId String      @unique
+  job   AnalysisJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   problemStatement     String
   targetPersona        String
   solutionHypothesis   String
   mvpScope             String
   differentiationAngle String
   goToMarketChannel    String
-  riskFactors          Json
-  confidenceLevels     Json
-  compositeScore       Float
-  scoringBreakdown     Json
-  signalTimelineChart  Json?
-  competitorLandscape  Json?
-  browsableSignals     Json?
-  status               IdeaStatus  @default(PENDING)
-  userFeedback         String?
-  actionAt             DateTime?
+
+  riskFactors         Json
+  confidenceLevels    Json
+  compositeScore      Float
+  scoringBreakdown    Json
+  signalTimelineChart Json?
+  competitorLandscape Json?
+  browsableSignals    Json?
+
+  status       IdeaStatus @default(PENDING)
+  userFeedback String?
+  actionAt     DateTime?
 
   approvedDomain String?
   approvedAt     DateTime?
@@ -571,8 +582,9 @@ model Idea {
   isResuable      Boolean   @default(false)
   reusableContext Json?
   reusableAt      DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([status])
