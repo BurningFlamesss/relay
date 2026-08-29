@@ -167,6 +167,7 @@ model User {
   creditTransactions CreditTransaction[]
   analysisJobs       AnalysisJob[]
   ideas              Idea[]
+  ideaCandidates     IdeaCandidate[]
 
   @@unique([email])
   @@map("users")
@@ -442,14 +443,100 @@ model ScrapeJob {
 }
 
 model Signal {
-  analysisJob   AnalysisJob? @relation(fields: [analysisJobId], references: [id])
-  analysisJobId String?
+  id    String       @id @default(cuid())
+  JobId String
+  Job   AnalysisJob? @relation(fields: [JobId], references: [id])
+
+  source       ScrapingSourceType
+  url          String
+  urlHash      String
+  title        String?
+  quote        String
+  authorHandle String?
+  authorType   AuthorType         @default(UNKNOWN)
+  publishedAt  DateTime?
+
+  intentLabel    SignalIntentLabel?
+  intensityScore Float?
+  isDemandSignal Boolean            @default(false)
+
+  clusterId String?
+  cluster   SignalCluster? @relation(fields: [clusterId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([JobId])
+  @@index([clusterId])
+  @@index([urlHash])
+  @@index([isDemandSignal])
+  @@map("signal")
+}
+
+model SignalCluster {
+  id                String         @id @default(cuid())
+  jobId             String
+  label             String
+  frequency         Int
+  intensityScore    Float
+  demandSignalCount Int            @default(0)
+  personaSketches   Json
+  failedWorkarounds Json
+  evidenceChain     Json
+  compositeScore    Float          @default(0)
+  signals           Signal[]
+  candidate         IdeaCandidate? @relation(fields: [ideaCandidateId], references: [id])
+
+  createdAt       DateTime @default(now())
+  ideaCandidateId String?
+
+  @@index([jobId])
+  @@map("signal_cluster")
 }
 
 model IdeaCandidate {
   id    String      @id @default(cuid())
   jobId String
   job   AnalysisJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  clusterId String?
+  cluster   SignalCluster? @relation(fields: [clusterId], references: [id])
+
+  problemLabel   String
+  problemSummary String
+  targetPersona  String?
+
+  competitorMap   Json?
+  featureGaps     Json?
+  deadCompetitors Json?
+
+  communitySize    Json?
+  jobPostingVolume Int?
+  fundingSignals   Json?
+  trendDirection   String?
+  whyNow           String?
+
+  problemScore     Float?
+  competitionScore Float?
+  marketScore      Float?
+  timingScore      Float?
+  compositeScore   Float?
+  scoringBreakdown Json?
+
+  status          CandidateStatus @default(ACTIVE)
+  stashedByUserId String?
+  stashedByUser   User?           @relation("StashedByUser", fields: [stashedByUserId], references: [id])
+  stashedAt       DateTime?
+
+  promotedToJobId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  promotedJobs AnalysisJob[]
+
+  @@index([jobId])
+  @@index([status])
+  @@index([compositeScore])
+  @@map("idea_candidate")
 }
 
 model Idea {
