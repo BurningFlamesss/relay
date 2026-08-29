@@ -168,6 +168,7 @@ model User {
   analysisJobs       AnalysisJob[]
   ideas              Idea[]
   ideaCandidates     IdeaCandidate[]
+  ideaCandidates     IdeaCandidate[]
 
   @@unique([email])
   @@map("users")
@@ -532,6 +533,8 @@ model IdeaCandidate {
   updatedAt       DateTime @updatedAt
 
   promotedJobs AnalysisJob[]
+  user         User?         @relation(fields: [userId], references: [id])
+  userId       String?
 
   @@index([jobId])
   @@index([status])
@@ -540,8 +543,40 @@ model IdeaCandidate {
 }
 
 model Idea {
-  id           String        @id @default(cuid())
-  userId       String
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  analysisJobs AnalysisJob[]
+  id                   String      @id @default(cuid())
+  jobId                String      @unique
+  job                  AnalysisJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  userId               String
+  user                 User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemStatement     String
+  targetPersona        String
+  solutionHypothesis   String
+  mvpScope             String
+  differentiationAngle String
+  goToMarketChannel    String
+  riskFactors          Json
+  confidenceLevels     Json
+  compositeScore       Float
+  scoringBreakdown     Json
+  signalTimelineChart  Json?
+  competitorLandscape  Json?
+  browsableSignals     Json?
+  status               IdeaStatus  @default(PENDING)
+  userFeedback         String?
+  actionAt             DateTime?
+
+  approvedDomain String?
+  approvedAt     DateTime?
+
+  isResuable      Boolean   @default(false)
+  reusableContext Json?
+  reusableAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([approvedDomain])
+  @@index([isResuable])
+  @@map("idea")
 }
