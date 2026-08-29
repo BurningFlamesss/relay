@@ -23,7 +23,19 @@ export const PHASE_ORDER = [
     "DELIVERY"
 ]
 
-export type PhaseType = (typeof PHASE_ORDER)[number]
+export type PhaseType = "PREFLIGHT" |
+    "QUERY_ARCHITECTURE" |
+    "SIGNAL_SCRAPING" |
+    "SIGNAL_PREPROCESSING" |
+    "PROBLEM_CLUSTER_SYNTHESIS" |
+    "ITERATION_GATE" |
+    "OPPORTUNITY_QUALIFICATION" |
+    "COMPETITIVE_DEEP_DIVE" |
+    "MARKET_SIZING" |
+    "SCORING" |
+    "SYNTHESIS" |
+    "REPORT_ASSEMBLY" |
+    "DELIVERY"
 
 
 export type AnalysisTier = "LOW" | "MID" | "HIGH";
@@ -45,7 +57,7 @@ export interface RawSignal {
     publishedAt?: string;
 }
 
-export interface ScrapeOpts {
+export interface ScrapeOptions {
     jobId: string;
     maxSignals: number;
     excludedDomainHashes: Set<string>;
@@ -56,7 +68,7 @@ export interface SourceAdapter {
     readonly rateLimit: number;
     scrape: (
         queries: Array<{ query: string; intentLabel: SignalIntentLabel }>,
-        opts: ScrapeOpts,
+        options: ScrapeOptions,
     ) => Promise<RawSignal[]>;
 }
 
