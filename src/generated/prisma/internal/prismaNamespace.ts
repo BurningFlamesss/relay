@@ -2259,7 +2259,7 @@ export type ScrapeJobScalarFieldEnum = (typeof ScrapeJobScalarFieldEnum)[keyof t
 
 export const SignalScalarFieldEnum = {
   id: 'id',
-  JobId: 'JobId',
+  jobId: 'jobId',
   source: 'source',
   url: 'url',
   urlHash: 'urlHash',

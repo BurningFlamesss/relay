@@ -448,9 +448,9 @@ model ScrapeJob {
 
 model Signal {
   id    String @id @default(cuid())
-  JobId String
+  jobId String
 
-  Job AnalysisJob @relation(fields: [JobId], references: [id], onDelete: Cascade)
+  job AnalysisJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   source       ScrapingSourceType
   url          String
@@ -470,7 +470,7 @@ model Signal {
 
   createdAt DateTime @default(now())
 
-  @@index([JobId])
+  @@index([jobId])
   @@index([clusterId])
   @@index([urlHash])
   @@index([isDemandSignal])

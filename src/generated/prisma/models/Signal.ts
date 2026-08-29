@@ -36,7 +36,7 @@ export type SignalSumAggregateOutputType = {
 
 export type SignalMinAggregateOutputType = {
   id: string | null
-  JobId: string | null
+  jobId: string | null
   source: $Enums.ScrapingSourceType | null
   url: string | null
   urlHash: string | null
@@ -54,7 +54,7 @@ export type SignalMinAggregateOutputType = {
 
 export type SignalMaxAggregateOutputType = {
   id: string | null
-  JobId: string | null
+  jobId: string | null
   source: $Enums.ScrapingSourceType | null
   url: string | null
   urlHash: string | null
@@ -72,7 +72,7 @@ export type SignalMaxAggregateOutputType = {
 
 export type SignalCountAggregateOutputType = {
   id: number
-  JobId: number
+  jobId: number
   source: number
   url: number
   urlHash: number
@@ -100,7 +100,7 @@ export type SignalSumAggregateInputType = {
 
 export type SignalMinAggregateInputType = {
   id?: true
-  JobId?: true
+  jobId?: true
   source?: true
   url?: true
   urlHash?: true
@@ -118,7 +118,7 @@ export type SignalMinAggregateInputType = {
 
 export type SignalMaxAggregateInputType = {
   id?: true
-  JobId?: true
+  jobId?: true
   source?: true
   url?: true
   urlHash?: true
@@ -136,7 +136,7 @@ export type SignalMaxAggregateInputType = {
 
 export type SignalCountAggregateInputType = {
   id?: true
-  JobId?: true
+  jobId?: true
   source?: true
   url?: true
   urlHash?: true
@@ -241,7 +241,7 @@ export type SignalGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type SignalGroupByOutputType = {
   id: string
-  JobId: string
+  jobId: string
   source: $Enums.ScrapingSourceType
   url: string
   urlHash: string
@@ -282,7 +282,7 @@ export type SignalWhereInput = {
   OR?: Prisma.SignalWhereInput[]
   NOT?: Prisma.SignalWhereInput | Prisma.SignalWhereInput[]
   id?: Prisma.StringFilter<"Signal"> | string
-  JobId?: Prisma.StringFilter<"Signal"> | string
+  jobId?: Prisma.StringFilter<"Signal"> | string
   source?: Prisma.EnumScrapingSourceTypeFilter<"Signal"> | $Enums.ScrapingSourceType
   url?: Prisma.StringFilter<"Signal"> | string
   urlHash?: Prisma.StringFilter<"Signal"> | string
@@ -296,13 +296,13 @@ export type SignalWhereInput = {
   isDemandSignal?: Prisma.BoolFilter<"Signal"> | boolean
   clusterId?: Prisma.StringNullableFilter<"Signal"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Signal"> | Date | string
-  Job?: Prisma.XOR<Prisma.AnalysisJobScalarRelationFilter, Prisma.AnalysisJobWhereInput>
+  job?: Prisma.XOR<Prisma.AnalysisJobScalarRelationFilter, Prisma.AnalysisJobWhereInput>
   cluster?: Prisma.XOR<Prisma.SignalClusterNullableScalarRelationFilter, Prisma.SignalClusterWhereInput> | null
 }
 
 export type SignalOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  JobId?: Prisma.SortOrder
+  jobId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   url?: Prisma.SortOrder
   urlHash?: Prisma.SortOrder
@@ -316,7 +316,7 @@ export type SignalOrderByWithRelationInput = {
   isDemandSignal?: Prisma.SortOrder
   clusterId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  Job?: Prisma.AnalysisJobOrderByWithRelationInput
+  job?: Prisma.AnalysisJobOrderByWithRelationInput
   cluster?: Prisma.SignalClusterOrderByWithRelationInput
 }
 
@@ -325,7 +325,7 @@ export type SignalWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.SignalWhereInput | Prisma.SignalWhereInput[]
   OR?: Prisma.SignalWhereInput[]
   NOT?: Prisma.SignalWhereInput | Prisma.SignalWhereInput[]
-  JobId?: Prisma.StringFilter<"Signal"> | string
+  jobId?: Prisma.StringFilter<"Signal"> | string
   source?: Prisma.EnumScrapingSourceTypeFilter<"Signal"> | $Enums.ScrapingSourceType
   url?: Prisma.StringFilter<"Signal"> | string
   urlHash?: Prisma.StringFilter<"Signal"> | string
@@ -339,13 +339,13 @@ export type SignalWhereUniqueInput = Prisma.AtLeast<{
   isDemandSignal?: Prisma.BoolFilter<"Signal"> | boolean
   clusterId?: Prisma.StringNullableFilter<"Signal"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Signal"> | Date | string
-  Job?: Prisma.XOR<Prisma.AnalysisJobScalarRelationFilter, Prisma.AnalysisJobWhereInput>
+  job?: Prisma.XOR<Prisma.AnalysisJobScalarRelationFilter, Prisma.AnalysisJobWhereInput>
   cluster?: Prisma.XOR<Prisma.SignalClusterNullableScalarRelationFilter, Prisma.SignalClusterWhereInput> | null
 }, "id">
 
 export type SignalOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  JobId?: Prisma.SortOrder
+  jobId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   url?: Prisma.SortOrder
   urlHash?: Prisma.SortOrder
@@ -371,7 +371,7 @@ export type SignalScalarWhereWithAggregatesInput = {
   OR?: Prisma.SignalScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SignalScalarWhereWithAggregatesInput | Prisma.SignalScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Signal"> | string
-  JobId?: Prisma.StringWithAggregatesFilter<"Signal"> | string
+  jobId?: Prisma.StringWithAggregatesFilter<"Signal"> | string
   source?: Prisma.EnumScrapingSourceTypeWithAggregatesFilter<"Signal"> | $Enums.ScrapingSourceType
   url?: Prisma.StringWithAggregatesFilter<"Signal"> | string
   urlHash?: Prisma.StringWithAggregatesFilter<"Signal"> | string
@@ -401,13 +401,13 @@ export type SignalCreateInput = {
   intensityScore?: number | null
   isDemandSignal?: boolean
   createdAt?: Date | string
-  Job: Prisma.AnalysisJobCreateNestedOneWithoutSignalsInput
+  job: Prisma.AnalysisJobCreateNestedOneWithoutSignalsInput
   cluster?: Prisma.SignalClusterCreateNestedOneWithoutSignalsInput
 }
 
 export type SignalUncheckedCreateInput = {
   id?: string
-  JobId: string
+  jobId: string
   source: $Enums.ScrapingSourceType
   url: string
   urlHash: string
@@ -437,13 +437,13 @@ export type SignalUpdateInput = {
   intensityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isDemandSignal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Job?: Prisma.AnalysisJobUpdateOneRequiredWithoutSignalsNestedInput
+  job?: Prisma.AnalysisJobUpdateOneRequiredWithoutSignalsNestedInput
   cluster?: Prisma.SignalClusterUpdateOneWithoutSignalsNestedInput
 }
 
 export type SignalUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  JobId?: Prisma.StringFieldUpdateOperationsInput | string
+  jobId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumScrapingSourceTypeFieldUpdateOperationsInput | $Enums.ScrapingSourceType
   url?: Prisma.StringFieldUpdateOperationsInput | string
   urlHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -461,7 +461,7 @@ export type SignalUncheckedUpdateInput = {
 
 export type SignalCreateManyInput = {
   id?: string
-  JobId: string
+  jobId: string
   source: $Enums.ScrapingSourceType
   url: string
   urlHash: string
@@ -495,7 +495,7 @@ export type SignalUpdateManyMutationInput = {
 
 export type SignalUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  JobId?: Prisma.StringFieldUpdateOperationsInput | string
+  jobId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumScrapingSourceTypeFieldUpdateOperationsInput | $Enums.ScrapingSourceType
   url?: Prisma.StringFieldUpdateOperationsInput | string
   urlHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -523,7 +523,7 @@ export type SignalOrderByRelationAggregateInput = {
 
 export type SignalCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  JobId?: Prisma.SortOrder
+  jobId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   url?: Prisma.SortOrder
   urlHash?: Prisma.SortOrder
@@ -545,7 +545,7 @@ export type SignalAvgOrderByAggregateInput = {
 
 export type SignalMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  JobId?: Prisma.SortOrder
+  jobId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   url?: Prisma.SortOrder
   urlHash?: Prisma.SortOrder
@@ -563,7 +563,7 @@ export type SignalMaxOrderByAggregateInput = {
 
 export type SignalMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  JobId?: Prisma.SortOrder
+  jobId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   url?: Prisma.SortOrder
   urlHash?: Prisma.SortOrder
@@ -748,7 +748,7 @@ export type SignalScalarWhereInput = {
   OR?: Prisma.SignalScalarWhereInput[]
   NOT?: Prisma.SignalScalarWhereInput | Prisma.SignalScalarWhereInput[]
   id?: Prisma.StringFilter<"Signal"> | string
-  JobId?: Prisma.StringFilter<"Signal"> | string
+  jobId?: Prisma.StringFilter<"Signal"> | string
   source?: Prisma.EnumScrapingSourceTypeFilter<"Signal"> | $Enums.ScrapingSourceType
   url?: Prisma.StringFilter<"Signal"> | string
   urlHash?: Prisma.StringFilter<"Signal"> | string
@@ -778,12 +778,12 @@ export type SignalCreateWithoutClusterInput = {
   intensityScore?: number | null
   isDemandSignal?: boolean
   createdAt?: Date | string
-  Job: Prisma.AnalysisJobCreateNestedOneWithoutSignalsInput
+  job: Prisma.AnalysisJobCreateNestedOneWithoutSignalsInput
 }
 
 export type SignalUncheckedCreateWithoutClusterInput = {
   id?: string
-  JobId: string
+  jobId: string
   source: $Enums.ScrapingSourceType
   url: string
   urlHash: string
@@ -894,7 +894,7 @@ export type SignalUncheckedUpdateManyWithoutJobInput = {
 
 export type SignalCreateManyClusterInput = {
   id?: string
-  JobId: string
+  jobId: string
   source: $Enums.ScrapingSourceType
   url: string
   urlHash: string
@@ -923,12 +923,12 @@ export type SignalUpdateWithoutClusterInput = {
   intensityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isDemandSignal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  Job?: Prisma.AnalysisJobUpdateOneRequiredWithoutSignalsNestedInput
+  job?: Prisma.AnalysisJobUpdateOneRequiredWithoutSignalsNestedInput
 }
 
 export type SignalUncheckedUpdateWithoutClusterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  JobId?: Prisma.StringFieldUpdateOperationsInput | string
+  jobId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumScrapingSourceTypeFieldUpdateOperationsInput | $Enums.ScrapingSourceType
   url?: Prisma.StringFieldUpdateOperationsInput | string
   urlHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -945,7 +945,7 @@ export type SignalUncheckedUpdateWithoutClusterInput = {
 
 export type SignalUncheckedUpdateManyWithoutClusterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  JobId?: Prisma.StringFieldUpdateOperationsInput | string
+  jobId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumScrapingSourceTypeFieldUpdateOperationsInput | $Enums.ScrapingSourceType
   url?: Prisma.StringFieldUpdateOperationsInput | string
   urlHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -964,7 +964,7 @@ export type SignalUncheckedUpdateManyWithoutClusterInput = {
 
 export type SignalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  JobId?: boolean
+  jobId?: boolean
   source?: boolean
   url?: boolean
   urlHash?: boolean
@@ -978,13 +978,13 @@ export type SignalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   isDemandSignal?: boolean
   clusterId?: boolean
   createdAt?: boolean
-  Job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
+  job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
   cluster?: boolean | Prisma.Signal$clusterArgs<ExtArgs>
 }, ExtArgs["result"]["signal"]>
 
 export type SignalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  JobId?: boolean
+  jobId?: boolean
   source?: boolean
   url?: boolean
   urlHash?: boolean
@@ -998,13 +998,13 @@ export type SignalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   isDemandSignal?: boolean
   clusterId?: boolean
   createdAt?: boolean
-  Job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
+  job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
   cluster?: boolean | Prisma.Signal$clusterArgs<ExtArgs>
 }, ExtArgs["result"]["signal"]>
 
 export type SignalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  JobId?: boolean
+  jobId?: boolean
   source?: boolean
   url?: boolean
   urlHash?: boolean
@@ -1018,13 +1018,13 @@ export type SignalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   isDemandSignal?: boolean
   clusterId?: boolean
   createdAt?: boolean
-  Job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
+  job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
   cluster?: boolean | Prisma.Signal$clusterArgs<ExtArgs>
 }, ExtArgs["result"]["signal"]>
 
 export type SignalSelectScalar = {
   id?: boolean
-  JobId?: boolean
+  jobId?: boolean
   source?: boolean
   url?: boolean
   urlHash?: boolean
@@ -1040,29 +1040,29 @@ export type SignalSelectScalar = {
   createdAt?: boolean
 }
 
-export type SignalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "JobId" | "source" | "url" | "urlHash" | "title" | "quote" | "authorHandle" | "authorType" | "publishedAt" | "intentLabel" | "intensityScore" | "isDemandSignal" | "clusterId" | "createdAt", ExtArgs["result"]["signal"]>
+export type SignalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobId" | "source" | "url" | "urlHash" | "title" | "quote" | "authorHandle" | "authorType" | "publishedAt" | "intentLabel" | "intensityScore" | "isDemandSignal" | "clusterId" | "createdAt", ExtArgs["result"]["signal"]>
 export type SignalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  Job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
+  job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
   cluster?: boolean | Prisma.Signal$clusterArgs<ExtArgs>
 }
 export type SignalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  Job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
+  job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
   cluster?: boolean | Prisma.Signal$clusterArgs<ExtArgs>
 }
 export type SignalIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  Job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
+  job?: boolean | Prisma.AnalysisJobDefaultArgs<ExtArgs>
   cluster?: boolean | Prisma.Signal$clusterArgs<ExtArgs>
 }
 
 export type $SignalPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Signal"
   objects: {
-    Job: Prisma.$AnalysisJobPayload<ExtArgs>
+    job: Prisma.$AnalysisJobPayload<ExtArgs>
     cluster: Prisma.$SignalClusterPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    JobId: string
+    jobId: string
     source: $Enums.ScrapingSourceType
     url: string
     urlHash: string
@@ -1470,7 +1470,7 @@ readonly fields: SignalFieldRefs;
  */
 export interface Prisma__SignalClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  Job<T extends Prisma.AnalysisJobDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AnalysisJobDefaultArgs<ExtArgs>>): Prisma.Prisma__AnalysisJobClient<runtime.Types.Result.GetResult<Prisma.$AnalysisJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  job<T extends Prisma.AnalysisJobDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AnalysisJobDefaultArgs<ExtArgs>>): Prisma.Prisma__AnalysisJobClient<runtime.Types.Result.GetResult<Prisma.$AnalysisJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   cluster<T extends Prisma.Signal$clusterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Signal$clusterArgs<ExtArgs>>): Prisma.Prisma__SignalClusterClient<runtime.Types.Result.GetResult<Prisma.$SignalClusterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1502,7 +1502,7 @@ export interface Prisma__SignalClient<T, Null = never, ExtArgs extends runtime.T
  */
 export interface SignalFieldRefs {
   readonly id: Prisma.FieldRef<"Signal", 'String'>
-  readonly JobId: Prisma.FieldRef<"Signal", 'String'>
+  readonly jobId: Prisma.FieldRef<"Signal", 'String'>
   readonly source: Prisma.FieldRef<"Signal", 'ScrapingSourceType'>
   readonly url: Prisma.FieldRef<"Signal", 'String'>
   readonly urlHash: Prisma.FieldRef<"Signal", 'String'>
