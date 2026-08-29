@@ -32,7 +32,19 @@ enum PhaseStatus {
 }
 
 enum PhaseType {
-  z // TODO: Complete the workflow in README and then add here so no mismatches in the workflow is there
+  PREFLIGHT
+  QUERY_ARCHITECTURE
+  SIGNAL_SCRAPING
+  SIGNAL_PREPROCESSING
+  PROBLEM_CLUSTER_SYNTHESIS
+  ITERATION_GATE
+  OPPORTUNITY_QUALIFICATION
+  COMPETITIVE_DEEP_DIVE
+  MARKET_SIZING
+  SCORING
+  SYNTHESIS
+  REPORT_ASSEMBLY
+  DELIVERY
 }
 
 enum ScrapingSourceType {
@@ -77,7 +89,8 @@ enum IdeaStatus {
 
 enum CandidateStatus {
   ACTIVE
-  // Maybe also add rejected and retried
+  STASHED
+  PROMOTED
   ELIMINATED
 }
 
@@ -318,11 +331,47 @@ model CouponUsage {
   @@map("coupon_usages")
 }
 
-// model AnalysisJob {
-//   id     String @id @default(cuid())
-//   userId String
-//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-// }
+model TopicCache {
+  id                  String   @id @default(cuid())
+  topicHash           String   @unique
+  topicNormalised     String
+  lastAnalysedAt      DateTime
+  cacheExpiresAt      DateTime
+  representativeJobId String
+  hitCount            Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([topicHash])
+  @@index([cacheExpiresAt])
+  @@map("topic_cache")
+}
+
+model AnalysisJob {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  topic     String
+  topicHash String
+
+  filters Json?
+
+  tier          AnalysisTier
+  maxIterations Int          @default(1)
+
+  fromCandidateId String?
+  fromCandidate   IdeaCandidate? @relation(fields: [fromCandidateId], references: [id])
+
+  servedFromCacheId String?
+
+  creditsReserved  Int
+  creditsFinalCost Int @default(0)
+  creditsRefunded  Int @default(0)
+
+  status       JobStatus @default(QUEUED)
+  currentPhase PhaseType @default(PREFLIGHT)
+}
 
 // model Idea {
 //   id     String @id @default(cuid())

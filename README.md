@@ -157,10 +157,10 @@ If the idea is discarded, it enters moderation queue before any reuse.
 ## Tools & Tech Stack
 
 1. Tanstack Start
-2. Hono
+<!-- 2. Hono -->
 3. Postgresql
 4. Redis
-5. Pgvector
+<!-- 5. Pgvector -->
 6. SSE (instead of ws)
 7. Shadcn
 8. Tailwind CSS
