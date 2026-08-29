@@ -580,3 +580,48 @@ model Idea {
   @@index([isResuable])
   @@map("idea")
 }
+
+model ApprovedDomainExclusion {
+  id           String   @id @default(cuid())
+  userId       String
+  ideaId       String   @unique
+  domainLabel  String
+  domainHash   String   @unique
+  excludeSince DateTime @default(now())
+
+  @@index([userId])
+  @@index([domainHash])
+  @@map("approved_domain_exclusion")
+}
+
+model ReusableIdeaContext {
+  id            String   @id @default(cuid())
+  ideaId        String   @unique
+  userId        String
+  topicTags     String[]
+  topicHash     String
+  problemLabel  String
+  whyDiscarded  String?
+  userFeedback  String?
+  qualitySignal Int      @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([topicHash])
+  @@index([topicTags])
+  @@map("reusable_idea_context")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@map("notification")
+}
