@@ -60,7 +60,18 @@ export const ModelName = {
   CreditPack: 'CreditPack',
   Payment: 'Payment',
   Coupon: 'Coupon',
-  CouponUsage: 'CouponUsage'
+  CouponUsage: 'CouponUsage',
+  TopicCache: 'TopicCache',
+  AnalysisJob: 'AnalysisJob',
+  JobPhase: 'JobPhase',
+  ScrapeJob: 'ScrapeJob',
+  Signal: 'Signal',
+  SignalCluster: 'SignalCluster',
+  IdeaCandidate: 'IdeaCandidate',
+  Idea: 'Idea',
+  ApprovedDomainExclusion: 'ApprovedDomainExclusion',
+  ReusableIdeaContext: 'ReusableIdeaContext',
+  Notification: 'Notification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -241,6 +252,227 @@ export const CouponUsageScalarFieldEnum = {
 export type CouponUsageScalarFieldEnum = (typeof CouponUsageScalarFieldEnum)[keyof typeof CouponUsageScalarFieldEnum]
 
 
+export const TopicCacheScalarFieldEnum = {
+  id: 'id',
+  topicHash: 'topicHash',
+  topicNormalised: 'topicNormalised',
+  lastAnalysedAt: 'lastAnalysedAt',
+  cacheExpiresAt: 'cacheExpiresAt',
+  representativeJobId: 'representativeJobId',
+  hitCount: 'hitCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TopicCacheScalarFieldEnum = (typeof TopicCacheScalarFieldEnum)[keyof typeof TopicCacheScalarFieldEnum]
+
+
+export const AnalysisJobScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  topic: 'topic',
+  topicHash: 'topicHash',
+  filters: 'filters',
+  tier: 'tier',
+  maxIterations: 'maxIterations',
+  fromCandidateId: 'fromCandidateId',
+  servedFromCacheId: 'servedFromCacheId',
+  creditsReserved: 'creditsReserved',
+  creditsFinalCost: 'creditsFinalCost',
+  creditsRefunded: 'creditsRefunded',
+  status: 'status',
+  currentPhase: 'currentPhase',
+  iterationsDone: 'iterationsDone',
+  bullJobId: 'bullJobId',
+  isRerun: 'isRerun',
+  parentJobId: 'parentJobId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type AnalysisJobScalarFieldEnum = (typeof AnalysisJobScalarFieldEnum)[keyof typeof AnalysisJobScalarFieldEnum]
+
+
+export const JobPhaseScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  phase: 'phase',
+  status: 'status',
+  input: 'input',
+  output: 'output',
+  summary: 'summary',
+  errorMessage: 'errorMessage',
+  errorStack: 'errorStack',
+  retryCount: 'retryCount',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type JobPhaseScalarFieldEnum = (typeof JobPhaseScalarFieldEnum)[keyof typeof JobPhaseScalarFieldEnum]
+
+
+export const ScrapeJobScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  source: 'source',
+  queries: 'queries',
+  status: 'status',
+  signalCount: 'signalCount',
+  bullJobId: 'bullJobId',
+  errorMessage: 'errorMessage',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ScrapeJobScalarFieldEnum = (typeof ScrapeJobScalarFieldEnum)[keyof typeof ScrapeJobScalarFieldEnum]
+
+
+export const SignalScalarFieldEnum = {
+  id: 'id',
+  JobId: 'JobId',
+  source: 'source',
+  url: 'url',
+  urlHash: 'urlHash',
+  title: 'title',
+  quote: 'quote',
+  authorHandle: 'authorHandle',
+  authorType: 'authorType',
+  publishedAt: 'publishedAt',
+  intentLabel: 'intentLabel',
+  intensityScore: 'intensityScore',
+  isDemandSignal: 'isDemandSignal',
+  clusterId: 'clusterId',
+  createdAt: 'createdAt'
+} as const
+
+export type SignalScalarFieldEnum = (typeof SignalScalarFieldEnum)[keyof typeof SignalScalarFieldEnum]
+
+
+export const SignalClusterScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  label: 'label',
+  frequency: 'frequency',
+  intensityScore: 'intensityScore',
+  demandSignalCount: 'demandSignalCount',
+  personaSketches: 'personaSketches',
+  failedWorkarounds: 'failedWorkarounds',
+  evidenceChain: 'evidenceChain',
+  compositeScore: 'compositeScore',
+  createdAt: 'createdAt'
+} as const
+
+export type SignalClusterScalarFieldEnum = (typeof SignalClusterScalarFieldEnum)[keyof typeof SignalClusterScalarFieldEnum]
+
+
+export const IdeaCandidateScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  userId: 'userId',
+  stashedByUserId: 'stashedByUserId',
+  stashedAt: 'stashedAt',
+  clusterId: 'clusterId',
+  problemLabel: 'problemLabel',
+  problemSummary: 'problemSummary',
+  targetPersona: 'targetPersona',
+  competitorMap: 'competitorMap',
+  featureGaps: 'featureGaps',
+  deadCompetitors: 'deadCompetitors',
+  communitySize: 'communitySize',
+  jobPostingVolume: 'jobPostingVolume',
+  fundingSignals: 'fundingSignals',
+  trendDirection: 'trendDirection',
+  whyNow: 'whyNow',
+  problemScore: 'problemScore',
+  competitionScore: 'competitionScore',
+  marketScore: 'marketScore',
+  timingScore: 'timingScore',
+  compositeScore: 'compositeScore',
+  scoringBreakdown: 'scoringBreakdown',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IdeaCandidateScalarFieldEnum = (typeof IdeaCandidateScalarFieldEnum)[keyof typeof IdeaCandidateScalarFieldEnum]
+
+
+export const IdeaScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  userId: 'userId',
+  problemStatement: 'problemStatement',
+  targetPersona: 'targetPersona',
+  solutionHypothesis: 'solutionHypothesis',
+  mvpScope: 'mvpScope',
+  differentiationAngle: 'differentiationAngle',
+  goToMarketChannel: 'goToMarketChannel',
+  riskFactors: 'riskFactors',
+  confidenceLevels: 'confidenceLevels',
+  compositeScore: 'compositeScore',
+  scoringBreakdown: 'scoringBreakdown',
+  signalTimelineChart: 'signalTimelineChart',
+  competitorLandscape: 'competitorLandscape',
+  browsableSignals: 'browsableSignals',
+  status: 'status',
+  userFeedback: 'userFeedback',
+  actionAt: 'actionAt',
+  approvedDomain: 'approvedDomain',
+  approvedAt: 'approvedAt',
+  isResuable: 'isResuable',
+  reusableContext: 'reusableContext',
+  reusableAt: 'reusableAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IdeaScalarFieldEnum = (typeof IdeaScalarFieldEnum)[keyof typeof IdeaScalarFieldEnum]
+
+
+export const ApprovedDomainExclusionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  ideaId: 'ideaId',
+  domainLabel: 'domainLabel',
+  domainHash: 'domainHash',
+  excludeSince: 'excludeSince'
+} as const
+
+export type ApprovedDomainExclusionScalarFieldEnum = (typeof ApprovedDomainExclusionScalarFieldEnum)[keyof typeof ApprovedDomainExclusionScalarFieldEnum]
+
+
+export const ReusableIdeaContextScalarFieldEnum = {
+  id: 'id',
+  ideaId: 'ideaId',
+  userId: 'userId',
+  topicTags: 'topicTags',
+  topicHash: 'topicHash',
+  problemLabel: 'problemLabel',
+  whyDiscarded: 'whyDiscarded',
+  userFeedback: 'userFeedback',
+  qualitySignal: 'qualitySignal',
+  createdAt: 'createdAt'
+} as const
+
+export type ReusableIdeaContextScalarFieldEnum = (typeof ReusableIdeaContextScalarFieldEnum)[keyof typeof ReusableIdeaContextScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  body: 'body',
+  link: 'link',
+  read: 'read',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -255,6 +487,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

@@ -91,3 +91,58 @@ export type Coupon = Prisma.CouponModel
  * 
  */
 export type CouponUsage = Prisma.CouponUsageModel
+/**
+ * Model TopicCache
+ * 
+ */
+export type TopicCache = Prisma.TopicCacheModel
+/**
+ * Model AnalysisJob
+ * 
+ */
+export type AnalysisJob = Prisma.AnalysisJobModel
+/**
+ * Model JobPhase
+ * 
+ */
+export type JobPhase = Prisma.JobPhaseModel
+/**
+ * Model ScrapeJob
+ * 
+ */
+export type ScrapeJob = Prisma.ScrapeJobModel
+/**
+ * Model Signal
+ * 
+ */
+export type Signal = Prisma.SignalModel
+/**
+ * Model SignalCluster
+ * 
+ */
+export type SignalCluster = Prisma.SignalClusterModel
+/**
+ * Model IdeaCandidate
+ * 
+ */
+export type IdeaCandidate = Prisma.IdeaCandidateModel
+/**
+ * Model Idea
+ * 
+ */
+export type Idea = Prisma.IdeaModel
+/**
+ * Model ApprovedDomainExclusion
+ * 
+ */
+export type ApprovedDomainExclusion = Prisma.ApprovedDomainExclusionModel
+/**
+ * Model ReusableIdeaContext
+ * 
+ */
+export type ReusableIdeaContext = Prisma.ReusableIdeaContextModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

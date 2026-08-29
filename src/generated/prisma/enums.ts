@@ -43,7 +43,19 @@ export type PhaseStatus = (typeof PhaseStatus)[keyof typeof PhaseStatus]
 
 
 export const PhaseType = {
-  z: 'z'
+  PREFLIGHT: 'PREFLIGHT',
+  QUERY_ARCHITECTURE: 'QUERY_ARCHITECTURE',
+  SIGNAL_SCRAPING: 'SIGNAL_SCRAPING',
+  SIGNAL_PREPROCESSING: 'SIGNAL_PREPROCESSING',
+  PROBLEM_CLUSTER_SYNTHESIS: 'PROBLEM_CLUSTER_SYNTHESIS',
+  ITERATION_GATE: 'ITERATION_GATE',
+  OPPORTUNITY_QUALIFICATION: 'OPPORTUNITY_QUALIFICATION',
+  COMPETITIVE_DEEP_DIVE: 'COMPETITIVE_DEEP_DIVE',
+  MARKET_SIZING: 'MARKET_SIZING',
+  SCORING: 'SCORING',
+  SYNTHESIS: 'SYNTHESIS',
+  REPORT_ASSEMBLY: 'REPORT_ASSEMBLY',
+  DELIVERY: 'DELIVERY'
 } as const
 
 export type PhaseType = (typeof PhaseType)[keyof typeof PhaseType]
@@ -101,6 +113,8 @@ export type IdeaStatus = (typeof IdeaStatus)[keyof typeof IdeaStatus]
 
 export const CandidateStatus = {
   ACTIVE: 'ACTIVE',
+  STASHED: 'STASHED',
+  PROMOTED: 'PROMOTED',
   ELIMINATED: 'ELIMINATED'
 } as const
 
