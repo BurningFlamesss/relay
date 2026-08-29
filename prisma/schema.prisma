@@ -165,6 +165,8 @@ model User {
   couponUses         CouponUsage[]
   payments           Payment[]
   creditTransactions CreditTransaction[]
+  analysisJobs       AnalysisJob[]
+  ideas              Idea[]
 
   @@unique([email])
   @@map("users")
@@ -371,10 +373,88 @@ model AnalysisJob {
 
   status       JobStatus @default(QUEUED)
   currentPhase PhaseType @default(PREFLIGHT)
+
+  iterationsDone Int     @default(0)
+  bullJobId      String? @unique
+
+  phases     JobPhase[]
+  scrapeJobs ScrapeJob[]
+  signals    Signal[]
+  candidates IdeaCandidate[]
+  idea       Idea?           @relation(fields: [ideaId], references: [id])
+
+  isRerun     Boolean       @default(false)
+  parentJobId String?
+  parentJob   AnalysisJob?  @relation("JobRerun", fields: [parentJobId], references: [id])
+  reruns      AnalysisJob[] @relation("JobRerun")
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+  ideaId      String?
+
+  @@index([userId])
+  @@index([status])
+  @@index([topicHash])
+  @@map("analysis_job")
 }
 
-// model Idea {
-//   id     String @id @default(cuid())
-//   userId String
-//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-// }
+model JobPhase {
+  id     String      @id @default(cuid())
+  jobId  String
+  job    AnalysisJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  phase  PhaseType
+  status PhaseStatus @default(PENDING)
+
+  input        Json?
+  output       Json?
+  summary      Json?
+  errorMessage String?
+  errorStack   String?
+  retryCount   Int     @default(0)
+
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@unique([jobId, phase])
+  @@index([jobId])
+  @@map("job_phase")
+}
+
+model ScrapeJob {
+  id           String             @id @default(cuid())
+  jobId        String
+  job          AnalysisJob        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  source       ScrapingSourceType
+  queries      String[]
+  status       PhaseStatus        @default(PENDING)
+  signalCount  Int                @default(0)
+  bullJobId    String?            @unique
+  errorMessage String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime           @default(now())
+
+  @@index([jobId])
+  @@index([status])
+  @@map("scrape_job")
+}
+
+model Signal {
+  analysisJob   AnalysisJob? @relation(fields: [analysisJobId], references: [id])
+  analysisJobId String?
+}
+
+model IdeaCandidate {
+  id    String      @id @default(cuid())
+  jobId String
+  job   AnalysisJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model Idea {
+  id           String        @id @default(cuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analysisJobs AnalysisJob[]
+}
