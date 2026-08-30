@@ -2,6 +2,8 @@ import type { ScraperJobData, ScraperResult } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import { UnrecoverableError, type Job } from "bullmq";
 import { getAdapter } from "./sources";
+import { createHash } from "node:crypto";
+import { bufferSignals, publishProgress } from "#/core/redis.ts";
 
 const MAX_SIGNALS_PER_SOURCE = 300
 
@@ -58,7 +60,69 @@ export async function processScrapeJob(job: Job<ScraperJobData>): Promise<Scrape
         throw error
     }
 
+    const seen: Set<string> = new Set()
 
+    const filtered = rawSignals.filter((signal) => {
+        if (!signal.urlHash || seen.has(signal.urlHash)) {
+            return false
+        }
+
+        if (excludedSet.has(hashDomain(extractDomain(signal.url)))) {
+            return false
+        }
+
+        if (!signal.quote || signal.quote.trim().length < 20) {
+            return false
+        }
+
+        seen.add(signal.urlHash)
+
+        return true
+    })
+
+    if (filtered.length > 0) {
+        await bufferSignals(jobId, source, filtered)
+    }
+
+    await publishProgress({
+        type: "SCRAPE_SOURCE_DONE",
+        jobId,
+        signalCount: filtered.length,
+        message: `${source}: ${filtered.length} signals (${rawSignals.length - filtered.length}) filtered)`,
+        timeStamp: Date.now()
+    })
+
+    await prisma.scrapeJob.update({
+        where: {
+            id: scrapeJobId
+        },
+        data: {
+            status: "COMPLETED",
+            signalCount: filtered.length,
+            completedAt: new Date()
+        }
+    })
+
+    return {
+        source,
+        signalCount: filtered.length,
+        redisKey: `job:${jobId}:signals:${source}`,
+        skippedCount: rawSignals.length - filtered.length,
+        durationMs: Date.now() - startedAt
+    }
+
+}
+
+function extractDomain(url: string): string {
+    try {
+        return new URL(url).hostname.replace(/^www\./, "")
+    } catch (error) {
+        return url
+    }
+}
+
+function hashDomain(domain: string): string {
+    return createHash("sha256").update(domain.toLowerCase().trim()).digest("hex")
 }
 
 function isPermanentError(error: Error): boolean {
