@@ -42,6 +42,28 @@ async function start(): Promise<void> {
 
     // TODO: Health check
 
+    if (serverEnv.WORKER_HEALTH_PORT) {
+        const port = parseInt(serverEnv.WORKER_HEALTH_PORT, 10)
+        const { createServer } = await import("node:http")
+
+        createServer((req, res) => {
+            if (req.url === "/health" && req.method === "GET") {
+                const ok = workers.every(worker => !worker.closing)
+
+                res.writeHead(ok ? 200 : 503, {
+                    "Content-Type": "application/json"
+                })
+                res.end(JSON.stringify({
+                    status: ok ? "ok" : "closing",
+                    pid: process.pid,
+                    type
+                }))
+            } else {
+                res.writeHead(404).end()
+            }
+        }).listen(port, () => console.log(`[WORKERS] Health: http://localhost:${port}/health`))
+    }
+
     let stopping = false
 
     async function stop(signal: string): Promise<void> {

@@ -9,6 +9,7 @@ export const serverEnv = createEnv({
         REDIS_CONNECTION_STRING: z.url(),
         REDIS_CACHE_CONNECTION_STRING: z.url().optional(),
         WORKER_TYPE: z.string(),
+        WORKER_HEALTH_PORT: z.string(),
         NODE_ENV: z.enum(["development", "production"]).catch("development")
     },
 
