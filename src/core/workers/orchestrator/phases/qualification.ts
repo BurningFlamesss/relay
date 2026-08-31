@@ -12,7 +12,7 @@ export async function runOpportunityQualification(context: PhaseContext, cluster
 
     const topClusters = clusterResult.clusters.slice(0, 3)
 
-    // TODO: Spawn scraper jobs
+    // TODO: Spawn scraper jobs for trend data
     // TODO: Call AI
 
     const whyNowJob = await enqueueAITask({
@@ -34,4 +34,32 @@ export async function runOpportunityQualification(context: PhaseContext, cluster
     await updatePhase(context.jobId, "OPPORTUNITY_QUALIFICATION", "COMPLETED", {
         summary: "Trend data, demand counts, why-now factor collected"
     })
+}
+
+export async function runCompetitiveDeepDive(context: PhaseContext, clusterResult: ClusterLabelingResult, isDone: (phase: string) => boolean): Promise<void> {
+    if (isDone("COMPETITIVE_DEEP_DIVE")) {
+        return
+    }
+
+    await updatePhase(context.jobId, "COMPETITIVE_DEEP_DIVE", "RUNNING")
+
+    // TODO: Spawn competitor scraper jobs
+
+    const competitorJob = await enqueueAITask({
+        jobId: context.jobId,
+        task: "COMPETITOR_ANALYSIS",
+        payload: {
+            topClusterLabel: clusterResult.clusters[0]?.label ?? "",
+            instruction: "Map competitor weaknesses, unbuilt feature requests, and dead competitor lessons. Ground every claim in the evidence."
+        }
+    })
+
+    await competitorJob.waitUntilFinished(aiQueueEvents, AI_CALL_TIMEOUT_MS)
+
+    // TODO: Persist to IdeaCandidate
+
+    await updatePhase(context.jobId, "COMPETITIVE_DEEP_DIVE", "COMPLETED", {
+        summary: "Competitor map, feature gaps, dead competitor lessons extracted"
+    })
+
 }
