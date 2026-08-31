@@ -5,6 +5,7 @@ import { prisma } from "#/db.ts";
 import type { PhaseContext } from "../context";
 import { updatePhase } from "../phase-tracker";
 import { runClustering } from "./clustering";
+import { runPreprocessing } from "./preprocessing";
 import { runScrapingPass } from "./scraping";
 
 export interface IterationGateResult {
@@ -103,7 +104,7 @@ export async function runIterationGate(context: PhaseContext, clusterResult: Clu
         const drillResult = (await drillJob.waitUntilFinished(aiQueueEvents, AI_CALL_TIMEOUT_MS)) as QueryArchitectureResult
 
         await runScrapingPass(context, drillResult.queries, iterationsDone + 1)
-        // await runPreprocessing(context, true)
+        await runPreprocessing(context, true)
 
         currentClusters = await runClustering(context)
         topScore = currentClusters.clusters[0]?.compositeScore ?? 0
