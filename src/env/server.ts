@@ -8,6 +8,7 @@ export const serverEnv = createEnv({
         BETTER_AUTH_SECRET: z.string().min(1),
         REDIS_CONNECTION_STRING: z.url(),
         REDIS_CACHE_CONNECTION_STRING: z.url().optional(),
+        WORKER_TYPE: z.string(),
         NODE_ENV: z.enum(["development", "production"]).catch("development")
     },
 
