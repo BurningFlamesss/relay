@@ -1,10 +1,10 @@
 export const QUEUE = {
-    ORCHESTRATOR: "analysis:orchestrator",
-    SCRAPER: "analysis:scraper",
-    PREPROCESS: "analysis:preprocess",
-    AI: "analysis:ai",
-    SCORING: "analysis:scoring",
-    DLQ: "analysis:dead-letter",
+    ORCHESTRATOR: "analysis-orchestrator",
+    SCRAPER: "analysis-scraper",
+    PREPROCESS: "analysis-preprocess",
+    AI: "analysis-ai",
+    SCORING: "analysis-scoring",
+    DLQ: "analysis-dead-letter",
 } as const
 
 export const PHASE_ORDER = [
@@ -20,7 +20,14 @@ export const PHASE_ORDER = [
     "SCORING",
     "SYNTHESIS",
     "REPORT_ASSEMBLY",
-    "DELIVERY"
+    "DELIVERY",
+    "RESEARCH_PLANNING",
+    "RESEARCH_DISCOVERY",
+    "RESEARCH_CRAWLING",
+    "RESEARCH_EXTRACTION",
+    "RESEARCH_ANALYSIS",
+    "RESEARCH_SYNTHESIS",
+    "RESEARCH_CITATION"
 ]
 
 export type PhaseType = "PREFLIGHT" |
@@ -35,7 +42,14 @@ export type PhaseType = "PREFLIGHT" |
     "SCORING" |
     "SYNTHESIS" |
     "REPORT_ASSEMBLY" |
-    "DELIVERY"
+    "DELIVERY" |
+    "RESEARCH_PLANNING" |
+    "RESEARCH_DISCOVERY" |
+    "RESEARCH_CRAWLING" |
+    "RESEARCH_EXTRACTION" |
+    "RESEARCH_ANALYSIS" |
+    "RESEARCH_SYNTHESIS" |
+    "RESEARCH_CITATION"
 
 
 export type AnalysisTier = "LOW" | "MID" | "HIGH";

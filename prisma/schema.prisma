@@ -45,6 +45,13 @@ enum PhaseType {
   SYNTHESIS
   REPORT_ASSEMBLY
   DELIVERY
+  RESEARCH_PLANNING
+  RESEARCH_DISCOVERY
+  RESEARCH_CRAWLING
+  RESEARCH_EXTRACTION
+  RESEARCH_ANALYSIS
+  RESEARCH_SYNTHESIS
+  RESEARCH_CITATION
 }
 
 enum ScrapingSourceType {
@@ -160,6 +167,7 @@ model User {
 
   creditWallet       CreditWallet?
   jobs               AnalysisJob[]
+  researchJobs       ResearchJob[]
   ideas              Idea[]
   couponUses         CouponUsage[]
   payments           Payment[]
@@ -636,4 +644,283 @@ model Notification {
 
   @@index([userId, read])
   @@map("notification")
+}
+
+enum ResearchStatus {
+  QUEUED
+  PLANNING
+  DISCOVERING
+  CRAWLING
+  EXTRACTING
+  ANALYZING
+  SYNTHESIZING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum ResearchDepth {
+  QUICK
+  STANDARD
+  DEEP
+}
+
+enum SourceCategory {
+  OFFICIAL
+  DOCUMENTATION
+  ACADEMIC
+  RESEARCH
+  NEWS
+  TECHNICAL
+  COMPANY
+  FINANCIAL
+  COMMUNITY
+}
+
+enum SourceType {
+  WEB
+  API
+  DOCUMENT
+  REPOSITORY
+}
+
+enum DocumentStatus {
+  PENDING
+  CRAWLING
+  COMPLETED
+  FAILED
+  SKIPPED
+}
+
+enum EvidenceType {
+  DIRECT_QUOTE
+  PARAPHRASE
+  STATISTICAL
+  CITATION
+  OPINION
+}
+
+model ResearchJob {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  question    String
+  questionHash String     @unique
+  depth       ResearchDepth @default(STANDARD)
+  maxIterations Int       @default(3)
+  maxSources  Int         @default(30)
+  maxPages    Int         @default(100)
+
+  status      ResearchStatus @default(QUEUED)
+  currentStage String?
+
+  plan        Json?
+  sources     ResearchSource[]
+  documents   ResearchDocument[]
+  evidence    Evidence[]
+  findings    ResearchFinding[]
+  report      ResearchReport?
+
+  iterationsDone Int     @default(0)
+  creditsUsed    Int     @default(0)
+  errorMessage   String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([questionHash])
+  @@map("research_job")
+}
+
+model ResearchSource {
+  id          String       @id @default(cuid())
+  jobId       String
+  job         ResearchJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  name        String
+  domain      String
+  url         String
+  category    SourceCategory
+  priority    Int          @default(5)
+  sourceType  SourceType   @default(WEB)
+  enabled     Boolean      @default(true)
+
+  crawlPolicy Json?
+  crawlStatus DocumentStatus @default(PENDING)
+  crawlError  String?
+  crawledAt   DateTime?
+  pagesCrawled Int        @default(0)
+
+  relevanceScore Float?
+  authorityScore Float?
+  freshnessScore Float?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  documents   ResearchDocument[]
+
+  @@index([jobId])
+  @@index([domain])
+  @@index([category])
+  @@map("research_source")
+}
+
+model ResearchDocument {
+  id           String          @id @default(cuid())
+  jobId        String
+  job          ResearchJob     @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  sourceId     String?
+  source       ResearchSource? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+
+  url          String
+  canonicalUrl String?
+  title        String?
+  description  String?
+  author       String?
+  publishedAt  DateTime?
+  crawledAt    DateTime        @default(now())
+
+  domain       String
+  content      String
+  markdown     String?
+  headings     String[]
+  language     String?
+  wordCount    Int             @default(0)
+
+  contentHash  String          @unique
+  metadata     Json?
+
+  status       DocumentStatus  @default(PENDING)
+  errorMessage String?
+
+  evidence     Evidence[]
+
+  @@index([jobId])
+  @@index([sourceId])
+  @@index([domain])
+  @@index([contentHash])
+  @@index([publishedAt])
+  @@map("research_document")
+}
+
+model Evidence {
+  id           String           @id @default(cuid())
+  jobId        String
+  job          ResearchJob      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  documentId   String
+  document     ResearchDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  claim        String
+  supportingText String
+  evidenceType EvidenceType     @default(DIRECT_QUOTE)
+
+  relevance    Float            @default(0.5)
+  confidence   Float            @default(0.5)
+
+  location     String?
+  startOffset  Int?
+  endOffset    Int?
+
+  citations    Citation[]
+
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([jobId])
+  @@index([documentId])
+  @@index([relevance])
+  @@index([confidence])
+  @@map("evidence")
+}
+
+model Citation {
+  id          String    @id @default(cuid())
+  evidenceId  String
+  evidence    Evidence  @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  label       String
+  url         String
+  title       String?
+  domain      String
+  publishedAt DateTime?
+  snippet     String?
+
+  createdAt   DateTime  @default(now())
+
+  @@index([evidenceId])
+  @@map("citation")
+}
+
+model ResearchFinding {
+  id          String       @id @default(cuid())
+  jobId       String
+  job         ResearchJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  claim       String
+  explanation String
+  evidenceIds String[]
+
+  confidence  String       @default("medium")
+  category    String?
+
+  order       Int          @default(0)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([jobId])
+  @@map("research_finding")
+}
+
+model ResearchReport {
+  id                String      @id @default(cuid())
+  jobId             String      @unique
+  job               ResearchJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  title             String
+  executiveSummary  String
+  keyFindings       Json
+  detailedAnalysis  Json
+  disagreements     Json
+  limitations       String[]
+  conclusion        String
+  sources           Json
+
+  wordCount         Int         @default(0)
+  readingTimeMinutes Int        @default(0)
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@map("research_report")
+}
+
+model ModelInvocation {
+  id          String   @id @default(cuid())
+  jobId       String?
+  model       String
+  role        String
+  task        String
+
+  promptTokens     Int
+  completionTokens Int
+  totalTokens      Int
+  latencyMs        Int
+
+  success      Boolean  @default(true)
+  errorMessage String?
+  fallbackFrom String?
+
+  createdAt    DateTime @default(now())
+
+  @@index([jobId])
+  @@index([model])
+  @@index([role])
+  @@index([createdAt])
+  @@map("model_invocation")
 }

@@ -122,3 +122,43 @@ export type ReusableIdeaContext = Prisma.ReusableIdeaContextModel
  * 
  */
 export type Notification = Prisma.NotificationModel
+/**
+ * Model ResearchJob
+ * 
+ */
+export type ResearchJob = Prisma.ResearchJobModel
+/**
+ * Model ResearchSource
+ * 
+ */
+export type ResearchSource = Prisma.ResearchSourceModel
+/**
+ * Model ResearchDocument
+ * 
+ */
+export type ResearchDocument = Prisma.ResearchDocumentModel
+/**
+ * Model Evidence
+ * 
+ */
+export type Evidence = Prisma.EvidenceModel
+/**
+ * Model Citation
+ * 
+ */
+export type Citation = Prisma.CitationModel
+/**
+ * Model ResearchFinding
+ * 
+ */
+export type ResearchFinding = Prisma.ResearchFindingModel
+/**
+ * Model ResearchReport
+ * 
+ */
+export type ResearchReport = Prisma.ResearchReportModel
+/**
+ * Model ModelInvocation
+ * 
+ */
+export type ModelInvocation = Prisma.ModelInvocationModel

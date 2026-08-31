@@ -1,6 +1,7 @@
 import type { ScraperJobData, ScraperResult } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
-import { UnrecoverableError, type Job } from "bullmq";
+import { UnrecoverableError  } from "bullmq";
+import type {Job} from "bullmq";
 import { getAdapter } from "./sources";
 import { createHash } from "node:crypto";
 import { bufferSignals, publishProgress } from "#/core/redis.ts";

@@ -1,5 +1,6 @@
 import { getWorkerConnection } from "#/core/redis.ts";
-import { QUEUE, type ScraperJobData, type ScraperResult } from "#/core/types.ts";
+import { QUEUE   } from "#/core/types.ts";
+import type {ScraperJobData, ScraperResult} from "#/core/types.ts";
 import { Worker } from "bullmq";
 import { processScrapeJob } from "./processor";
 import { dlQueue } from "#/core/queues.ts";

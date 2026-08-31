@@ -55,7 +55,14 @@ export const PhaseType = {
   SCORING: 'SCORING',
   SYNTHESIS: 'SYNTHESIS',
   REPORT_ASSEMBLY: 'REPORT_ASSEMBLY',
-  DELIVERY: 'DELIVERY'
+  DELIVERY: 'DELIVERY',
+  RESEARCH_PLANNING: 'RESEARCH_PLANNING',
+  RESEARCH_DISCOVERY: 'RESEARCH_DISCOVERY',
+  RESEARCH_CRAWLING: 'RESEARCH_CRAWLING',
+  RESEARCH_EXTRACTION: 'RESEARCH_EXTRACTION',
+  RESEARCH_ANALYSIS: 'RESEARCH_ANALYSIS',
+  RESEARCH_SYNTHESIS: 'RESEARCH_SYNTHESIS',
+  RESEARCH_CITATION: 'RESEARCH_CITATION'
 } as const
 
 export type PhaseType = (typeof PhaseType)[keyof typeof PhaseType]
@@ -194,3 +201,75 @@ export const PaymentProvider = {
 } as const
 
 export type PaymentProvider = (typeof PaymentProvider)[keyof typeof PaymentProvider]
+
+
+export const ResearchStatus = {
+  QUEUED: 'QUEUED',
+  PLANNING: 'PLANNING',
+  DISCOVERING: 'DISCOVERING',
+  CRAWLING: 'CRAWLING',
+  EXTRACTING: 'EXTRACTING',
+  ANALYZING: 'ANALYZING',
+  SYNTHESIZING: 'SYNTHESIZING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ResearchStatus = (typeof ResearchStatus)[keyof typeof ResearchStatus]
+
+
+export const ResearchDepth = {
+  QUICK: 'QUICK',
+  STANDARD: 'STANDARD',
+  DEEP: 'DEEP'
+} as const
+
+export type ResearchDepth = (typeof ResearchDepth)[keyof typeof ResearchDepth]
+
+
+export const SourceCategory = {
+  OFFICIAL: 'OFFICIAL',
+  DOCUMENTATION: 'DOCUMENTATION',
+  ACADEMIC: 'ACADEMIC',
+  RESEARCH: 'RESEARCH',
+  NEWS: 'NEWS',
+  TECHNICAL: 'TECHNICAL',
+  COMPANY: 'COMPANY',
+  FINANCIAL: 'FINANCIAL',
+  COMMUNITY: 'COMMUNITY'
+} as const
+
+export type SourceCategory = (typeof SourceCategory)[keyof typeof SourceCategory]
+
+
+export const SourceType = {
+  WEB: 'WEB',
+  API: 'API',
+  DOCUMENT: 'DOCUMENT',
+  REPOSITORY: 'REPOSITORY'
+} as const
+
+export type SourceType = (typeof SourceType)[keyof typeof SourceType]
+
+
+export const DocumentStatus = {
+  PENDING: 'PENDING',
+  CRAWLING: 'CRAWLING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+} as const
+
+export type DocumentStatus = (typeof DocumentStatus)[keyof typeof DocumentStatus]
+
+
+export const EvidenceType = {
+  DIRECT_QUOTE: 'DIRECT_QUOTE',
+  PARAPHRASE: 'PARAPHRASE',
+  STATISTICAL: 'STATISTICAL',
+  CITATION: 'CITATION',
+  OPINION: 'OPINION'
+} as const
+
+export type EvidenceType = (typeof EvidenceType)[keyof typeof EvidenceType]

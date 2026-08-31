@@ -1,5 +1,6 @@
 import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
-import { AI_CALL_TIMEOUT_MS, type ClusterLabelingResult } from "#/core/types.ts";
+import { AI_CALL_TIMEOUT_MS  } from "#/core/types.ts";
+import type {ClusterLabelingResult} from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import type { PhaseContext } from "../context";
 import { loadPhaseOutput, updatePhase } from "../phase-tracker";

@@ -1,5 +1,6 @@
 import { serializeVoiceContext } from "#/features/voice/serialize-voice-context.ts";
-import { createSpeechRecognitionSession, type SpeechRecognitionSession } from "#/features/voice/speech-recognition.ts";
+import { createSpeechRecognitionSession  } from "#/features/voice/speech-recognition.ts";
+import type {SpeechRecognitionSession} from "#/features/voice/speech-recognition.ts";
 import { uploadAudioForTranscription } from "#/features/voice/transcribe.ts";
 import { parseIntent } from "#/server/functions/intent.ts";
 import type { VoiceCommandContext, VoiceCommandResult, VoiceState } from "#/types/voice.ts";

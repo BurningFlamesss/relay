@@ -1,4 +1,5 @@
-import { QUEUE, type AIJobData } from "#/core/types.ts";
+import { QUEUE  } from "#/core/types.ts";
+import type {AIJobData} from "#/core/types.ts";
 import { Worker } from "bullmq";
 import { processAIJob } from "./processor";
 import { getWorkerConnection } from "#/core/redis.ts";

@@ -1,6 +1,7 @@
 import { enqueueScrapers, scraperQueueEvents } from "#/core/queues.ts";
 import { drainSignalBuffer, publishProgress } from "#/core/redis.ts";
-import { SCRAPER_TIMEOUT_MS, TIER_SOURCES, type ScraperResult, type SignalIntentLabel } from "#/core/types.ts";
+import { SCRAPER_TIMEOUT_MS, TIER_SOURCES   } from "#/core/types.ts";
+import type {ScraperResult, SignalIntentLabel} from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import type { PhaseContext } from "../context";
 import { updatePhase } from "../phase-tracker";

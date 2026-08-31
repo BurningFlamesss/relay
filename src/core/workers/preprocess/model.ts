@@ -1,4 +1,4 @@
-export let modelHandle: unknown = null
+export const modelHandle: unknown = null
 export let modelReady = false
 
 let _loadPromise: Promise<void> | null = null

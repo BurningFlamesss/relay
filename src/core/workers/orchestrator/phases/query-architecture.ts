@@ -1,4 +1,5 @@
-import { AI_CALL_TIMEOUT_MS, type QueryArchitectureResult } from "#/core/types.ts";
+import { AI_CALL_TIMEOUT_MS  } from "#/core/types.ts";
+import type {QueryArchitectureResult} from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import { createHash } from "node:crypto";
 import type { PhaseContext } from "../context";

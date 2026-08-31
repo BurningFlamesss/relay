@@ -1,5 +1,6 @@
 import { getWorkerConnection, publishProgress } from "#/core/redis.ts";
-import { QUEUE, type OrchestratorJobData } from "#/core/types.ts";
+import { QUEUE  } from "#/core/types.ts";
+import type {OrchestratorJobData} from "#/core/types.ts";
 import { cpus } from "node:os";
 import { processAnalysis } from "./processor";
 import { Worker } from "bullmq";

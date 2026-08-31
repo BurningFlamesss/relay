@@ -1,0 +1,158 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=relay
+      - POSTGRES_PASSWORD=relay_dev_password
+      - POSTGRES_DB=relay
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./prisma/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U relay -d relay"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - relay-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - relay-network
+
+  relay:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://relay:relay_dev_password@postgres:5432/relay?schema=public
+      - BETTER_AUTH_URL=http://localhost:3000
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - REDIS_CONNECTION_STRING=redis://redis:6379
+      - REDIS_CACHE_CONNECTION_STRING=redis://redis:6379
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      - CRAWL4AI_URL=http://crawl4ai:11235
+      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN}
+      - RESEARCH_MAX_ITERATIONS=${RESEARCH_MAX_ITERATIONS:-3}
+      - RESEARCH_MAX_SOURCES=${RESEARCH_MAX_SOURCES:-30}
+      - RESEARCH_MAX_PAGES=${RESEARCH_MAX_PAGES:-100}
+      - RESEARCH_CRAWL_TIMEOUT_MS=${RESEARCH_CRAWL_TIMEOUT_MS:-60000}
+      - RESEARCH_AI_TIMEOUT_MS=${RESEARCH_AI_TIMEOUT_MS:-120000}
+      - WORKER_TYPE=orchestrator
+      - WORKER_HEALTH_PORT=3001
+      - VITE_APP_URL=${VITE_APP_URL:-http://localhost:3000}
+      - VITE_POSTHOG_KEY=${VITE_POSTHOG_KEY}
+      - VITE_POSTHOG_HOST=${VITE_POSTHOG_HOST:-https://us.i.posthog.com}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      crawl4ai:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - relay-network
+
+  crawl4ai:
+    image: unclecode/crawl4ai:0.4.3
+    ports:
+      - "11235:11235"
+    environment:
+      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN}
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    volumes:
+      - crawl4ai-cache:/root/.cache/ms-playwright
+      - /dev/shm:/dev/shm
+    shm_size: 2g
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: "2"
+        reservations:
+          memory: 2G
+          cpus: "1"
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_ADMIN
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11235/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - relay-network
+
+  relay-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://relay:relay_dev_password@postgres:5432/relay?schema=public
+      - BETTER_AUTH_URL=http://localhost:3000
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - REDIS_CONNECTION_STRING=redis://redis:6379
+      - REDIS_CACHE_CONNECTION_STRING=redis://redis:6379
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      - CRAWL4AI_URL=http://crawl4ai:11235
+      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN}
+      - RESEARCH_MAX_ITERATIONS=${RESEARCH_MAX_ITERATIONS:-3}
+      - RESEARCH_MAX_SOURCES=${RESEARCH_MAX_SOURCES:-30}
+      - RESEARCH_MAX_PAGES=${RESEARCH_MAX_PAGES:-100}
+      - RESEARCH_CRAWL_TIMEOUT_MS=${RESEARCH_CRAWL_TIMEOUT_MS:-60000}
+      - RESEARCH_AI_TIMEOUT_MS=${RESEARCH_AI_TIMEOUT_MS:-120000}
+      - WORKER_TYPE=worker
+      - WORKER_HEALTH_PORT=3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      crawl4ai:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1"
+    restart: unless-stopped
+    networks:
+      - relay-network
+
+volumes:
+  postgres-data:
+  redis-data:
+  crawl4ai-cache:
+
+networks:
+  relay-network:
+    driver: bridge

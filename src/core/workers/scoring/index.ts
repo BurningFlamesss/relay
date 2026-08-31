@@ -1,4 +1,5 @@
-import { QUEUE, type ScoringJobData, type ScoringResult } from "#/core/types.ts";
+import { QUEUE   } from "#/core/types.ts";
+import type {ScoringJobData, ScoringResult} from "#/core/types.ts";
 import { Worker } from "bullmq";
 import { processScoringJob } from "./processor";
 import { getWorkerConnection } from "#/core/redis.ts";

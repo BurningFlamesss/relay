@@ -43,7 +43,7 @@ export async function loadCompletedPhases(jobId: string): Promise<Set<PhaseType>
         }
     })
 
-    return new Set(rows.map((row) => row.phase as PhaseType))
+    return new Set(rows.map((row) => row.phase))
 }
 
 export async function loadPhaseOutput(jobId: string, phase: PhaseType) {

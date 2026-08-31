@@ -1,13 +1,26 @@
-import { FlowProducer, Job, Queue, QueueEvents, type JobsOptions } from "bullmq";
+import type { Job,JobsOptions} from "bullmq";
+import { FlowProducer, Queue, QueueEvents  } from "bullmq";
+
 import { connection } from "./connection";
 import type { Stage } from "#/hooks/useAnalysis.tsx";
 import { createDedicatedConnection, getUtilityConnection } from "./redis";
-import { PREPROCESS_BATCH_SIZE, QUEUE, type AIJobData, type OrchestratorJobData, type PreprocessBatchResult, type PreprocessJobData, type ScoringJobData, type ScraperJobData, type ScraperResult } from "./types";
+import { PREPROCESS_BATCH_SIZE, QUEUE        } from "./types";
+import type {AIJobData, OrchestratorJobData, PreprocessBatchResult, PreprocessJobData, ScoringJobData, ScraperJobData, ScraperResult} from "./types";
 
 export type AnalyzeJobData = {
     jobId: string;
     userId: string;
     topic: string;
+}
+
+export type ResearchJobData = {
+    jobId: string;
+    userId: string;
+    topic: string;
+    topicHash: string;
+    tier: "LOW" | "MID" | "HIGH";
+    maxIterations: number;
+    filters?: OrchestratorJobData["filters"];
 }
 
 export type AnalyzeJobProgress = {
@@ -78,6 +91,8 @@ export const dlQueue = makeQueue<{ originalQueue: string; jobData: unknown; erro
     attempts: 1
 })
 
+export const researchQueue = makeQueue<ResearchJobData>("research-orchestrator", CRITICAL)
+
 
 export const scraperQueueEvents = new QueueEvents(QUEUE.SCRAPER, {
     connection: createDedicatedConnection("qevents:scraper")
@@ -147,6 +162,13 @@ export async function enqueueAITask(data: AIJobData): Promise<Job<AIJobData>> {
 
     return aiQueue.add(`ai:${data.task}`, data, {
         jobId: dedupJobId
+    })
+}
+
+export async function enqueueResearch(data: ResearchJobData): Promise<Job<ResearchJobData>> {
+    return researchQueue.add(`research:${data.topic.slice(0, 40)}`, data, {
+        jobId: data.jobId,
+        priority: data.tier === "HIGH" ? 1 : data.tier === "MID" ? 5 : 10
     })
 }
 

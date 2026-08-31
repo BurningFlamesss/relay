@@ -1,5 +1,6 @@
 import type { AIJobData, AITaskType } from "#/core/types.ts";
-import { UnrecoverableError, type Job } from "bullmq";
+import { UnrecoverableError  } from "bullmq";
+import type {Job} from "bullmq";
 import { getCached, setCache } from "./cache";
 import { acquireRateLimit } from "./rate-limiter";
 import { handleQueryArchitecture } from "./tasks/query-architecture";

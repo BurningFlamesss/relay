@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { ActionCommand, FormFillCommand, NavigationCommand, UnknownCommand, VoiceCommand, VoiceCommandContext, VoiceSchema } from "#/types/voice.ts";
 import { z } from "zod";
-import axios, { type AxiosError } from "axios";
+import axios from "axios";
+import type {AxiosError} from "axios";
 
 const zodVoiceSchema = z.union([
     z.custom<z.ZodTypeAny>(),
@@ -60,7 +61,7 @@ function toJsonSchema(schema: VoiceSchema): JsonSchemaObject | null {
         return {
             type: "object",
             properties: Object.fromEntries(
-                Object.keys(schema as Record<string, unknown>).map((key) => [key, { type: "string" }])
+                Object.keys(schema).map((key) => [key, { type: "string" }])
             ),
         };
     }
@@ -225,7 +226,7 @@ function jsonSchemaToZod(schemaObj: JsonSchemaObject): z.ZodTypeAny {
         } else if (field.type === "boolean") {
             zodType = z.boolean();
         } else if (field.type === "array" && field.items) {
-            const itemSchema = jsonSchemaToZod({ type: "object", properties: { item: field.items } } as JsonSchemaObject);
+            const itemSchema = jsonSchemaToZod({ type: "object", properties: { item: field.items } });
             zodType = z.array(itemSchema);
         } else {
             zodType = z.any();

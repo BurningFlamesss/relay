@@ -1,4 +1,5 @@
-import { QUEUE, type PreprocessBatchResult, type PreprocessJobData } from "#/core/types.ts";
+import { QUEUE   } from "#/core/types.ts";
+import type {PreprocessBatchResult, PreprocessJobData} from "#/core/types.ts";
 import { Worker } from "bullmq";
 import { processPreprocessBatch } from "./processor";
 import { getWorkerConnection } from "#/core/redis.ts";

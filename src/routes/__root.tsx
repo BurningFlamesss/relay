@@ -64,7 +64,8 @@ const voiceContext: VoiceCommandContext = {
   language: "ne",
   routes: [
     { path: "/", name: "Landing" },
-    { path: "/download", name: "Download" }
+    { path: "/download", name: "Download" },
+    { path: "/research", name: "Research" }
   ],
   actions: {
     current_route: z.object({}).describe("Log the current route")

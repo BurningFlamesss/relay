@@ -71,7 +71,15 @@ export const ModelName = {
   Idea: 'Idea',
   ApprovedDomainExclusion: 'ApprovedDomainExclusion',
   ReusableIdeaContext: 'ReusableIdeaContext',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  ResearchJob: 'ResearchJob',
+  ResearchSource: 'ResearchSource',
+  ResearchDocument: 'ResearchDocument',
+  Evidence: 'Evidence',
+  Citation: 'Citation',
+  ResearchFinding: 'ResearchFinding',
+  ResearchReport: 'ResearchReport',
+  ModelInvocation: 'ModelInvocation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -471,6 +479,169 @@ export const NotificationScalarFieldEnum = {
 } as const
 
 export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+export const ResearchJobScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  question: 'question',
+  questionHash: 'questionHash',
+  depth: 'depth',
+  maxIterations: 'maxIterations',
+  maxSources: 'maxSources',
+  maxPages: 'maxPages',
+  status: 'status',
+  currentStage: 'currentStage',
+  plan: 'plan',
+  iterationsDone: 'iterationsDone',
+  creditsUsed: 'creditsUsed',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type ResearchJobScalarFieldEnum = (typeof ResearchJobScalarFieldEnum)[keyof typeof ResearchJobScalarFieldEnum]
+
+
+export const ResearchSourceScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  name: 'name',
+  domain: 'domain',
+  url: 'url',
+  category: 'category',
+  priority: 'priority',
+  sourceType: 'sourceType',
+  enabled: 'enabled',
+  crawlPolicy: 'crawlPolicy',
+  crawlStatus: 'crawlStatus',
+  crawlError: 'crawlError',
+  crawledAt: 'crawledAt',
+  pagesCrawled: 'pagesCrawled',
+  relevanceScore: 'relevanceScore',
+  authorityScore: 'authorityScore',
+  freshnessScore: 'freshnessScore',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ResearchSourceScalarFieldEnum = (typeof ResearchSourceScalarFieldEnum)[keyof typeof ResearchSourceScalarFieldEnum]
+
+
+export const ResearchDocumentScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  sourceId: 'sourceId',
+  url: 'url',
+  canonicalUrl: 'canonicalUrl',
+  title: 'title',
+  description: 'description',
+  author: 'author',
+  publishedAt: 'publishedAt',
+  crawledAt: 'crawledAt',
+  domain: 'domain',
+  content: 'content',
+  markdown: 'markdown',
+  headings: 'headings',
+  language: 'language',
+  wordCount: 'wordCount',
+  contentHash: 'contentHash',
+  metadata: 'metadata',
+  status: 'status',
+  errorMessage: 'errorMessage'
+} as const
+
+export type ResearchDocumentScalarFieldEnum = (typeof ResearchDocumentScalarFieldEnum)[keyof typeof ResearchDocumentScalarFieldEnum]
+
+
+export const EvidenceScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  documentId: 'documentId',
+  claim: 'claim',
+  supportingText: 'supportingText',
+  evidenceType: 'evidenceType',
+  relevance: 'relevance',
+  confidence: 'confidence',
+  location: 'location',
+  startOffset: 'startOffset',
+  endOffset: 'endOffset',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EvidenceScalarFieldEnum = (typeof EvidenceScalarFieldEnum)[keyof typeof EvidenceScalarFieldEnum]
+
+
+export const CitationScalarFieldEnum = {
+  id: 'id',
+  evidenceId: 'evidenceId',
+  label: 'label',
+  url: 'url',
+  title: 'title',
+  domain: 'domain',
+  publishedAt: 'publishedAt',
+  snippet: 'snippet',
+  createdAt: 'createdAt'
+} as const
+
+export type CitationScalarFieldEnum = (typeof CitationScalarFieldEnum)[keyof typeof CitationScalarFieldEnum]
+
+
+export const ResearchFindingScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  claim: 'claim',
+  explanation: 'explanation',
+  evidenceIds: 'evidenceIds',
+  confidence: 'confidence',
+  category: 'category',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ResearchFindingScalarFieldEnum = (typeof ResearchFindingScalarFieldEnum)[keyof typeof ResearchFindingScalarFieldEnum]
+
+
+export const ResearchReportScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  title: 'title',
+  executiveSummary: 'executiveSummary',
+  keyFindings: 'keyFindings',
+  detailedAnalysis: 'detailedAnalysis',
+  disagreements: 'disagreements',
+  limitations: 'limitations',
+  conclusion: 'conclusion',
+  sources: 'sources',
+  wordCount: 'wordCount',
+  readingTimeMinutes: 'readingTimeMinutes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ResearchReportScalarFieldEnum = (typeof ResearchReportScalarFieldEnum)[keyof typeof ResearchReportScalarFieldEnum]
+
+
+export const ModelInvocationScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  model: 'model',
+  role: 'role',
+  task: 'task',
+  promptTokens: 'promptTokens',
+  completionTokens: 'completionTokens',
+  totalTokens: 'totalTokens',
+  latencyMs: 'latencyMs',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  fallbackFrom: 'fallbackFrom',
+  createdAt: 'createdAt'
+} as const
+
+export type ModelInvocationScalarFieldEnum = (typeof ModelInvocationScalarFieldEnum)[keyof typeof ModelInvocationScalarFieldEnum]
 
 
 export const SortOrder = {

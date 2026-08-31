@@ -1,6 +1,7 @@
 import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { publishProgress } from "#/core/redis.ts";
-import { AI_CALL_TIMEOUT_MS, ITERATION_THRESHOLD, type ClusterLabelingResult, type QueryArchitectureResult } from "#/core/types.ts";
+import { AI_CALL_TIMEOUT_MS, ITERATION_THRESHOLD   } from "#/core/types.ts";
+import type {ClusterLabelingResult, QueryArchitectureResult} from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import type { PhaseContext } from "../context";
 import { updatePhase } from "../phase-tracker";
