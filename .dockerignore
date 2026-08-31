@@ -1,0 +1,54 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Build output
+dist
+**/dist
+build
+**/build
+.next
+**/.next
+.turbo
+**/.turbo
+
+# Caches
+.cache
+**/.cache
+.npm
+.yarn
+.pnpm-store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Tests / coverage
+coverage
+**/coverage
+
+# IDE / OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Documentation
+README.md

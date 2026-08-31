@@ -78,7 +78,7 @@ services:
       - relay-network
 
   crawl4ai:
-    image: unclecode/crawl4ai:0.4.3
+    image: unclecode/crawl4ai:latest
     ports:
       - "11235:11235"
     environment:

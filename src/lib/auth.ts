@@ -2,6 +2,8 @@ import { serverEnv } from '#/env/server.ts';
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
+import { sendEmails } from '@/features/sendEmail';
+
 
 const { prisma } = await import("#/db")
 
@@ -17,6 +19,13 @@ export const auth = betterAuth({
 
     async sendResetPassword({ user, url, token }, request) {
       console.table({ user, url, token })
+      await sendEmails({
+        type: "reset",
+        receiverEmail: user.email,
+        receiverName: user.name,
+        token: url,
+        callToAction: "Reset Your Password"
+      })
     },
     resetPasswordTokenExpiresIn: 1000 * 60 * 20,
 
@@ -34,6 +43,13 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     async sendVerificationEmail({ user, url, token }, request) {
       console.table({ user, url, token })
+      await sendEmails({
+        type: "verify",
+        receiverEmail: user.email,
+        receiverName: user.name,
+        token: url,
+        callToAction: "Verify Your Email"
+      })
     },
     expiresIn: 1000 * 60 * 20
   },
