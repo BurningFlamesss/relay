@@ -154,6 +154,63 @@ User can rerun from phase 5 onwards with constraints.
 If the idea is discarded, it enters moderation queue before any reuse.
 
 
+## Quick Start (Local Development)
+
+### Prerequisites
+- Node.js 22+
+- Docker & Docker Compose
+- OpenRouter API Key (get from [openrouter.ai/keys](https://openrouter.ai/keys))
+
+### 1. Clone & Install
+```bash
+git clone <repo-url>
+cd relay
+npm install
+```
+
+### 2. Configure Environment
+```bash
+cp .env.example .env.local
+```
+Edit `.env.local` and add your:
+- `OPENROUTER_API_KEY` (required)
+- `BETTER_AUTH_SECRET` (generate with `openssl rand -base64 32`)
+
+### 3. Start Local Infrastructure
+```bash
+npm run docker:dev
+```
+This starts PostgreSQL and Redis in Docker (no Crawl4AI needed for basic functionality).
+
+### 4. Setup Database & Run
+```bash
+npm run dev:local
+```
+This runs migrations and starts both the web app (port 3000) and workers.
+
+### Alternative: Run Services Separately
+```bash
+# Terminal 1 - Start infrastructure
+npm run docker:dev
+
+# Terminal 2 - Setup database
+npm run db:generate
+npm run db:migrate
+
+# Terminal 3 - Start web app
+npm run dev
+
+# Terminal 4 - Start workers
+npm run workers
+```
+
+### Stop Everything
+```bash
+npm run docker:down
+```
+
+---
+
 ## Tools & Tech Stack
 
 1. Tanstack Start

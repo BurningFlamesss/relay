@@ -13,6 +13,9 @@ export interface CrawlOptions {
     jsCode?: string
     screenshot?: boolean
     pdf?: boolean
+    sourceType?: "WEB" | "RSS" | "API"
+    apiParams?: Record<string, string>
+    rssSelector?: string
 }
 
 export interface CrawlResult {
@@ -112,6 +115,291 @@ export class CrawlerService {
         return results
     }
 
+    async crawlRss(url: string, options: CrawlOptions = {}): Promise<CrawlResult[]> {
+        console.log(`[CRAWLER] Fetching RSS feed: ${url}`)
+        
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    "User-Agent": "Relay Research Bot/1.0",
+                    "Accept": "application/rss+xml, application/xml, text/xml"
+                },
+                signal: AbortSignal.timeout(options.timeoutMs ?? 30000)
+            })
+
+            if (!response.ok) {
+                throw new Error(`RSS fetch failed: ${response.status}`)
+            }
+
+            const xmlText = await response.text()
+            const items = this.parseRssFeed(xmlText, url)
+            
+            return items.map(item => ({
+                url: item.link,
+                success: true,
+                title: item.title,
+                description: item.description,
+                text: item.content ?? item.description ?? "",
+                markdown: undefined,
+                html: undefined,
+                headings: [],
+                links: [],
+                media: [],
+                metadata: {
+                    sourceType: "RSS",
+                    pubDate: item.pubDate,
+                    guid: item.guid,
+                    categories: item.categories
+                },
+                publishedAt: item.pubDate,
+                author: item.author,
+                language: undefined,
+                wordCount: item.content?.length ?? item.description?.length ?? 0,
+                crawledAt: new Date(),
+            }))
+        } catch (error) {
+            console.error(`[CRAWLER] RSS fetch failed for ${url}:`, error)
+            return [{
+                url,
+                success: false,
+                error: error instanceof Error ? error.message : "RSS fetch failed",
+                crawledAt: new Date(),
+            }]
+        }
+    }
+
+    private parseRssFeed(xmlText: string, sourceUrl: string): Array<{
+        title: string
+        link: string
+        description: string
+        content: string
+        pubDate: string
+        author: string
+        guid: string
+        categories: string[]
+    }> {
+        const items: Array<{
+            title: string
+            link: string
+            description: string
+            content: string
+            pubDate: string
+            author: string
+            guid: string
+            categories: string[]
+        }> = []
+
+        try {
+            // Simple regex-based RSS parsing (for Atom/RSS 2.0)
+            const itemRegex = /<item>([\s\S]*?)<\/item>/g
+            let match
+
+            while ((match = itemRegex.exec(xmlText)) !== null) {
+                const itemXml = match[1]
+                
+                const getTag = (tag: string) => {
+                    const regex = new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`, 'i')
+                    const m = itemXml.match(regex)
+                    return m ? m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() : ""
+                }
+
+                const title = getTag("title")
+                const link = getTag("link")
+                const description = getTag("description")
+                const content = getTag("content:encoded") || getTag("content") || description
+                const pubDate = getTag("pubDate") || getTag("dc:date") || getTag("published")
+                const author = getTag("author") || getTag("dc:creator")
+                const guid = getTag("guid")
+                const categories = [...itemXml.matchAll(/<category[^>]*>([^<]+)<\/category>/gi)].map(m => m[1])
+
+                if (title && link) {
+                    items.push({ title, link, description, content, pubDate, author, guid, categories })
+                }
+            }
+
+            // Also try Atom format
+            if (items.length === 0) {
+                const entryRegex = /<entry>([\s\S]*?)<\/entry>/g
+                while ((match = entryRegex.exec(xmlText)) !== null) {
+                    const entryXml = match[1]
+                    
+                    const getTag = (tag: string) => {
+                        const regex = new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`, 'i')
+                        const m = entryXml.match(regex)
+                        return m ? m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() : ""
+                    }
+
+                    const title = getTag("title")
+                    const linkMatch = entryXml.match(/<link[^>]*href=["']([^"']+)["'][^>]*>/i)
+                    const link = linkMatch ? linkMatch[1] : ""
+                    const description = getTag("summary") || getTag("content")
+                    const content = getTag("content") || description
+                    const pubDate = getTag("updated") || getTag("published")
+                    const authorMatch = entryXml.match(/<author>([\s\S]*?)<name>([^<]+)<\/name>[\s\S]*?<\/author>/i)
+                    const author = authorMatch ? authorMatch[2] : ""
+                    const guid = getTag("id")
+
+                    if (title && link) {
+                        items.push({ title, link, description, content, pubDate, author, guid, categories: [] })
+                    }
+                }
+            }
+        } catch (error) {
+            console.error(`[CRAWLER] RSS parse error:`, error)
+        }
+
+        return items
+    }
+
+    async crawlApi(url: string, options: CrawlOptions = {}): Promise<CrawlResult[]> {
+        console.log(`[CRAWLER] Fetching API: ${url}`)
+        
+        const params = new URLSearchParams(options.apiParams ?? {})
+        const fullUrl = `${url}?${params.toString()}`
+
+        try {
+            const response = await fetch(fullUrl, {
+                headers: {
+                    "User-Agent": "Relay Research Bot/1.0",
+                    "Accept": "application/json"
+                },
+                signal: AbortSignal.timeout(options.timeoutMs ?? 30000)
+            })
+
+            if (!response.ok) {
+                throw new Error(`API fetch failed: ${response.status}`)
+            }
+
+            const data = await response.json()
+            const items = this.parseApiResponse(data, url)
+            
+            return items.map(item => ({
+                url: item.url,
+                success: true,
+                title: item.title,
+                description: item.description,
+                text: item.text,
+                markdown: undefined,
+                html: undefined,
+                headings: [],
+                links: [],
+                media: [],
+                metadata: {
+                    sourceType: "API",
+                    ...item.metadata
+                },
+                publishedAt: item.publishedAt,
+                author: item.author,
+                language: undefined,
+                wordCount: item.text?.length ?? 0,
+                crawledAt: new Date(),
+            }))
+        } catch (error) {
+            console.error(`[CRAWLER] API fetch failed for ${url}:`, error)
+            return [{
+                url,
+                success: false,
+                error: error instanceof Error ? error.message : "API fetch failed",
+                crawledAt: new Date(),
+            }]
+        }
+    }
+
+    private parseApiResponse(data: unknown, sourceUrl: string): Array<{
+        title: string
+        url: string
+        description: string
+        text: string
+        publishedAt: string
+        author: string
+        metadata: Record<string, unknown>
+    }> {
+        const items: Array<{
+            title: string
+            url: string
+            description: string
+            text: string
+            publishedAt: string
+            author: string
+            metadata: Record<string, unknown>
+        }> = []
+
+        try {
+            // Handle ArXiv API (Atom format)
+            if (sourceUrl.includes("arxiv.org")) {
+                // ArXiv returns Atom XML, but we'd parse it here
+                // For now, return empty - the RSS handler can handle Atom
+            }
+            // Handle Crossref API
+            else if (sourceUrl.includes("crossref.org")) {
+                const works = (data as { items?: unknown[] })?.items ?? []
+                for (const work of works.slice(0, 50)) {
+                    const w = work as Record<string, unknown>
+                    items.push({
+                        title: (w.title as string[])?.join(" ") ?? "",
+                        url: w.DOI ? `https://doi.org/${w.DOI}` : (w.URL as string) ?? "",
+                        description: (w.abstract as string) ?? (w["container-title"] as string[])?.join(" ") ?? "",
+                        text: (w.abstract as string) ?? "",
+                        publishedAt: w["published-print"]?.["date-parts"]?.[0]?.join("-") ?? w.created?.["date-parts"]?.[0]?.join("-") ?? "",
+                        author: (w.author as Array<{ given: string; family: string }>)?.map(a => `${a.given} ${a.family}`).join(", ") ?? "",
+                        metadata: { doi: w.DOI, type: w.type, journal: w["container-title"] }
+                    })
+                }
+            }
+            // Handle OpenAlex API
+            else if (sourceUrl.includes("openalex.org")) {
+                const works = (data as { results?: unknown[] })?.results ?? []
+                for (const work of works.slice(0, 50)) {
+                    const w = work as Record<string, unknown>
+                    items.push({
+                        title: w.title as string ?? "",
+                        url: w.id as string ?? "",
+                        description: w.abstract as string ?? "",
+                        text: w.abstract as string ?? "",
+                        publishedAt: w.publication_year ? `${w.publication_year}-01-01` : "",
+                        author: (w.authorships as Array<{ author: { display_name: string } }>)?.map(a => a.author.display_name).join(", ") ?? "",
+                        metadata: { doi: w.doi, cited_by_count: w.cited_by_count, type: w.type }
+                    })
+                }
+            }
+            // Handle Semantic Scholar API
+            else if (sourceUrl.includes("semanticscholar.org")) {
+                const papers = (data as { data?: unknown[] })?.data ?? (data as { papers?: unknown[] })?.papers ?? []
+                for (const paper of papers.slice(0, 50)) {
+                    const p = paper as Record<string, unknown>
+                    items.push({
+                        title: p.title as string ?? "",
+                        url: p.url as string ?? `https://www.semanticscholar.org/paper/${p.paperId}`,
+                        description: p.abstract as string ?? "",
+                        text: p.abstract as string ?? "",
+                        publishedAt: p.year ? `${p.year}-01-01` : "",
+                        author: (p.authors as Array<{ name: string }>)?.map(a => a.name).join(", ") ?? "",
+                        metadata: { paperId: p.paperId, citationCount: p.citationCount, venue: p.venue }
+                    })
+                }
+            }
+        } catch (error) {
+            console.error(`[CRAWLER] API parse error:`, error)
+        }
+
+        return items
+    }
+
+    async crawlSourceByType(url: string, sourceType: "WEB" | "RSS" | "API", options: CrawlOptions = {}): Promise<CrawlResult[]> {
+        switch (sourceType) {
+            case "RSS":
+                return this.crawlRss(url, options)
+            case "API":
+                return this.crawlApi(url, options)
+            case "WEB":
+            default:
+                if (Array.isArray(options.apiParams)) {
+                    return this.crawlUrls([url], options)
+                }
+                return [await this.crawlUrl(url, options)]
+        }
+    }
+
     async crawlSite(url: string, options: DeepCrawlOptions): Promise<CrawlResult[]> {
         const payload = {
             ...this.buildCrawlPayload(url, options),
@@ -167,7 +455,7 @@ export class CrawlerService {
 
     private buildCrawlPayload(url: string, options: CrawlOptions): Record<string, unknown> {
         return {
-            url,
+            urls: [url],
             config: {
                 timeout: options.timeoutMs ?? this.defaultTimeout,
                 wait_for: options.waitFor,

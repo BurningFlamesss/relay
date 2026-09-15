@@ -3,11 +3,11 @@ import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import { createHash } from "node:crypto";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
-import { loadPhaseOutput, updatePhase } from "#/core/workers/orchestrator/phase-tracker.ts";
+import { updateResearchPhase } from "../phase-tracker.ts";
 import { discoverSources, mapPrismaSource } from "#/core/research/source-registry.ts";
-import type { ResearchPlan, QueryArchitectureResult } from "#/core/research/types.ts";
+import type { ResearchPlan, SearchQuery } from "#/core/research/types.ts";
 
-export async function runResearchDiscovery(context: PhaseContext, plan: QueryArchitectureResult): Promise<void> {
+export async function runResearchDiscovery(context: PhaseContext, plan: ResearchPlan): Promise<void> {
     const { jobId, isDone } = context
 
     if (isDone("RESEARCH_DISCOVERY")) {
@@ -15,28 +15,39 @@ export async function runResearchDiscovery(context: PhaseContext, plan: QueryArc
     }
 
     await context.progress("RESEARCH_DISCOVERY", "Discovering relevant sources...")
-    await updatePhase(jobId, "RESEARCH_DISCOVERY", "RUNNING")
+    await updateResearchPhase(jobId, "RESEARCH_DISCOVERY", "RUNNING")
     await prisma.researchJob.update({
         where: { id: jobId },
         data: { currentStage: "discovering" },
     })
 
+    console.log(`[DISCOVERY] Starting discovery for job ${jobId}`)
+    console.log(`[DISCOVERY] Plan queries: ${plan.searchQueries.length}`)
+
     const discovery = await discoverSources({
-        searchQueries: plan.queries.map(q => ({
+        searchQueries: plan.searchQueries.map(q => ({
             query: q.query,
-            expectedSourceTypes: [], // Will be inferred from intent
+            expectedSourceTypes: q.expectedSourceTypes,
         })),
     }, {
         maxSources: 30,
         minAuthorityScore: 0,
     })
 
+    console.log(`[DISCOVERY] Discovery result: ${discovery.sources.length} sources from ${discovery.totalCandidates} candidates`)
+
     const sources = discovery.sources.map(mapPrismaSource)
 
+    console.log(`[DISCOVERY] Mapped ${sources.length} sources for job ${jobId}`)
+
+    // Create job-specific source records (copy from global sources)
     for (const source of sources) {
+        const jobSourceId = `${source.id}-${jobId.slice(0, 8)}`
+        
         await prisma.researchSource.upsert({
-            where: { id: source.id },
-            update: {
+            where: { id: jobSourceId },
+            create: {
+                id: jobSourceId,
                 jobId,
                 name: source.name,
                 domain: source.domain,
@@ -50,9 +61,7 @@ export async function runResearchDiscovery(context: PhaseContext, plan: QueryArc
                 authorityScore: source.authorityScore,
                 freshnessScore: source.freshnessScore,
             },
-            create: {
-                id: source.id,
-                jobId,
+            update: {
                 name: source.name,
                 domain: source.domain,
                 url: source.url,
@@ -68,7 +77,7 @@ export async function runResearchDiscovery(context: PhaseContext, plan: QueryArc
         })
     }
 
-    await updatePhase(jobId, "RESEARCH_DISCOVERY", "COMPLETED", {
+    await updateResearchPhase(jobId, "RESEARCH_DISCOVERY", "COMPLETED", {
         summary: `Discovered ${sources.length} sources from ${discovery.totalCandidates} candidates (${discovery.duplicateCount} duplicates filtered)`,
     })
 

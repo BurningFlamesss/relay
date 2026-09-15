@@ -1,0 +1,20 @@
+FROM unclecode/crawl4ai:latest
+
+USER root
+
+# Set the browsers path and install as root
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN mkdir -p /ms-playwright && chown -R appuser:appuser /ms-playwright
+
+# Install chromium as root (needed for system dependencies)
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN playwright install chromium --with-deps
+
+# Verify the executable exists
+RUN ls -la /ms-playwright/
+
+# Switch back to appuser
+USER appuser
+
+# Ensure the path is set for appuser
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright

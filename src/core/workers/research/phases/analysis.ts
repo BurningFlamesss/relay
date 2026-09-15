@@ -2,7 +2,7 @@ import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
-import { loadPhaseOutput, updatePhase } from "#/core/workers/orchestrator/phase-tracker.ts";
+import { loadResearchPhaseOutput, updateResearchPhase } from "../phase-tracker.ts";
 
 export async function runResearchAnalysis(context: PhaseContext): Promise<void> {
     const { jobId, isDone } = context
@@ -12,7 +12,7 @@ export async function runResearchAnalysis(context: PhaseContext): Promise<void> 
     }
 
     await context.progress("RESEARCH_ANALYSIS", "Analyzing evidence and identifying gaps...")
-    await updatePhase(jobId, "RESEARCH_ANALYSIS", "RUNNING")
+    await updateResearchPhase(jobId, "RESEARCH_ANALYSIS", "RUNNING")
     await prisma.researchJob.update({
         where: { id: jobId },
         data: { currentStage: "analyzing" },
@@ -30,7 +30,7 @@ export async function runResearchAnalysis(context: PhaseContext): Promise<void> 
     })
 
     if (!plan?.plan || evidence.length === 0) {
-        await updatePhase(jobId, "RESEARCH_ANALYSIS", "SKIPPED", {
+        await updateResearchPhase(jobId, "RESEARCH_ANALYSIS", "SKIPPED", {
             summary: "No evidence or plan to analyze",
         })
         return
@@ -66,7 +66,7 @@ export async function runResearchAnalysis(context: PhaseContext): Promise<void> 
 
     const result = await aiJob.waitUntilFinished(aiQueueEvents, AI_CALL_TIMEOUT_MS * 2)
 
-    await updatePhase(jobId, "RESEARCH_ANALYSIS", "COMPLETED", {
+    await updateResearchPhase(jobId, "RESEARCH_ANALYSIS", "COMPLETED", {
         output: result,
         summary: `Analyzed ${evidence.length} evidence items`,
     })

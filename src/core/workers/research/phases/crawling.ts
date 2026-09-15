@@ -1,10 +1,11 @@
 import { prisma } from "#/db.ts";
 import { serverEnv } from "#/env/server.ts";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
-import { updatePhase } from "#/core/workers/orchestrator/phase-tracker.ts";
+import { updateResearchPhase } from "../phase-tracker.ts";
 import { publishProgress } from "#/core/redis.ts";
 import { createCrawlerService } from "#/core/crawler/service.ts";
-import type { CrawlOptions } from "#/core/crawler/service.ts";
+import type { CrawlOptions, CrawlResult } from "#/core/crawler/service.ts";
+import { createHash } from "node:crypto"
 
 const MAX_CONCURRENT_CRAWLS = 3
 
@@ -19,7 +20,7 @@ export async function runResearchCrawling(context: PhaseContext, iterationNumber
 
     if (iterationNumber === 0) {
         await context.progress("RESEARCH_CRAWLING", "Crawling sources with Crawl4AI...")
-        await updatePhase(jobId, "RESEARCH_CRAWLING", "RUNNING")
+        await updateResearchPhase(jobId, "RESEARCH_CRAWLING", "RUNNING")
         await prisma.researchJob.update({
             where: { id: jobId },
             data: { currentStage: "crawling" },
@@ -39,7 +40,7 @@ export async function runResearchCrawling(context: PhaseContext, iterationNumber
 
     if (sources.length === 0) {
         if (iterationNumber === 0) {
-            await updatePhase(jobId, "RESEARCH_CRAWLING", "FAILED", {
+            await updateResearchPhase(jobId, "RESEARCH_CRAWLING", "FAILED", {
                 errorMessage: "No sources to crawl",
             })
         }
@@ -48,67 +49,111 @@ export async function runResearchCrawling(context: PhaseContext, iterationNumber
 
     const crawler = createCrawlerService()
 
-    const crawlOptions: CrawlOptions = {
-        concurrency: MAX_CONCURRENT_CRAWLS,
-        timeoutMs: serverEnv.RESEARCH_CRAWL_TIMEOUT_MS,
-        extractLinks: true,
-        extractMedia: false,
-    }
-
     let processedCount = 0
     let failedCount = 0
 
     for (let i = 0; i < sources.length; i += MAX_CONCURRENT_CRAWLS) {
         const batch = sources.slice(i, i + MAX_CONCURRENT_CRAWLS)
-        const urls = batch.map(s => s.url)
 
-        const results = await crawler.crawlUrls(urls, crawlOptions)
+        for (const source of batch) {
+            let results: CrawlResult[]
+            
+            // Use sourceType-aware crawling
+            const sourceType = source.sourceType ?? "WEB"
+            const crawlOptions: CrawlOptions = {
+                concurrency: 1,
+                timeoutMs: serverEnv.RESEARCH_CRAWL_TIMEOUT_MS,
+                extractLinks: true,
+                extractMedia: false,
+                sourceType: source.sourceType as "WEB" | "RSS" | "API",
+                apiParams: source.sourceType === "API" ? { 
+                    query: source.name,
+                    max_results: 50 
+                } : undefined,
+            }
 
-        for (let j = 0; j < batch.length; j++) {
-            const source = batch[j]
-            const result = results[j]
+            try {
+                console.log(`[CRAWLING] Processing ${source.name} (${source.sourceType}) - ${source.url}`)
+                const results = await crawler.crawlSourceByType(source.url, sourceType as "WEB" | "RSS" | "API", crawlOptions)
+                
+                // For RSS/API, we might get multiple results; for WEB, we get 1
+                for (const result of results) {
+                    if (result.success) {
+                        await prisma.researchSource.update({
+                            where: { id: source.id },
+                            data: {
+                                crawlStatus: "COMPLETED",
+                                crawlError: null,
+                                crawledAt: new Date(),
+                                pagesCrawled: 1,
+                            },
+                        })
 
-            if (result.success) {
-                await prisma.researchSource.update({
-                    where: { id: source.id },
-                    data: {
-                        crawlStatus: "COMPLETED",
-                        crawlError: null,
-                        crawledAt: new Date(),
-                        pagesCrawled: 1,
-                    },
-                })
+                        const content = result.markdown ?? result.text ?? ""
+                        const contentHash = createHash("sha256").update(content + result.url).digest("hex").slice(0, 32)
 
-                await prisma.researchDocument.create({
-                    data: {
-                        id: `doc-${jobId}-${source.id}-${Date.now()}`,
-                        jobId,
-                        sourceId: source.id,
-                        url: result.url,
-                        canonicalUrl: undefined,
-                        title: result.title,
-                        description: result.description,
-                        author: result.author,
-                        publishedAt: result.publishedAt ? new Date(result.publishedAt) : null,
-                        domain: source.domain,
-                        content: result.markdown ?? result.text ?? "",
-                        markdown: result.markdown ?? undefined,
-                        headings: result.headings?.map(h => `${"#".repeat(h.level)} ${h.text}`) ?? [],
-                        language: result.language,
-                        wordCount: result.wordCount ?? 0,
-                        contentHash: "",
-                        metadata: result.metadata as any,
-                        status: "PENDING",
-                    },
-                })
+                        await prisma.researchDocument.upsert({
+                            where: { contentHash },
+                            create: {
+                                id: `doc-${jobId}-${source.id}-${Date.now()}`,
+                                jobId,
+                                sourceId: source.id,
+                                url: result.url,
+                                canonicalUrl: undefined,
+                                title: result.title,
+                                description: result.description,
+                                author: result.author,
+                                publishedAt: result.publishedAt ? new Date(result.publishedAt) : null,
+                                domain: source.domain,
+                                content: content || "Content extracted via " + sourceType,
+                                markdown: result.markdown ?? undefined,
+                                headings: result.headings?.map(h => `${"#".repeat(h.level)} ${h.text}`) ?? [],
+                                language: result.language,
+                                wordCount: result.wordCount ?? content.length ?? 0,
+                                contentHash,
+                                metadata: result.metadata as any,
+                                status: "PENDING",
+                            },
+                            update: {
+                                jobId,
+                                sourceId: source.id,
+                                url: result.url,
+                                title: result.title,
+                                description: result.description,
+                                author: result.author,
+                                publishedAt: result.publishedAt ? new Date(result.publishedAt) : null,
+                                domain: source.domain,
+                                content: content || "Content extracted via " + sourceType,
+                                markdown: result.markdown ?? undefined,
+                                headings: result.headings?.map(h => `${"#".repeat(h.level)} ${h.text}`) ?? [],
+                                language: result.language,
+                                wordCount: result.wordCount ?? content.length ?? 0,
+                                metadata: result.metadata as any,
+                                status: "PENDING",
+                            },
+                        })
 
-                processedCount++
-            } else {
+                        processedCount++
+                    } else {
+                        await prisma.researchSource.update({
+                            where: { id: source.id },
+                            data: {
+                                crawlStatus: "FAILED",
+                                crawlError: result.error ?? "Crawl failed",
+                                crawledAt: new Date(),
+                                pagesCrawled: 0,
+                            },
+                        })
+                        failedCount++
+                    }
+                }
+            } catch (error) {
+                console.error(`[CRAWLING] Error processing ${source.name}:`, error)
                 await prisma.researchSource.update({
                     where: { id: source.id },
                     data: {
                         crawlStatus: "FAILED",
-                        crawlError: result.error ?? "Crawl failed",
+                        crawlError: error instanceof Error ? error.message : "Crawl failed",
                         crawledAt: new Date(),
                         pagesCrawled: 0,
                     },
@@ -127,7 +172,7 @@ export async function runResearchCrawling(context: PhaseContext, iterationNumber
     }
 
     if (iterationNumber === 0) {
-        await updatePhase(jobId, "RESEARCH_CRAWLING", "COMPLETED", {
+        await updateResearchPhase(jobId, "RESEARCH_CRAWLING", "COMPLETED", {
             summary: `${processedCount} sources crawled successfully, ${failedCount} failed`,
         })
         await context.phaseDone("RESEARCH_CRAWLING", `${processedCount} sources crawled`)

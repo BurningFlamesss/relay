@@ -9,7 +9,7 @@ export const serverEnv = createEnv({
         REDIS_CONNECTION_STRING: z.url(),
         REDIS_CACHE_CONNECTION_STRING: z.url().optional(),
         WORKER_TYPE: z.string(),
-        WORKER_HEALTH_PORT: z.string(),
+        WORKER_HEALTH_PORT: z.string().optional(),
         NODE_ENV: z.enum(["development", "production"]).catch("development"),
         OPENROUTER_API_KEY: z.string().optional(),
         OPENROUTER_BASE_URL: z.url().default("https://openrouter.ai/api/v1"),

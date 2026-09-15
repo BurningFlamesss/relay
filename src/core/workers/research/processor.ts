@@ -3,7 +3,7 @@ import type { Job } from "bullmq"
 import { prisma } from "#/db.ts"
 import { publishProgress } from "#/core/redis.ts"
 import { dlQueue } from "#/core/queues.ts"
-import { loadCompletedPhases, updatePhase } from "#/core/workers/orchestrator/phase-tracker.ts"
+import { loadResearchCompletedPhases, updateResearchPhase } from "./phase-tracker.ts"
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts"
 import {
     runResearchPlanning,
@@ -20,16 +20,16 @@ export async function processResearchJob(job: Job<OrchestratorJobData>): Promise
     await prisma.researchJob.update({
         where: { id: jobId },
         data: {
-            status: "RUNNING",
+            status: "PLANNING",
             currentStage: "planning",
         },
     })
 
-    let completedPhases = await loadCompletedPhases(jobId)
+    let completedPhases = await loadResearchCompletedPhases(jobId)
     const isDone = (phase: string) => completedPhases.has(phase as any)
 
     const refreshDone = async () => {
-        completedPhases = await loadCompletedPhases(jobId)
+        completedPhases = await loadResearchCompletedPhases(jobId)
     }
 
     const progress = async (phase: string, message: string, extra?: Record<string, unknown>) => {

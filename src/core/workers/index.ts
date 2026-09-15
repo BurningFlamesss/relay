@@ -4,6 +4,8 @@ import { createScraperWorker } from "./scraper";
 import { createPreprocessWorker } from "./preprocess";
 import { createAIWorker } from "./ai";
 import { createScoringWorker } from "./scoring";
+import { createAnalyzeWorker } from "./analyze";
+import { createResearchWorker } from "./research";
 import { serverEnv } from "#/env/server.ts";
 import { drainAndCloseQueues } from "../queues";
 import { closeAllConnections } from "../redis";
@@ -13,10 +15,12 @@ const REGISTRY: Record<string, () => Worker> = {
     scraper: createScraperWorker,
     preprocess: createPreprocessWorker,
     ai: createAIWorker,
-    scoring: createScoringWorker
+    scoring: createScoringWorker,
+    analyze: createAnalyzeWorker,
+    research: createResearchWorker
 }
 
-async function start(): Promise<void> {
+export async function start(): Promise<void> {
     const type = serverEnv.WORKER_TYPE ?? "all"
 
     const workers: Array<Worker> = []

@@ -2,7 +2,7 @@ import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
-import { loadPhaseOutput, updatePhase } from "#/core/workers/orchestrator/phase-tracker.ts";
+import { loadResearchPhaseOutput, updateResearchPhase } from "../phase-tracker.ts";
 import { createDocumentNormalizer } from "#/core/research/orchestration/normalizer.ts";
 import { createEvidenceExtractor } from "#/core/research/orchestration/evidence-extractor.ts";
 
@@ -14,7 +14,7 @@ export async function runResearchExtraction(context: PhaseContext): Promise<void
     }
 
     await context.progress("RESEARCH_EXTRACTION", "Normalizing documents and extracting evidence...")
-    await updatePhase(jobId, "RESEARCH_EXTRACTION", "RUNNING")
+    await updateResearchPhase(jobId, "RESEARCH_EXTRACTION", "RUNNING")
     await prisma.researchJob.update({
         where: { id: jobId },
         data: { currentStage: "extracting" },
@@ -29,7 +29,7 @@ export async function runResearchExtraction(context: PhaseContext): Promise<void
     })
 
     if (documents.length === 0) {
-        await updatePhase(jobId, "RESEARCH_EXTRACTION", "SKIPPED", {
+        await updateResearchPhase(jobId, "RESEARCH_EXTRACTION", "SKIPPED", {
             summary: "No pending documents to process",
         })
         return
@@ -86,9 +86,22 @@ export async function runResearchExtraction(context: PhaseContext): Promise<void
         if (plan?.plan) {
             const evidence = await extractor.extractEvidence(normalized, plan.plan as any)
             for (const ev of evidence) {
-                await prisma.evidence.create({
-                    data: {
+                await prisma.evidence.upsert({
+                    where: { id: ev.id },
+                    create: {
                         id: ev.id,
+                        jobId,
+                        documentId: doc.id,
+                        claim: ev.claim,
+                        supportingText: ev.supportingText,
+                        evidenceType: ev.evidenceType,
+                        relevance: ev.relevance,
+                        confidence: ev.confidence,
+                        location: ev.location,
+                        startOffset: ev.startOffset,
+                        endOffset: ev.endOffset,
+                    },
+                    update: {
                         jobId,
                         documentId: doc.id,
                         claim: ev.claim,
@@ -108,7 +121,7 @@ export async function runResearchExtraction(context: PhaseContext): Promise<void
         processedCount++
     }
 
-    await updatePhase(jobId, "RESEARCH_EXTRACTION", "COMPLETED", {
+    await updateResearchPhase(jobId, "RESEARCH_EXTRACTION", "COMPLETED", {
         summary: `Processed ${processedCount} documents, extracted ${evidenceCount} evidence items`,
     })
 

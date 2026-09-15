@@ -17,7 +17,7 @@ export const ResearchRequestSchema = z.object({
 })
 
 export const ResearchJobIdSchema = z.object({
-    jobId: z.string().cuid(),
+    jobId: z.string().min(1, "Job ID is required"),
 })
 
 export type ResearchRequest = z.infer<typeof ResearchRequestSchema>

@@ -6,7 +6,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 export const startAnalyzeFn = createServerFn()
     .middleware([getSessionMiddleware])
-    .inputValidator(AnalyzeSchema)
+    .validator(AnalyzeSchema)
     .handler(async ({ data, context }) => {
         
         if (!context.session) {

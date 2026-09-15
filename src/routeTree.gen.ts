@@ -10,26 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ResearchIndexRouteImport } from './routes/research/index'
-import { Route as CofounderIndexRouteImport } from './routes/cofounder/index'
-import { Route as AnalyzeIndexRouteImport } from './routes/analyze/index'
-import { Route as SettingsCreditsRouteImport } from './routes/settings/credits'
-import { Route as PaymentRedeemRouteImport } from './routes/_payment/redeem'
-import { Route as PaymentPricingRouteImport } from './routes/_payment/pricing'
-import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
-import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
 import { Route as AuthAuthenticateRouteImport } from './routes/_auth/authenticate'
+import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
+import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
+import { Route as PaymentPricingRouteImport } from './routes/_payment/pricing'
+import { Route as PaymentRedeemRouteImport } from './routes/_payment/redeem'
+import { Route as AnalyzeIndexRouteImport } from './routes/analyze/index'
 import { Route as ApiHealthRouteRouteImport } from './routes/api/health/route'
+import { Route as ApiTestResearchRouteRouteImport } from './routes/api/test-research/route'
+import { Route as CofounderIndexRouteImport } from './routes/cofounder/index'
+import { Route as ResearchIndexRouteImport } from './routes/research/index'
+import { Route as SettingsCreditsRouteImport } from './routes/settings/credits'
+import { Route as PaymentBillingPackIdRouteImport } from './routes/_payment/billing/$packId'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiResearchIndexRouteImport } from './routes/api/research/index'
 import { Route as ApiResearchJobIdRouteImport } from './routes/api/research/$jobId'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as PaymentBillingPackIdRouteImport } from './routes/_payment/billing/$packId'
 import { Route as ApiStreamJobIdRouteRouteImport } from './routes/api/stream/$jobId/route'
-import { Route as ApiResearchJobIdStatusRouteImport } from './routes/api/research/$jobId/status'
-import { Route as ApiResearchJobIdSourcesRouteImport } from './routes/api/research/$jobId/sources'
-import { Route as ApiResearchJobIdReportRouteImport } from './routes/api/research/$jobId/report'
-import { Route as ApiResearchJobIdEvidenceRouteImport } from './routes/api/research/$jobId/evidence'
 import { Route as ApiResearchJobIdCancelRouteImport } from './routes/api/research/$jobId/cancel'
+import { Route as ApiResearchJobIdEvidenceRouteImport } from './routes/api/research/$jobId/evidence'
+import { Route as ApiResearchJobIdReportRouteImport } from './routes/api/research/$jobId/report'
+import { Route as ApiResearchJobIdSourcesRouteImport } from './routes/api/research/$jobId/sources'
+import { Route as ApiResearchJobIdStatusRouteImport } from './routes/api/research/$jobId/status'
 import { Route as ApiResearchStreamJobIdRouteRouteImport } from './routes/api/research/stream/$jobId/route'
 
 const IndexRoute = IndexRouteImport.update({
@@ -37,39 +38,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResearchIndexRoute = ResearchIndexRouteImport.update({
-  id: '/research/',
-  path: '/research/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CofounderIndexRoute = CofounderIndexRouteImport.update({
-  id: '/cofounder/',
-  path: '/cofounder/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnalyzeIndexRoute = AnalyzeIndexRouteImport.update({
-  id: '/analyze/',
-  path: '/analyze/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsCreditsRoute = SettingsCreditsRouteImport.update({
-  id: '/settings/credits',
-  path: '/settings/credits',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PaymentRedeemRoute = PaymentRedeemRouteImport.update({
-  id: '/_payment/redeem',
-  path: '/redeem',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PaymentPricingRoute = PaymentPricingRouteImport.update({
-  id: '/_payment/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/_auth/reset-password',
-  path: '/reset-password',
+const AuthAuthenticateRoute = AuthAuthenticateRouteImport.update({
+  id: '/_auth/authenticate',
+  path: '/authenticate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRequestResetPasswordRoute =
@@ -78,14 +49,59 @@ const AuthRequestResetPasswordRoute =
     path: '/request-reset-password',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthAuthenticateRoute = AuthAuthenticateRouteImport.update({
-  id: '/_auth/authenticate',
-  path: '/authenticate',
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/_auth/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentPricingRoute = PaymentPricingRouteImport.update({
+  id: '/_payment/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentRedeemRoute = PaymentRedeemRouteImport.update({
+  id: '/_payment/redeem',
+  path: '/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyzeIndexRoute = AnalyzeIndexRouteImport.update({
+  id: '/analyze/',
+  path: '/analyze/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiHealthRouteRoute = ApiHealthRouteRouteImport.update({
   id: '/api/health',
   path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTestResearchRouteRoute = ApiTestResearchRouteRouteImport.update({
+  id: '/api/test-research',
+  path: '/api/test-research',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CofounderIndexRoute = CofounderIndexRouteImport.update({
+  id: '/cofounder/',
+  path: '/cofounder/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchIndexRoute = ResearchIndexRouteImport.update({
+  id: '/research/',
+  path: '/research/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsCreditsRoute = SettingsCreditsRouteImport.update({
+  id: '/settings/credits',
+  path: '/settings/credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentBillingPackIdRoute = PaymentBillingPackIdRouteImport.update({
+  id: '/_payment/billing/$packId',
+  path: '/billing/$packId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiResearchIndexRoute = ApiResearchIndexRouteImport.update({
@@ -98,34 +114,14 @@ const ApiResearchJobIdRoute = ApiResearchJobIdRouteImport.update({
   path: '/api/research/$jobId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PaymentBillingPackIdRoute = PaymentBillingPackIdRouteImport.update({
-  id: '/_payment/billing/$packId',
-  path: '/billing/$packId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiStreamJobIdRouteRoute = ApiStreamJobIdRouteRouteImport.update({
   id: '/api/stream/$jobId',
   path: '/api/stream/$jobId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiResearchJobIdStatusRoute = ApiResearchJobIdStatusRouteImport.update({
-  id: '/status',
-  path: '/status',
-  getParentRoute: () => ApiResearchJobIdRoute,
-} as any)
-const ApiResearchJobIdSourcesRoute = ApiResearchJobIdSourcesRouteImport.update({
-  id: '/sources',
-  path: '/sources',
-  getParentRoute: () => ApiResearchJobIdRoute,
-} as any)
-const ApiResearchJobIdReportRoute = ApiResearchJobIdReportRouteImport.update({
-  id: '/report',
-  path: '/report',
+const ApiResearchJobIdCancelRoute = ApiResearchJobIdCancelRouteImport.update({
+  id: '/cancel',
+  path: '/cancel',
   getParentRoute: () => ApiResearchJobIdRoute,
 } as any)
 const ApiResearchJobIdEvidenceRoute =
@@ -134,9 +130,19 @@ const ApiResearchJobIdEvidenceRoute =
     path: '/evidence',
     getParentRoute: () => ApiResearchJobIdRoute,
   } as any)
-const ApiResearchJobIdCancelRoute = ApiResearchJobIdCancelRouteImport.update({
-  id: '/cancel',
-  path: '/cancel',
+const ApiResearchJobIdReportRoute = ApiResearchJobIdReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => ApiResearchJobIdRoute,
+} as any)
+const ApiResearchJobIdSourcesRoute = ApiResearchJobIdSourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => ApiResearchJobIdRoute,
+} as any)
+const ApiResearchJobIdStatusRoute = ApiResearchJobIdStatusRouteImport.update({
+  id: '/status',
+  path: '/status',
   getParentRoute: () => ApiResearchJobIdRoute,
 } as any)
 const ApiResearchStreamJobIdRouteRoute =
@@ -149,6 +155,7 @@ const ApiResearchStreamJobIdRouteRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/health': typeof ApiHealthRouteRoute
+  '/api/test-research': typeof ApiTestResearchRouteRoute
   '/authenticate': typeof AuthAuthenticateRoute
   '/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/health': typeof ApiHealthRouteRoute
+  '/api/test-research': typeof ApiTestResearchRouteRoute
   '/authenticate': typeof AuthAuthenticateRoute
   '/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/health': typeof ApiHealthRouteRoute
+  '/api/test-research': typeof ApiTestResearchRouteRoute
   '/_auth/authenticate': typeof AuthAuthenticateRoute
   '/_auth/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/api/health'
+    | '/api/test-research'
     | '/authenticate'
     | '/request-reset-password'
     | '/reset-password'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/api/health'
+    | '/api/test-research'
     | '/authenticate'
     | '/request-reset-password'
     | '/reset-password'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/api/health'
+    | '/api/test-research'
     | '/_auth/authenticate'
     | '/_auth/request-reset-password'
     | '/_auth/reset-password'
@@ -297,6 +309,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiHealthRouteRoute: typeof ApiHealthRouteRoute
+  ApiTestResearchRouteRoute: typeof ApiTestResearchRouteRoute
   AuthAuthenticateRoute: typeof AuthAuthenticateRoute
   AuthRequestResetPasswordRoute: typeof AuthRequestResetPasswordRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
@@ -323,53 +336,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/research/': {
-      id: '/research/'
-      path: '/research'
-      fullPath: '/research/'
-      preLoaderRoute: typeof ResearchIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cofounder/': {
-      id: '/cofounder/'
-      path: '/cofounder'
-      fullPath: '/cofounder/'
-      preLoaderRoute: typeof CofounderIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/analyze/': {
-      id: '/analyze/'
-      path: '/analyze'
-      fullPath: '/analyze/'
-      preLoaderRoute: typeof AnalyzeIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/credits': {
-      id: '/settings/credits'
-      path: '/settings/credits'
-      fullPath: '/settings/credits'
-      preLoaderRoute: typeof SettingsCreditsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_payment/redeem': {
-      id: '/_payment/redeem'
-      path: '/redeem'
-      fullPath: '/redeem'
-      preLoaderRoute: typeof PaymentRedeemRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_payment/pricing': {
-      id: '/_payment/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PaymentPricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth/reset-password': {
-      id: '/_auth/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
+    '/_auth/authenticate': {
+      id: '/_auth/authenticate'
+      path: '/authenticate'
+      fullPath: '/authenticate'
+      preLoaderRoute: typeof AuthAuthenticateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/request-reset-password': {
@@ -379,11 +350,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRequestResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/authenticate': {
-      id: '/_auth/authenticate'
-      path: '/authenticate'
-      fullPath: '/authenticate'
-      preLoaderRoute: typeof AuthAuthenticateRouteImport
+    '/_auth/reset-password': {
+      id: '/_auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_payment/pricing': {
+      id: '/_payment/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PaymentPricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_payment/redeem': {
+      id: '/_payment/redeem'
+      path: '/redeem'
+      fullPath: '/redeem'
+      preLoaderRoute: typeof PaymentRedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analyze/': {
+      id: '/analyze/'
+      path: '/analyze'
+      fullPath: '/analyze/'
+      preLoaderRoute: typeof AnalyzeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/health': {
@@ -391,6 +383,48 @@ declare module '@tanstack/react-router' {
       path: '/api/health'
       fullPath: '/api/health'
       preLoaderRoute: typeof ApiHealthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/test-research': {
+      id: '/api/test-research'
+      path: '/api/test-research'
+      fullPath: '/api/test-research'
+      preLoaderRoute: typeof ApiTestResearchRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cofounder/': {
+      id: '/cofounder/'
+      path: '/cofounder'
+      fullPath: '/cofounder/'
+      preLoaderRoute: typeof CofounderIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research/': {
+      id: '/research/'
+      path: '/research'
+      fullPath: '/research/'
+      preLoaderRoute: typeof ResearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/credits': {
+      id: '/settings/credits'
+      path: '/settings/credits'
+      fullPath: '/settings/credits'
+      preLoaderRoute: typeof SettingsCreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_payment/billing/$packId': {
+      id: '/_payment/billing/$packId'
+      path: '/billing/$packId'
+      fullPath: '/billing/$packId'
+      preLoaderRoute: typeof PaymentBillingPackIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/research/': {
@@ -407,20 +441,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiResearchJobIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_payment/billing/$packId': {
-      id: '/_payment/billing/$packId'
-      path: '/billing/$packId'
-      fullPath: '/billing/$packId'
-      preLoaderRoute: typeof PaymentBillingPackIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/stream/$jobId': {
       id: '/api/stream/$jobId'
       path: '/api/stream/$jobId'
@@ -428,25 +448,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStreamJobIdRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/research/$jobId/status': {
-      id: '/api/research/$jobId/status'
-      path: '/status'
-      fullPath: '/api/research/$jobId/status'
-      preLoaderRoute: typeof ApiResearchJobIdStatusRouteImport
-      parentRoute: typeof ApiResearchJobIdRoute
-    }
-    '/api/research/$jobId/sources': {
-      id: '/api/research/$jobId/sources'
-      path: '/sources'
-      fullPath: '/api/research/$jobId/sources'
-      preLoaderRoute: typeof ApiResearchJobIdSourcesRouteImport
-      parentRoute: typeof ApiResearchJobIdRoute
-    }
-    '/api/research/$jobId/report': {
-      id: '/api/research/$jobId/report'
-      path: '/report'
-      fullPath: '/api/research/$jobId/report'
-      preLoaderRoute: typeof ApiResearchJobIdReportRouteImport
+    '/api/research/$jobId/cancel': {
+      id: '/api/research/$jobId/cancel'
+      path: '/cancel'
+      fullPath: '/api/research/$jobId/cancel'
+      preLoaderRoute: typeof ApiResearchJobIdCancelRouteImport
       parentRoute: typeof ApiResearchJobIdRoute
     }
     '/api/research/$jobId/evidence': {
@@ -456,11 +462,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiResearchJobIdEvidenceRouteImport
       parentRoute: typeof ApiResearchJobIdRoute
     }
-    '/api/research/$jobId/cancel': {
-      id: '/api/research/$jobId/cancel'
-      path: '/cancel'
-      fullPath: '/api/research/$jobId/cancel'
-      preLoaderRoute: typeof ApiResearchJobIdCancelRouteImport
+    '/api/research/$jobId/report': {
+      id: '/api/research/$jobId/report'
+      path: '/report'
+      fullPath: '/api/research/$jobId/report'
+      preLoaderRoute: typeof ApiResearchJobIdReportRouteImport
+      parentRoute: typeof ApiResearchJobIdRoute
+    }
+    '/api/research/$jobId/sources': {
+      id: '/api/research/$jobId/sources'
+      path: '/sources'
+      fullPath: '/api/research/$jobId/sources'
+      preLoaderRoute: typeof ApiResearchJobIdSourcesRouteImport
+      parentRoute: typeof ApiResearchJobIdRoute
+    }
+    '/api/research/$jobId/status': {
+      id: '/api/research/$jobId/status'
+      path: '/status'
+      fullPath: '/api/research/$jobId/status'
+      preLoaderRoute: typeof ApiResearchJobIdStatusRouteImport
       parentRoute: typeof ApiResearchJobIdRoute
     }
     '/api/research/stream/$jobId': {
@@ -495,6 +515,7 @@ const ApiResearchJobIdRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiHealthRouteRoute: ApiHealthRouteRoute,
+  ApiTestResearchRouteRoute: ApiTestResearchRouteRoute,
   AuthAuthenticateRoute: AuthAuthenticateRoute,
   AuthRequestResetPasswordRoute: AuthRequestResetPasswordRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,

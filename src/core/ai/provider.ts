@@ -3,6 +3,8 @@ import type {
     ModelCapabilities,
     ModelRole,
     MODEL_ROLES,
+} from "./types.ts"
+import {
     getModelCapabilities,
     getModelForRole,
     getFallbackModels,

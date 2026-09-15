@@ -3,7 +3,7 @@ import { ResearchRequestSchema, ResearchJobIdSchema } from "#/schema/research.ts
 import { createServerFn } from "@tanstack/react-start"
 import { redirect } from "@tanstack/react-router"
 import { prisma } from "#/db.ts"
-import { crypto } from "node:crypto"
+import crypto from "node:crypto"
 import { researchQueue } from "#/core/queues.ts"
 import type { ResearchJobData } from "#/core/queues.ts"
 

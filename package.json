@@ -18,11 +18,15 @@
     "generate-pwa-asset": "pwa-assets-generator --preset minimal-2023 public/relay.png",
     "post-cta-init": "npx -y create-db@latest --user-agent tanstack/tsrouter",
     "db:generate": "dotenv -e .env.local -- prisma generate",
+    "db:generate:docker": "prisma generate",
     "db:push": "dotenv -e .env.local -- prisma db push",
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:seed": "dotenv -e .env.local -- prisma db seed",
-    "docker:up": "docker compose --env-file .env.local up"
+    "docker:up": "docker compose --env-file .env.local up",
+    "docker:dev": "docker compose -f docker-compose.yml --env-file .env.local up -d postgres redis crawl4ai",
+    "docker:down": "docker compose -f docker-compose.yml down",
+    "dev:local": "npm run docker:dev && sleep 3 && npm run db:generate && npm run db:push && npm run dev:all"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

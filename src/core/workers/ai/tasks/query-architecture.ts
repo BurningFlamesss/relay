@@ -3,9 +3,9 @@ import type { QueryArchitectureResult } from "#/core/types.ts"
 import { z } from "zod"
 
 const ResearchPlanSchema = z.object({
-    question: z.string(),
-    intent: z.string(),
-    subQuestions: z.array(z.string()),
+    question: z.string().optional(),
+    intent: z.string().optional(),
+    subQuestions: z.array(z.string()).optional(),
     searchQueries: z.array(z.object({
         query: z.string(),
         intent: z.enum(["factual", "comparative", "exploratory", "technical", "financial", "opinion"]),
@@ -14,17 +14,17 @@ const ResearchPlanSchema = z.object({
             "OFFICIAL", "DOCUMENTATION", "ACADEMIC", "RESEARCH", "NEWS",
             "TECHNICAL", "COMPANY", "FINANCIAL", "COMMUNITY"
         ])),
-    })),
+    })).optional(),
     sourceCategories: z.array(z.enum([
         "OFFICIAL", "DOCUMENTATION", "ACADEMIC", "RESEARCH", "NEWS",
         "TECHNICAL", "COMPANY", "FINANCIAL", "COMMUNITY"
-    ])),
-    preferredSources: z.array(z.string()),
-    freshnessRequirement: z.enum(["recent", "any", "historical"]),
-    depth: z.enum(["QUICK", "STANDARD", "DEEP"]),
-    estimatedSources: z.number(),
-    estimatedIterations: z.number(),
-})
+    ])).optional(),
+    preferredSources: z.array(z.string()).optional(),
+    freshnessRequirement: z.enum(["recent", "any", "historical"]).optional(),
+    depth: z.enum(["QUICK", "STANDARD", "DEEP"]).optional(),
+    estimatedSources: z.number().optional(),
+    estimatedIterations: z.number().optional(),
+}).passthrough()
 
 const PLANNER_SYSTEM_PROMPT = `You are Relay's Research Planner. Create a comprehensive research plan for the given question.
 
@@ -74,9 +74,23 @@ Create a detailed research plan as JSON.`
 
     const response = await router.complete(request, "planner")
 
-    try {
-        const parsed = JSON.parse(response.content)
+    // Extract JSON from markdown code blocks if present
+    let content = response.content.trim()
+    if (content.startsWith("```json")) {
+        content = content.replace(/^```json\s*/, "").replace(/\s*```$/, "")
+    } else if (content.startsWith("```")) {
+        content = content.replace(/^```\s*/, "").replace(/\s*```$/, "")
+    }
+
+try {
+        const parsed = JSON.parse(content)
         const validated = ResearchPlanSchema.parse(parsed)
+
+        // Check if searchQueries exists and has items
+        if (!validated.searchQueries || validated.searchQueries.length === 0) {
+            console.warn("[QUERY_ARCHITECTURE] No searchQueries in response, using fallback")
+            return createFallbackPlan(topic, filters, negativeContexts)
+        }
 
         return {
             queries: validated.searchQueries.map(q => ({
@@ -84,7 +98,7 @@ Create a detailed research plan as JSON.`
                 intentLabel: mapIntentToLabel(q.intent),
                 reasoning: `Priority ${q.priority}: ${q.intent} query for ${q.expectedSourceTypes.join(", ")} sources`,
             })),
-negativeContextUsed: negativeContexts.length > 0,
+            negativeContextUsed: negativeContexts.length > 0,
         }
     } catch (error) {
         console.error("[QUERY_ARCHITECTURE] Failed to parse plan:", error)

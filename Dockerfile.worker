@@ -8,7 +8,8 @@ RUN apk add --no-cache \
     g++ \
     libc6-compat \
     openssl \
-    ca-certificates
+    ca-certificates \
+    && npm install -g dotenv-cli
 
 FROM base AS deps
 
@@ -21,17 +22,24 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+RUN npm run build && npm run db:generate:docker
 
 FROM base AS runner
 
 ENV NODE_ENV=production
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=builder /app/.output ./app/.output
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/workers ./workers
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/src/generated ./src/generated
 
-RUN npm run db:generate
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+RUN npx prisma generate
 
-CMD ["node", ".output/workers/start.mjs"]
+CMD ["npx", "tsx", "workers/start.ts"]

@@ -1,5 +1,4 @@
-import { ScoringResult } from './../../types';
-import type { OrchestratorJobData, PhaseType } from "#/core/types.ts";
+import type { OrchestratorJobData, PhaseType, ScoringResult } from "#/core/types.ts";
 import type { Job } from "bullmq";
 import { loadCompletedPhases, updatePhase } from "./phase-tracker";
 import { publishProgress } from "#/core/redis.ts";

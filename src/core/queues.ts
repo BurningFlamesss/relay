@@ -158,7 +158,8 @@ export async function enqueuePreprocessingBatches(jobId: string, signalIds: Arra
 }
 
 export async function enqueueAITask(data: AIJobData): Promise<Job<AIJobData>> {
-    const dedupJobId = data.cacheKey ? `ai:cache:${data.cacheKey}` : `ai:${data.jobId}:${data.task}:${Date.now()}`
+    const safeCacheKey = data.cacheKey ? data.cacheKey.replace(/:/g, "-") : ""
+    const dedupJobId = safeCacheKey ? `ai:cache:${safeCacheKey}` : `ai:${data.jobId}:${data.task}:${Date.now()}`
 
     return aiQueue.add(`ai:${data.task}`, data, {
         jobId: dedupJobId

@@ -99,7 +99,12 @@ export class EvidenceExtractor {
             }))
         } catch (error) {
             console.error("[EVIDENCE] Extraction failed:", error)
-            return this.fallbackExtraction(document, plan)
+            try {
+                return this.fallbackExtraction(document, plan)
+            } catch (fallbackError) {
+                console.error("[EVIDENCE] Fallback extraction also failed:", fallbackError)
+                return []
+            }
         }
     }
 

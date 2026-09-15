@@ -2,7 +2,7 @@ import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
-import { updatePhase } from "#/core/workers/orchestrator/phase-tracker.ts";
+import { updateResearchPhase } from "../phase-tracker.ts";
 import { createResearchSynthesizer } from "#/core/research/orchestration/synthesizer.ts";
 import { createCitationResolver } from "#/core/research/orchestration/citation-resolver.ts";
 
@@ -14,7 +14,7 @@ export async function runResearchSynthesis(context: PhaseContext): Promise<void>
     }
 
     await context.progress("RESEARCH_SYNTHESIS", "Synthesizing final research report...")
-    await updatePhase(jobId, "RESEARCH_SYNTHESIS", "RUNNING")
+    await updateResearchPhase(jobId, "RESEARCH_SYNTHESIS", "RUNNING")
     await prisma.researchJob.update({
         where: { id: jobId },
         data: { currentStage: "synthesizing" },
@@ -22,16 +22,16 @@ export async function runResearchSynthesis(context: PhaseContext): Promise<void>
 
     const job = await prisma.researchJob.findUnique({
         where: { id: jobId },
-        include: {
+        select: {
             plan: true,
-            documents: true,
+            documents: { include: { source: true } },
             evidence: { include: { document: true } },
             sources: true,
         },
     })
 
     if (!job?.plan || !job.documents.length || !job.evidence.length) {
-        await updatePhase(jobId, "RESEARCH_SYNTHESIS", "FAILED", {
+        await updateResearchPhase(jobId, "RESEARCH_SYNTHESIS", "FAILED", {
             errorMessage: "Missing plan, documents, or evidence for synthesis",
         })
         throw new Error("Insufficient data for synthesis")
@@ -93,7 +93,7 @@ export async function runResearchSynthesis(context: PhaseContext): Promise<void>
         },
     })
 
-    await updatePhase(jobId, "RESEARCH_SYNTHESIS", "COMPLETED", {
+    await updateResearchPhase(jobId, "RESEARCH_SYNTHESIS", "COMPLETED", {
         summary: `Report generated: ${report.wordCount} words, ${report.keyFindings.length} findings`,
     })
 

@@ -1,20 +1,51 @@
 import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import type { QueryArchitectureResult } from "#/core/types.ts";
+import type { ResearchPlan, SourceCategory, ResearchDepth } from "#/core/research/types.ts";
 import { prisma } from "#/db.ts";
 import { createHash } from "node:crypto";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
-import { loadPhaseOutput, updatePhase } from "#/core/workers/orchestrator/phase-tracker.ts";
+import { loadResearchPhaseOutput, updateResearchPhase } from "../phase-tracker.ts";
 
-export async function runResearchPlanning(context: PhaseContext): Promise<QueryArchitectureResult> {
+function mapQueryArchitectureToResearchPlan(result: QueryArchitectureResult, topic: string, depth: ResearchDepth): ResearchPlan {
+    const subQuestions = result.queries.slice(0, 5).map(q => q.query)
+    const sourceCategories = [...new Set(result.queries.flatMap(q => {
+        const intent = q.intentLabel
+        if (intent === "COMPLAINT" || intent === "WORKAROUND") return ["TECHNICAL", "COMMUNITY"]
+        if (intent === "DEMAND" || intent === "FEATURE_REQUEST") return ["TECHNICAL", "RESEARCH"]
+        if (intent === "COMPETITOR") return ["COMPANY", "FINANCIAL"]
+        if (intent === "FAILURE_POST") return ["TECHNICAL", "COMMUNITY"]
+        return ["TECHNICAL", "RESEARCH"]
+    }))] as SourceCategory[]
+
+    return {
+        question: topic,
+        intent: result.queries[0]?.reasoning ?? "Research investigation",
+        subQuestions,
+        searchQueries: result.queries.map(q => ({
+            query: q.query,
+            intent: q.intentLabel.toLowerCase() as any,
+            priority: 5,
+            expectedSourceTypes: [],
+        })),
+        sourceCategories,
+        preferredSources: [],
+        freshnessRequirement: "recent",
+        depth,
+        estimatedSources: 30,
+        estimatedIterations: 3,
+    }
+}
+
+export async function runResearchPlanning(context: PhaseContext): Promise<ResearchPlan> {
     const { jobId, topic, topicHash, filters, isDone } = context
 
     if (isDone("RESEARCH_PLANNING")) {
-        return loadPhaseOutput<QueryArchitectureResult>(jobId, "RESEARCH_PLANNING")
+        return loadResearchPhaseOutput<ResearchPlan>(jobId, "RESEARCH_PLANNING")
     }
 
     await context.progress("RESEARCH_PLANNING", "Generating research plan...")
-    await updatePhase(jobId, "RESEARCH_PLANNING", "RUNNING")
+    await updateResearchPhase(jobId, "RESEARCH_PLANNING", "RUNNING")
     await prisma.researchJob.update({
         where: { id: jobId },
         data: { currentStage: "planning" },
@@ -44,12 +75,23 @@ export async function runResearchPlanning(context: PhaseContext): Promise<QueryA
 
     const result = (await aiJob.waitUntilFinished(aiQueueEvents, AI_CALL_TIMEOUT_MS)) as QueryArchitectureResult
 
-    await updatePhase(jobId, "RESEARCH_PLANNING", "COMPLETED", {
-        output: result,
+    // Convert QueryArchitectureResult to ResearchPlan
+    const job = await prisma.researchJob.findUnique({ where: { id: jobId }, select: { depth: true } })
+    const depth = job?.depth ?? "STANDARD"
+    const researchPlan = mapQueryArchitectureToResearchPlan(result, topic, depth)
+
+    // Save the plan to the research job
+    await prisma.researchJob.update({
+        where: { id: jobId },
+        data: { plan: researchPlan as any },
+    })
+
+    await updateResearchPhase(jobId, "RESEARCH_PLANNING", "COMPLETED", {
+        output: researchPlan,
         summary: `Generated ${result.queries.length} queries (negative context used: ${result.negativeContextUsed})`,
     })
 
     await context.phaseDone("RESEARCH_PLANNING", `${result.queries.length} queries ready`)
 
-    return result
+    return researchPlan
 }

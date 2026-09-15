@@ -3,6 +3,9 @@ import { expand } from "dotenv-expand";
 
 expand(config({ path: ".env.local" }))
 
-await import("../src/core/workers/research/index.ts")
+const { start } = await import("../src/core/workers/index.ts")
 
-console.log("[workers] Research Worker started")
+start().catch((error) => {
+    console.error("[WORKERS] Startup failed:", error)
+    process.exit(1)
+})

@@ -246,6 +246,7 @@ export type SourceCategory = (typeof SourceCategory)[keyof typeof SourceCategory
 export const SourceType = {
   WEB: 'WEB',
   API: 'API',
+  RSS: 'RSS',
   DOCUMENT: 'DOCUMENT',
   REPOSITORY: 'REPOSITORY'
 } as const

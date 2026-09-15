@@ -46,7 +46,8 @@ export class DocumentNormalizer {
     normalize(crawlResult: CrawlerCrawlResult, sourceId?: string): ResearchDocument {
         const url = normalizeUrl(crawlResult.url)
         const domain = extractDomain(url)
-        const contentHash = generateContentHash(crawlResult.markdown ?? crawlResult.text ?? crawlResult.html ?? "")
+        const rawContent = crawlResult.markdown ?? crawlResult.text ?? crawlResult.html ?? ""
+        const contentHash = generateContentHash(rawContent, url)
         const urlHash = generateUrlHash(url)
 
         const content = this.extractMainContent(crawlResult)
