@@ -2,7 +2,6 @@ import { serverEnv } from "#/env/server.ts"
 import type {
     ModelCapabilities,
     ModelRole,
-    MODEL_ROLES,
 } from "./types.ts"
 import {
     getModelCapabilities,
@@ -93,9 +92,22 @@ export function createAIProvider(): AIProvider {
     return new OpenRouterProvider()
 }
 
+/**
+ * Build the OpenRouter key pool from the (optional) comma-separated
+ * OPENROUTER_API_KEYS plus the single OPENROUTER_API_KEY, de-duplicated.
+ */
+function parseApiKeys(multi?: string, single?: string): string[] {
+    const raw = [multi, single]
+        .filter((value): value is string => Boolean(value))
+        .join(",")
+    return [...new Set(raw.split(",").map(key => key.trim()).filter(Boolean))]
+}
+
 class OpenRouterProvider implements AIProvider {
     private readonly baseUrl: string
-    private readonly apiKey: string
+    private readonly apiKeys: string[]
+    private readonly exhaustedKeys = new Set<string>()
+    private keyIndex = 0
     private readonly defaultTimeout: number
     private readonly requestLog: Array<{
         timestamp: number
@@ -108,11 +120,13 @@ class OpenRouterProvider implements AIProvider {
 
     constructor() {
         this.baseUrl = serverEnv.OPENROUTER_BASE_URL
-        this.apiKey = serverEnv.OPENROUTER_API_KEY ?? ""
+        this.apiKeys = parseApiKeys(serverEnv.OPENROUTER_API_KEYS, serverEnv.OPENROUTER_API_KEY)
         this.defaultTimeout = serverEnv.RESEARCH_AI_TIMEOUT_MS
 
-        if (!this.apiKey) {
+        if (this.apiKeys.length === 0) {
             console.warn("[AI] OPENROUTER_API_KEY not configured - AI calls will fail")
+        } else if (this.apiKeys.length > 1) {
+            console.log(`[AI] Loaded ${this.apiKeys.length} OpenRouter API keys (rotation enabled)`)
         }
     }
 
@@ -126,6 +140,35 @@ class OpenRouterProvider implements AIProvider {
 
     getFallbackModels(exclude: string[] = []): string[] {
         return getFallbackModels(exclude)
+    }
+
+    /**
+     * Return the next usable API key using round-robin, skipping keys whose daily
+     * free-tier quota is already known to be exhausted. Returns null when every
+     * configured key is exhausted.
+     */
+    private acquireKey(): string | null {
+        const count = this.apiKeys.length
+        if (count === 0) return null
+
+        for (let i = 0; i < count; i++) {
+            const index = (this.keyIndex + i) % count
+            const key = this.apiKeys[index]
+            if (!this.exhaustedKeys.has(key)) {
+                this.keyIndex = (index + 1) % count
+                return key
+            }
+        }
+
+        return null
+    }
+
+    private hasAvailableKey(): boolean {
+        return this.apiKeys.some(key => !this.exhaustedKeys.has(key))
+    }
+
+    private maskKey(key: string): string {
+        return key.length <= 10 ? "***" : `${key.slice(0, 8)}…${key.slice(-4)}`
     }
 
     async complete(request: AIRequest): Promise<AIResponse> {
@@ -265,11 +308,23 @@ class OpenRouterProvider implements AIProvider {
         return payload
     }
 
-    private async fetchWithRetry(payload: Record<string, unknown>, model: string, attempt = 1): Promise<Response> {
+    private async fetchWithRetry(payload: Record<string, unknown>, model: string): Promise<Response> {
         const maxAttempts = 3
         const baseDelay = 1000
+        const maxRotations = Math.max(1, this.apiKeys.length)
 
-        for (let i = attempt; i <= maxAttempts; i++) {
+        let attempt = 0
+        let rotations = 0
+        let lastQuotaError: AIProviderError | null = null
+
+        while (attempt < maxAttempts) {
+            const apiKey = this.acquireKey()
+
+            // Every configured key has hit its daily quota.
+            if (!apiKey) break
+
+            attempt++
+
             try {
                 const controller = new AbortController()
                 const timeoutId = setTimeout(() => controller.abort(), this.defaultTimeout)
@@ -277,7 +332,7 @@ class OpenRouterProvider implements AIProvider {
                 const response = await fetch(`${this.baseUrl}/chat/completions`, {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${this.apiKey}`,
+                        "Authorization": `Bearer ${apiKey}`,
                         "Content-Type": "application/json",
                         "HTTP-Referer": "https://relay.local",
                         "X-Title": "Relay Research Analyst",
@@ -289,17 +344,40 @@ class OpenRouterProvider implements AIProvider {
                 clearTimeout(timeoutId)
 
                 if (response.status === 429) {
+                    const errorText = await response.text().catch(() => "")
+
+                    // Daily/free-tier quota is tracked per key, so retire this key
+                    // and immediately retry with the next one instead of failing.
+                    if (/per[- ]day|free-models-per-day|quota|insufficient/i.test(errorText)) {
+                        this.exhaustedKeys.add(apiKey)
+                        lastQuotaError = new AIProviderError(
+                            `OpenRouter quota exceeded: ${errorText.slice(0, 200)}`,
+                            "QUOTA_EXCEEDED",
+                            429,
+                            false,
+                            model
+                        )
+                        console.warn(`[AI] Key ${this.maskKey(apiKey)} hit its daily quota (${this.exhaustedKeys.size}/${this.apiKeys.length} exhausted); rotating`)
+
+                        if (rotations < maxRotations) {
+                            rotations++
+                            attempt-- // not a real attempt - swap keys and try again
+                            continue
+                        }
+                        break
+                    }
+
                     const retryAfter = response.headers.get("Retry-After")
-                    const delay = retryAfter ? parseInt(retryAfter) * 1000 : baseDelay * Math.pow(2, i - 1)
-                    console.warn(`[AI] Rate limited, waiting ${delay}ms before retry ${i}/${maxAttempts}`)
-                    await this.sleep(delay)
+                    const delay = retryAfter ? parseInt(retryAfter) * 1000 : baseDelay * Math.pow(2, attempt - 1)
+                    console.warn(`[AI] Rate limited, waiting ${Math.min(delay, 10000)}ms before retry ${attempt}/${maxAttempts}`)
+                    await this.sleep(Math.min(delay, 10000))
                     continue
                 }
 
                 if (response.status >= 500) {
-                    if (i < maxAttempts) {
-                        const delay = baseDelay * Math.pow(2, i - 1)
-                        console.warn(`[AI] Server error ${response.status}, retry ${i}/${maxAttempts} in ${delay}ms`)
+                    if (attempt < maxAttempts) {
+                        const delay = baseDelay * Math.pow(2, attempt - 1)
+                        console.warn(`[AI] Server error ${response.status}, retry ${attempt}/${maxAttempts} in ${delay}ms`)
                         await this.sleep(delay)
                         continue
                     }
@@ -330,9 +408,9 @@ class OpenRouterProvider implements AIProvider {
                     )
                 }
 
-                if (i < maxAttempts) {
-                    const delay = baseDelay * Math.pow(2, i - 1)
-                    console.warn(`[AI] Network error, retry ${i}/${maxAttempts} in ${delay}ms: ${error}`)
+                if (attempt < maxAttempts) {
+                    const delay = baseDelay * Math.pow(2, attempt - 1)
+                    console.warn(`[AI] Network error, retry ${attempt}/${maxAttempts} in ${delay}ms: ${error}`)
                     await this.sleep(delay)
                     continue
                 }
@@ -345,6 +423,18 @@ class OpenRouterProvider implements AIProvider {
                     model
                 )
             }
+        }
+
+        if (lastQuotaError) throw lastQuotaError
+
+        if (this.apiKeys.length > 0 && !this.hasAvailableKey()) {
+            throw new AIProviderError(
+                `OpenRouter quota exceeded: all ${this.apiKeys.length} API keys exhausted`,
+                "QUOTA_EXCEEDED",
+                429,
+                false,
+                model
+            )
         }
 
         throw new AIProviderError(

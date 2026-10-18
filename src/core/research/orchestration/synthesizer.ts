@@ -72,16 +72,25 @@ SYNTHESIS PRINCIPLES:
 7. Do not fabricate URLs, authors, dates, statistics, or quotations
 8. If evidence is insufficient for a sub-question, state this clearly
 
-OUTPUT FORMAT: JSON matching the SynthesisSchema exactly.
+OUTPUT FORMAT: Return ONLY a single JSON object (no markdown fences, no prose) with EXACTLY this shape. Every key is required - use [] for empty arrays:
 
-STRUCTURE:
-- Title: Clear, descriptive
-- Executive Summary: 2-3 paragraphs, key takeaways
-- Key Findings: 5-10 major findings, each with evidence IDs and confidence
-- Detailed Analysis: Sections with headings, content, evidence IDs
-- Disagreements: Explicit conflicts with evidence for each side
-- Limitations: What couldn't be determined, gaps in evidence
-- Conclusion: Balanced summary`
+{
+  "title": "string",
+  "executiveSummary": "2-3 paragraphs of key takeaways",
+  "keyFindings": [
+    { "claim": "string", "explanation": "string", "evidenceIds": ["<evidence-id>"], "confidence": "high|medium|low", "category": "string" }
+  ],
+  "detailedAnalysis": [
+    { "heading": "string", "content": "string", "evidenceIds": ["<evidence-id>"], "subSections": [{ "heading": "string", "content": "string", "evidenceIds": ["<evidence-id>"] }] }
+  ],
+  "disagreements": [
+    { "topic": "string", "positions": [{ "claim": "string", "evidenceIds": ["<evidence-id>"], "sourceCount": 1, "confidence": "high|medium|low" }], "resolution": "string" }
+  ],
+  "limitations": ["string"],
+  "conclusion": "1-2 paragraphs"
+}
+
+Use the actual [evidence-id] values shown beside each evidence item. Provide 5-10 keyFindings.`
 
 const SYNTHESIZER_USER_PROMPT = `Research Question: {{question}}
 Research Intent: {{intent}}
@@ -147,8 +156,8 @@ export class ResearchSynthesizer {
     }
 
     private formatEvidence(evidence: Evidence[]): string {
-        return evidence.slice(0, 50).map((e, i) => 
-            `[${i}] Claim: ${e.claim}\n    Support: ${e.supportingText.slice(0, 300)}\n    Type: ${e.evidenceType} | Relevance: ${e.relevance.toFixed(2)} | Confidence: ${e.confidence.toFixed(2)}`
+        return evidence.slice(0, 50).map((e) =>
+            `[${e.id}] Claim: ${e.claim}\n    Support: ${e.supportingText.slice(0, 300)}\n    Type: ${e.evidenceType} | Relevance: ${e.relevance.toFixed(2)} | Confidence: ${e.confidence.toFixed(2)}`
         ).join("\n\n")
     }
 

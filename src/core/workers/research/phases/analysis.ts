@@ -1,6 +1,7 @@
 import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
+import { publishProgress } from "#/core/redis.ts";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
 import { loadResearchPhaseOutput, updateResearchPhase } from "../phase-tracker.ts";
 
@@ -38,6 +39,13 @@ export async function runResearchAnalysis(context: PhaseContext): Promise<void> 
 
     const cacheKey = `research-analysis:${jobId}:${evidence.length}`
 
+    await publishProgress({
+        type: "AI_CALL_START",
+        jobId,
+        message: `Analyzing ${evidence.length} evidence items with AI…`,
+        timestamp: Date.now(),
+    })
+
     const aiJob = await enqueueAITask({
         jobId,
         task: "SYNTHESIS", // Reusing synthesis task for analysis
@@ -65,6 +73,13 @@ export async function runResearchAnalysis(context: PhaseContext): Promise<void> 
     })
 
     const result = await aiJob.waitUntilFinished(aiQueueEvents, AI_CALL_TIMEOUT_MS * 2)
+
+    await publishProgress({
+        type: "AI_CALL_DONE",
+        jobId,
+        message: "AI analysis complete",
+        timestamp: Date.now(),
+    })
 
     await updateResearchPhase(jobId, "RESEARCH_ANALYSIS", "COMPLETED", {
         output: result,

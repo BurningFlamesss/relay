@@ -224,8 +224,12 @@ export interface CandidateData {
 
 export type ProgressEventType =
     | "PHASE_START" | "PHASE_COMPLETE" | "PHASE_FAILED"
-    | "SCRAPE_SOURCE_DONE" | "ITERATION_START" | "ITERATION_COMPLETE"
-    | "SIGNAL_COUNT_UPDATE" | "DONE" | "FATAL";
+    | "SCRAPE_SOURCE_START" | "SCRAPE_SOURCE_DONE" | "SCRAPE_SOURCE_FAILED"
+    | "CRAWL_URL_START" | "CRAWL_URL_DONE" | "CRAWL_URL_FAILED"
+    | "ITERATION_START" | "ITERATION_COMPLETE"
+    | "SIGNAL_COUNT_UPDATE" | "AI_CALL_START" | "AI_CALL_DONE"
+    | "SOURCE_DISCOVERED" | "EVIDENCE_EXTRACTED"
+    | "DONE" | "FATAL";
 
 export interface ProgressEvent {
     type: ProgressEventType;
@@ -236,6 +240,12 @@ export interface ProgressEvent {
     message?: string;
     timestamp: number;
     error?: string;
+    // Detailed operation tracking
+    source?: ScrapingSourceType;
+    url?: string;
+    operationId?: string;
+    duration?: number;
+    metadata?: Record<string, unknown>;
 }
 
 

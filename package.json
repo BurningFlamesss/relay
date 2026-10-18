@@ -26,7 +26,9 @@
     "docker:up": "docker compose --env-file .env.local up",
     "docker:dev": "docker compose -f docker-compose.yml --env-file .env.local up -d postgres redis crawl4ai",
     "docker:down": "docker compose -f docker-compose.yml down",
-    "dev:local": "npm run docker:dev && sleep 3 && npm run db:generate && npm run db:push && npm run dev:all"
+    "dev:local": "npm run docker:dev && sleep 3 && npm run db:generate && npm run db:push && npm run dev:all",
+    "diagnose": "npx tsx scripts/diagnose-scraping.ts",
+    "verify:research": "dotenv -e .env.local -- npx tsx scripts/verify-research.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

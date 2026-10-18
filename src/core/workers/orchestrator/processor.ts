@@ -36,7 +36,7 @@ export async function processAnalysis(job: Job<OrchestratorJobData>): Promise<vo
                 jobId,
                 phase,
                 message,
-                timeStamp: Date.now()
+                timestamp: Date.now()
             })
         ])
     }
@@ -47,7 +47,7 @@ export async function processAnalysis(job: Job<OrchestratorJobData>): Promise<vo
             jobId,
             phase,
             message,
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
     }
 

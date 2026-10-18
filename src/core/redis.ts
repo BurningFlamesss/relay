@@ -1,7 +1,7 @@
 import { serverEnv } from "#/env/server.ts";
 import IORedis from "ioredis";
 import type { Redis, RedisOptions } from "ioredis";
-import type { RawSignal } from "./types";
+import type { RawSignal, ProgressEvent } from "./types";
 
 const BASE_OPTIONS: RedisOptions = {
     maxRetriesPerRequest: null,

@@ -62,7 +62,7 @@ export async function runPreprocessing(context: PhaseContext, newOnly = false): 
         jobId,
         signalCount: totalProcessed,
         message: `${totalProcessed} signals classified - ${totalDemand} demand signals`,
-        timeStamp: Date.now()
+        timestamp: Date.now()
     })
 
     if (!newOnly) {

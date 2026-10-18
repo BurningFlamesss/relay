@@ -39,7 +39,20 @@ DO NOT:
 - Extract generic/background information not relevant to the question
 - Use text that doesn't actually support the claim
 
-OUTPUT: JSON with "evidence" array. Maximum 10 items per document.`
+OUTPUT: Return ONLY a single JSON object with this exact shape. Maximum 10 items per document; use [] if none found:
+{
+  "evidence": [
+    {
+      "claim": "string (10-500 chars)",
+      "supportingText": "string (20-2000 chars, quoted or near-verbatim from the document)",
+      "evidenceType": "DIRECT_QUOTE | PARAPHRASE | STATISTICAL | CITATION | OPINION",
+      "relevance": 0.0,
+      "confidence": 0.0,
+      "location": "string (optional, section/paragraph)"
+    }
+  ]
+}
+Every item MUST include claim, supportingText, evidenceType, relevance and confidence.`
 
 const EXTRACTOR_USER_PROMPT = `Research Question: {{question}}
 Research Plan Intent: {{intent}}

@@ -1,5 +1,10 @@
 import { serverEnv } from "#/env/server.ts"
 
+// Many public sources (Reddit, Medium, GitHub, …) reject bot-style user agents,
+// so RSS/API requests advertise a normal browser UA.
+const BROWSER_UA =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
 export interface CrawlOptions {
     maxDepth?: number
     maxPages?: number
@@ -59,10 +64,19 @@ export class Crawl4AIError extends Error {
     }
 }
 
+export interface SearchOptions {
+    maxResults?: number
+    timeoutMs?: number
+    extractLinks?: boolean
+    extractMedia?: boolean
+}
+
 export class CrawlerService {
     private readonly baseUrl: string
     private readonly apiToken: string
     private readonly defaultTimeout: number
+    private healthy: boolean = true
+    private lastHealthCheck: number = 0
 
     constructor() {
         this.baseUrl = serverEnv.CRAWL4AI_URL.replace(/\/$/, "")
@@ -85,6 +99,225 @@ export class CrawlerService {
         const response = await this.fetchWithRetry(payload)
         const data = await response.json()
         return this.normalizeResult(data, url)
+    }
+
+    /**
+     * Search and crawl content from multiple sources with fallback mechanisms
+     */
+    async searchAndCrawl(query: string, options: SearchOptions = {}): Promise<CrawlResult[]> {
+        const maxResults = options.maxResults ?? 10
+        const results: CrawlResult[] = []
+
+        // Check Crawl4AI health periodically
+        await this.ensureCrawl4AIHealthy()
+
+        // Strategy 1: Try Crawl4AI search endpoint if available
+        if (this.healthy) {
+            try {
+                const searchResults = await this.searchViaCrawl4AI(query, maxResults, options)
+                results.push(...searchResults)
+                if (results.length >= maxResults) {
+                    return results.slice(0, maxResults)
+                }
+            } catch (error) {
+                console.warn(`[CRAWLER] Crawl4AI search failed:`, error)
+                this.healthy = false
+            }
+        }
+
+        // Strategy 2: Build direct URLs from known sources and crawl them
+        if (results.length < maxResults) {
+            const directUrls = this.buildSourceUrls(query)
+            const needed = maxResults - results.length
+            
+            for (const urlBatch of this.chunkArray(directUrls.slice(0, needed + 5), 3)) {
+                try {
+                    const crawlResults = await Promise.allSettled(
+                        urlBatch.map(url => this.crawlUrl(url, {
+                            timeoutMs: options.timeoutMs ?? 30000,
+                            extractLinks: options.extractLinks,
+                            extractMedia: options.extractMedia,
+                        }))
+                    )
+
+                    for (const result of crawlResults) {
+                        if (result.status === "fulfilled" && result.value.success) {
+                            results.push(result.value)
+                            if (results.length >= maxResults) break
+                        }
+                    }
+
+                    if (results.length >= maxResults) break
+                } catch (error) {
+                    console.warn(`[CRAWLER] Direct URL crawl failed:`, error)
+                }
+            }
+        }
+
+        // Strategy 3: Fallback to RSS/API sources if still not enough
+        if (results.length < maxResults) {
+            const rssResults = await this.crawlFallbackSources(query, maxResults - results.length)
+            results.push(...rssResults)
+        }
+
+        return results.slice(0, maxResults)
+    }
+
+    private async ensureCrawl4AIHealthy(): Promise<void> {
+        const now = Date.now()
+        if (now - this.lastHealthCheck < 60000) return // Check every minute
+
+        this.lastHealthCheck = now
+        const health = await this.checkHealth()
+        this.healthy = health.healthy
+
+        if (!this.healthy) {
+            console.warn(`[CRAWLER] Crawl4AI unhealthy: ${health.error}`)
+        }
+    }
+
+    private async searchViaCrawl4AI(query: string, maxResults: number, options: SearchOptions): Promise<CrawlResult[]> {
+        try {
+            const response = await fetch(`${this.baseUrl}/search`, {
+                method: "POST",
+                headers: this.getHeaders(),
+                body: JSON.stringify({
+                    query,
+                    max_results: maxResults,
+                    timeout: options.timeoutMs ?? 30000,
+                }),
+                signal: AbortSignal.timeout(options.timeoutMs ?? 30000),
+            })
+
+            if (!response.ok) {
+                throw new Crawl4AIError(
+                    `Search failed: ${response.status}`,
+                    "SEARCH_ERROR",
+                    response.status,
+                    response.status >= 500,
+                    query
+                )
+            }
+
+            const data = await response.json()
+            
+            if (Array.isArray(data.results)) {
+                return data.results.map((result: Record<string, unknown>) =>
+                    this.normalizeResult(result, result.url as string ?? "")
+                )
+            }
+
+            return []
+        } catch (error) {
+            // If /search endpoint doesn't exist, throw to trigger fallback
+            throw error
+        }
+    }
+
+    /**
+     * Build direct URLs for known sources based on query
+     */
+    private buildSourceUrls(query: string): string[] {
+        const encodedQuery = encodeURIComponent(query)
+        const urls: string[] = []
+
+        // Reddit
+        urls.push(
+            `https://www.reddit.com/search/?q=${encodedQuery}&sort=relevance&t=all`,
+            `https://old.reddit.com/search?q=${encodedQuery}&sort=relevance`,
+        )
+
+        // Hacker News
+        urls.push(
+            `https://hn.algolia.com/?q=${encodedQuery}&hitsPerPage=20`,
+        )
+
+        // Stack Overflow
+        urls.push(
+            `https://stackoverflow.com/search?q=${encodedQuery}`,
+        )
+
+        // Dev.to
+        urls.push(
+            `https://dev.to/search?q=${encodedQuery}`,
+        )
+
+        // GitHub Issues
+        urls.push(
+            `https://github.com/issues?q=${encodedQuery}+is%3Aissue`,
+        )
+
+        // Product Hunt (public discussions)
+        urls.push(
+            `https://www.producthunt.com/search?q=${encodedQuery}`,
+        )
+
+        // G2 Reviews
+        urls.push(
+            `https://www.g2.com/search?query=${encodedQuery}`,
+        )
+
+        // Capterra
+        urls.push(
+            `https://www.capterra.com/search?q=${encodedQuery}`,
+        )
+
+        return urls
+    }
+
+    /**
+     * Fallback to RSS/API sources when web crawling fails
+     */
+    private async crawlFallbackSources(query: string, needed: number): Promise<CrawlResult[]> {
+        const results: CrawlResult[] = []
+        const encodedQuery = encodeURIComponent(query)
+
+        // Try RSS feeds
+        const rssFeeds = [
+            `https://www.reddit.com/search.rss?q=${encodedQuery}&sort=relevance`,
+            `https://hnrss.org/newest?q=${encodedQuery}`,
+        ]
+
+        for (const feed of rssFeeds) {
+            try {
+                const feedResults = await this.crawlRss(feed, { timeoutMs: 15000 })
+                const validResults = feedResults.filter(r => r.success)
+                results.push(...validResults)
+
+                if (results.length >= needed) break
+            } catch (error) {
+                console.warn(`[CRAWLER] RSS fallback failed for ${feed}:`, error)
+            }
+        }
+
+        // Try API sources
+        if (results.length < needed) {
+            const apiUrls = [
+                `https://hn.algolia.com/api/v1/search?query=${encodedQuery}&hitsPerPage=20`,
+            ]
+
+            for (const apiUrl of apiUrls) {
+                try {
+                    const apiResults = await this.crawlApi(apiUrl, { timeoutMs: 15000 })
+                    const validResults = apiResults.filter(r => r.success)
+                    results.push(...validResults)
+
+                    if (results.length >= needed) break
+                } catch (error) {
+                    console.warn(`[CRAWLER] API fallback failed for ${apiUrl}:`, error)
+                }
+            }
+        }
+
+        return results.slice(0, needed)
+    }
+
+    private chunkArray<T>(array: T[], size: number): T[][] {
+        const chunks: T[][] = []
+        for (let i = 0; i < array.length; i += size) {
+            chunks.push(array.slice(i, i + size))
+        }
+        return chunks
     }
 
     async crawlUrls(urls: string[], options: CrawlOptions = {}): Promise<CrawlResult[]> {
@@ -121,8 +354,8 @@ export class CrawlerService {
         try {
             const response = await fetch(url, {
                 headers: {
-                    "User-Agent": "Relay Research Bot/1.0",
-                    "Accept": "application/rss+xml, application/xml, text/xml"
+                    "User-Agent": BROWSER_UA,
+                    "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml"
                 },
                 signal: AbortSignal.timeout(options.timeoutMs ?? 30000)
             })
@@ -168,7 +401,7 @@ export class CrawlerService {
         }
     }
 
-    private parseRssFeed(xmlText: string, sourceUrl: string): Array<{
+    private parseRssFeed(xmlText: string, _sourceUrl: string): Array<{
         title: string
         link: string
         description: string
@@ -260,8 +493,8 @@ export class CrawlerService {
         try {
             const response = await fetch(fullUrl, {
                 headers: {
-                    "User-Agent": "Relay Research Bot/1.0",
-                    "Accept": "application/json"
+                    "User-Agent": BROWSER_UA,
+                    "Accept": "application/json, application/vnd.github+json"
                 },
                 signal: AbortSignal.timeout(options.timeoutMs ?? 30000)
             })
@@ -335,12 +568,16 @@ export class CrawlerService {
                 const works = (data as { items?: unknown[] })?.items ?? []
                 for (const work of works.slice(0, 50)) {
                     const w = work as Record<string, unknown>
+                    const publishedPrint = w["published-print"] as Record<string, unknown> | undefined
+                    const created = w.created as Record<string, unknown> | undefined
+                    const dateParts = (publishedPrint?.["date-parts"] ?? created?.["date-parts"]) as string[][] | undefined
+                    
                     items.push({
                         title: (w.title as string[])?.join(" ") ?? "",
                         url: w.DOI ? `https://doi.org/${w.DOI}` : (w.URL as string) ?? "",
                         description: (w.abstract as string) ?? (w["container-title"] as string[])?.join(" ") ?? "",
                         text: (w.abstract as string) ?? "",
-                        publishedAt: w["published-print"]?.["date-parts"]?.[0]?.join("-") ?? w.created?.["date-parts"]?.[0]?.join("-") ?? "",
+                        publishedAt: dateParts?.[0]?.join("-") ?? "",
                         author: (w.author as Array<{ given: string; family: string }>)?.map(a => `${a.given} ${a.family}`).join(", ") ?? "",
                         metadata: { doi: w.DOI, type: w.type, journal: w["container-title"] }
                     })
@@ -375,6 +612,58 @@ export class CrawlerService {
                         publishedAt: p.year ? `${p.year}-01-01` : "",
                         author: (p.authors as Array<{ name: string }>)?.map(a => a.name).join(", ") ?? "",
                         metadata: { paperId: p.paperId, citationCount: p.citationCount, venue: p.venue }
+                    })
+                }
+            }
+            // Handle Hacker News (Algolia) API
+            else if (sourceUrl.includes("hn.algolia.com")) {
+                const hits = ((data as { hits?: unknown[] })?.hits ?? []) as Array<Record<string, unknown>>
+                for (const h of hits.slice(0, 50)) {
+                    const text = (h.story_text as string) ?? (h.comment_text as string) ?? (h.title as string) ?? ""
+                    items.push({
+                        title: (h.title as string) ?? (h.story_title as string) ?? "",
+                        url: (h.url as string) ?? (h.objectID ? `https://news.ycombinator.com/item?id=${h.objectID}` : ""),
+                        description: text.slice(0, 500),
+                        text,
+                        publishedAt: (h.created_at as string) ?? "",
+                        author: (h.author as string) ?? "",
+                        metadata: { points: h.points, numComments: h.num_comments, objectID: h.objectID },
+                    })
+                }
+            }
+            // Handle Stack Exchange API (Stack Overflow, …)
+            else if (sourceUrl.includes("stackexchange.com")) {
+                const list = ((data as { items?: unknown[] })?.items ?? []) as Array<Record<string, unknown>>
+                for (const it of list.slice(0, 50)) {
+                    const body = (it.body_markdown as string) ?? (it.body as string) ?? ""
+                    const owner = it.owner as { display_name?: string } | undefined
+                    items.push({
+                        title: (it.title as string) ?? "",
+                        url: (it.link as string) ?? "",
+                        description: body.slice(0, 500),
+                        text: body,
+                        publishedAt: it.creation_date
+                            ? new Date((it.creation_date as number) * 1000).toISOString()
+                            : "",
+                        author: owner?.display_name ?? "",
+                        metadata: { score: it.score, isAnswered: it.is_answered, tags: it.tags },
+                    })
+                }
+            }
+            // Handle GitHub search API (issues / pull requests)
+            else if (sourceUrl.includes("api.github.com")) {
+                const list = ((data as { items?: unknown[] })?.items ?? []) as Array<Record<string, unknown>>
+                for (const it of list.slice(0, 50)) {
+                    const body = (it.body as string) ?? ""
+                    const user = it.user as { login?: string } | undefined
+                    items.push({
+                        title: (it.title as string) ?? "",
+                        url: (it.html_url as string) ?? "",
+                        description: body.slice(0, 500),
+                        text: body,
+                        publishedAt: (it.created_at as string) ?? "",
+                        author: user?.login ?? "",
+                        metadata: { state: it.state, comments: it.comments, repository: it.repository_url },
                     })
                 }
             }

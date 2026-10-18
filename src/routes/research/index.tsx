@@ -1,6 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import { startResearchFn, getResearchJobFn, getResearchReportFn, getResearchSourcesFn, getResearchEvidenceFn, getUserResearchJobsFn } from '#/server/functions/research.tsx'
+import { useProgressTracker } from '#/hooks/useProgressTracker'
+import { ProgressTracker } from '#/components/ProgressTracker'
 
 export const Route = createFileRoute('/research/')({
   beforeLoad({ context }) {
@@ -22,18 +24,6 @@ type ResearchStage =
   | 'completed'
   | 'error'
 
-const STAGE_LABELS: Record<ResearchStage, string> = {
-  idle: 'Ready',
-  planning: 'Planning research...',
-  discovering: 'Discovering sources...',
-  crawling: 'Crawling sources...',
-  extracting: 'Extracting evidence...',
-  analyzing: 'Analyzing evidence...',
-  synthesizing: 'Synthesizing report...',
-  completed: 'Research completed',
-  error: 'Research failed',
-}
-
 interface ResearchJob {
   id: string
   question: string
@@ -51,6 +41,21 @@ interface ResearchJob {
   report?: any
 }
 
+// Storage key for persisting active research
+const ACTIVE_RESEARCH_KEY = 'relay-active-research'
+
+// A job is "active" unless it has reached a terminal status.
+const INACTIVE_STATUSES = ['COMPLETED', 'FAILED', 'CANCELLED']
+const isActiveJob = (status: unknown): boolean =>
+  typeof status === 'string' && !INACTIVE_STATUSES.includes(status)
+
+interface PersistedResearch {
+  jobId: string
+  question: string
+  stage: ResearchStage
+  startedAt: number
+}
+
 function ResearchPage() {
   const [stage, setStage] = useState<ResearchStage>('idle')
   const [jobId, setJobId] = useState<string | null>(null)
@@ -60,15 +65,95 @@ function ResearchPage() {
   const [evidence, setEvidence] = useState<any[]>([])
   const [error, setError] = useState<string | null>(null)
   const [history, setHistory] = useState<ResearchJob[]>([])
-  const [activeTab, setActiveTab] = useState<'report' | 'sources' | 'evidence' | 'history'>('report')
-  const esRef = useRef<EventSource | null>(null)
+  const [activeTab, setActiveTab] = useState<'report' | 'sources' | 'evidence' | 'history' | 'progress'>('progress')
+  const [question, setQuestion] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [isLoading, setIsLoading] = useState(false)
 
+  // Use the progress tracker hook with persistence
+  const progress = useProgressTracker(jobId, {
+    streamUrl: jobId ? `/api/research/stream/${jobId}` : undefined,
+    onComplete: () => {
+      setStage('completed')
+      loadResult(jobId!)
+    },
+    onError: (err) => {
+      setError(err)
+      setStage('error')
+    },
+  })
+
+  // Load persisted research on mount
   useEffect(() => {
     loadHistory()
-    return () => esRef.current?.close()
+    loadPersistedResearch()
+    
+    return () => {
+      // Cleanup handled by the hook
+    }
   }, [])
+
+  // Persist research state when it changes
+  useEffect(() => {
+    if (jobId && stage !== 'idle' && stage !== 'completed' && stage !== 'error') {
+      persistResearch(jobId, question, stage)
+    }
+  }, [jobId, stage, question])
+
+  const persistResearch = (jobId: string, question: string, stage: ResearchStage) => {
+    const data: PersistedResearch = {
+      jobId,
+      question,
+      stage,
+      startedAt: Date.now(),
+    }
+    localStorage.setItem(ACTIVE_RESEARCH_KEY, JSON.stringify(data))
+  }
+
+  const clearPersistedResearch = () => {
+    localStorage.removeItem(ACTIVE_RESEARCH_KEY)
+  }
+
+  const loadPersistedResearch = async () => {
+    try {
+      const saved = localStorage.getItem(ACTIVE_RESEARCH_KEY)
+      if (!saved) return
+
+      const data: PersistedResearch = JSON.parse(saved)
+
+      const jobData = await getResearchJobFn({ jobId: data.jobId })
+
+      // Job no longer exists - drop the stale pointer
+      if (!jobData) {
+        clearPersistedResearch()
+        return
+      }
+
+      // Restore the question/job regardless of state
+      setJobId(data.jobId)
+      setQuestion(data.question)
+      setJob(jobData as unknown as ResearchJob)
+      if (inputRef.current) {
+        inputRef.current.value = data.question
+      }
+
+      if (isActiveJob(jobData.status)) {
+        // Resume live updates from where it left off
+        setStage((jobData.currentStage as ResearchStage) || data.stage)
+        setActiveTab('progress')
+      } else if (jobData.status === 'COMPLETED') {
+        // Finished while away - show the finished report
+        setStage('completed')
+        await loadResult(data.jobId)
+      } else {
+        setStage('error')
+        setError('This research job did not complete.')
+      }
+    } catch (e) {
+      console.error('Failed to load persisted research:', e)
+      clearPersistedResearch()
+    }
+  }
 
   const loadHistory = async () => {
     try {
@@ -76,55 +161,6 @@ function ResearchPage() {
       if (jobs) setHistory(jobs)
     } catch (e) {
       console.error('Failed to load history:', e)
-    }
-  }
-
-  const connectSSE = (jobId: string) => {
-    if (esRef.current) {
-      esRef.current.close()
-    }
-
-    const es = new EventSource(`/api/research/stream/${jobId}`)
-    esRef.current = es
-
-    let retryCount = 0
-
-    es.onmessage = (e) => {
-      try {
-        const data = JSON.parse(e.data)
-        const newStage = data.stage as ResearchStage
-
-        setStage(newStage)
-
-        if (data.data) {
-          setJob(prev => prev ? { ...prev, ...data.data } : null)
-        }
-
-        if (['completed', 'error'].includes(newStage)) {
-          es.close()
-          esRef.current = null
-          if (newStage === 'completed') {
-            loadResult(jobId)
-          }
-        }
-      } catch (err) {
-        console.error('Failed to parse SSE:', err)
-      }
-    }
-
-    es.onerror = () => {
-      if (retryCount < 3) {
-        retryCount++
-        es.close()
-        esRef.current = null
-        setTimeout(() => connectSSE(jobId), 1000 * retryCount)
-        return
-      }
-
-      setStage('error')
-      setError('Connection lost. Please try again.')
-      es.close()
-      esRef.current = null
     }
   }
 
@@ -149,8 +185,8 @@ function ResearchPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const question = inputRef.current?.value.trim()
-    if (!question) return
+    const questionText = inputRef.current?.value.trim()
+    if (!questionText) return
 
     setIsLoading(true)
     setError(null)
@@ -159,30 +195,50 @@ function ResearchPage() {
     setReport(null)
     setSources([])
     setEvidence([])
+    setQuestion(questionText)
 
     try {
       const { jobId: newJobId } = await startResearchFn({ 
-        data: { question, depth: 'STANDARD' } 
+        data: { question: questionText, depth: 'STANDARD' } 
       })
       setJobId(newJobId)
-      connectSSE(newJobId)
+      setActiveTab('progress')
     } catch (e) {
       setError('Failed to start research. Please try again.')
       setStage('error')
+      clearPersistedResearch()
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleHistoryClick = async (selectedJob: ResearchJob) => {
+    const jobStage = (selectedJob.currentStage as ResearchStage) ?? 'idle'
     setJobId(selectedJob.id)
     setJob(selectedJob)
-    setStage(selectedJob.currentStage as ResearchStage ?? 'idle')
-    
+    setQuestion(selectedJob.question)
+    setStage(jobStage)
+    // Persist the selection so it is restored on reload/navigation
+    persistResearch(selectedJob.id, selectedJob.question, jobStage)
+
     if (selectedJob.status === 'COMPLETED') {
       await loadResult(selectedJob.id)
-    } else if (selectedJob.status === 'RUNNING' || selectedJob.status === 'ITERATING') {
-      connectSSE(selectedJob.id)
+    } else if (isActiveJob(selectedJob.status)) {
+      setActiveTab('progress')
+      setStage(jobStage === 'idle' ? 'planning' : jobStage)
+    }
+  }
+
+  const handleCancel = () => {
+    if (confirm('Are you sure you want to cancel this research?')) {
+      setJobId(null)
+      setStage('idle')
+      setJob(null)
+      setReport(null)
+      setSources([])
+      setEvidence([])
+      clearPersistedResearch()
+      progress.clearProgress()
     }
   }
 
@@ -411,7 +467,7 @@ function ResearchPage() {
                 placeholder="What are the current best approaches for building retrieval-augmented generation systems?"
                 rows={3}
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled={isLoading}
+                disabled={isLoading || (stage !== 'idle' && stage !== 'completed' && stage !== 'error')}
               />
             </div>
 
@@ -419,20 +475,30 @@ function ResearchPage() {
               <select
                 defaultValue="STANDARD"
                 className="px-4 py-2 border rounded-lg"
-                disabled={isLoading}
+                disabled={isLoading || (stage !== 'idle' && stage !== 'completed' && stage !== 'error')}
               >
                 <option value="QUICK">Quick (1 iteration, 10 sources)</option>
                 <option value="STANDARD">Standard (3 iterations, 30 sources)</option>
                 <option value="DEEP">Deep (5 iterations, 50 sources)</option>
               </select>
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Starting...' : 'Start Research'}
-              </button>
+              {stage === 'idle' || stage === 'completed' || stage === 'error' ? (
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Starting...' : 'Start Research'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                >
+                  Cancel Research
+                </button>
+              )}
             </div>
           </form>
 
@@ -443,49 +509,22 @@ function ResearchPage() {
           )}
         </section>
 
-        {stage !== 'idle' && (
+        {/* Real-time progress tracker */}
+        {jobId && stage !== 'idle' && (
           <section className="mb-8">
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="flex items-center gap-4 mb-4">
-                <div className={`w-3 h-3 rounded-full ${
-                  stage === 'completed' ? 'bg-green-500' :
-                  stage === 'error' ? 'bg-red-500' :
-                  'bg-blue-500 animate-pulse'
-                }`}></div>
-                <span className="font-medium">{STAGE_LABELS[stage]}</span>
-                {jobId && <span className="text-sm text-gray-500">Job: {jobId.slice(0, 8)}...</span>}
-              </div>
-
-              <div className="space-y-2">
-                {[
-                  { key: 'planning', label: 'Research plan created' },
-                  { key: 'discovering', label: 'Sources discovered' },
-                  { key: 'crawling', label: 'Sources crawled' },
-                  { key: 'extracting', label: 'Evidence extracted' },
-                  { key: 'analyzing', label: 'Evidence analyzed' },
-                  { key: 'synthesizing', label: 'Report synthesized' },
-                ].map(s => (
-                  <div key={s.key} className="flex items-center gap-2 text-sm">
-                    <span className={`w-5 h-5 rounded-full border-2 ${
-                      ['completed'].includes(stage) || 
-                      (['planning', 'discovering', 'crawling', 'extracting', 'analyzing', 'synthesizing'].indexOf(stage) > 
-                       ['planning', 'discovering', 'crawling', 'extracting', 'analyzing', 'synthesizing'].indexOf(s.key))
-                        ? 'border-green-500 bg-green-500' :
-                      stage === s.key ? 'border-blue-500' :
-                      'border-gray-300'
-                    }`}>
-                      {['completed'].includes(stage) || 
-                       (['planning', 'discovering', 'crawling', 'extracting', 'analyzing', 'synthesizing'].indexOf(stage) > 
-                        ['planning', 'discovering', 'crawling', 'extracting', 'analyzing', 'synthesizing'].indexOf(s.key))
-                        ? '✓' : ''}
-                    </span>
-                    <span className={stage === s.key ? 'font-medium' : 'text-gray-600'}>
-                      {s.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ProgressTracker
+              operations={progress.operations}
+              phases={progress.phases}
+              currentPhase={progress.currentPhase}
+              signalCount={progress.signalCount}
+              iteration={progress.iteration}
+              isComplete={progress.isComplete}
+              hasError={progress.hasError}
+              startedAt={progress.startedAt}
+              connected={progress.connected}
+              lastEventAt={progress.lastEventAt}
+              onClear={progress.clearProgress}
+            />
           </section>
         )}
 
@@ -494,11 +533,12 @@ function ResearchPage() {
             <div className="border-b mb-4">
               <nav className="flex gap-4" role="tablist">
                 {[
-                  { key: 'report', label: 'Report' },
-                  { key: 'sources', label: 'Sources' },
-                  { key: 'evidence', label: 'Evidence' },
-                  { key: 'history', label: 'History' },
-                ].map(tab => (
+                  { key: 'progress', label: 'Progress', show: stage !== 'idle' && stage !== 'completed' },
+                  { key: 'report', label: 'Report', show: true },
+                  { key: 'sources', label: 'Sources', show: true },
+                  { key: 'evidence', label: 'Evidence', show: true },
+                  { key: 'history', label: 'History', show: true },
+                ].filter(tab => tab.show).map(tab => (
                   <button
                     key={tab.key}
                     role="tab"
@@ -517,6 +557,21 @@ function ResearchPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
+              {activeTab === 'progress' && jobId && (
+                <ProgressTracker
+                  operations={progress.operations}
+                  phases={progress.phases}
+                  currentPhase={progress.currentPhase}
+                  signalCount={progress.signalCount}
+                  iteration={progress.iteration}
+                  isComplete={progress.isComplete}
+                  hasError={progress.hasError}
+                  startedAt={progress.startedAt}
+                  connected={progress.connected}
+                  lastEventAt={progress.lastEventAt}
+                  onClear={progress.clearProgress}
+                />
+              )}
               {activeTab === 'report' && renderReport()}
               {activeTab === 'sources' && renderSources()}
               {activeTab === 'evidence' && renderEvidence()}

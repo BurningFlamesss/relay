@@ -12,7 +12,15 @@ export const serverEnv = createEnv({
         WORKER_HEALTH_PORT: z.string().optional(),
         NODE_ENV: z.enum(["development", "production"]).catch("development"),
         OPENROUTER_API_KEY: z.string().optional(),
+        // Additional OpenRouter keys (comma-separated) used for rotation when a
+        // key hits its daily free-tier quota. Combined with OPENROUTER_API_KEY.
+        OPENROUTER_API_KEYS: z.string().optional(),
         OPENROUTER_BASE_URL: z.url().default("https://openrouter.ai/api/v1"),
+        OPENROUTER_MODEL_PLANNER: z.string().optional(),
+        OPENROUTER_MODEL_EXTRACTOR: z.string().optional(),
+        OPENROUTER_MODEL_RESEARCHER: z.string().optional(),
+        OPENROUTER_MODEL_SYNTHESIZER: z.string().optional(),
+        OPENROUTER_MODEL_FALLBACK: z.string().optional(),
         CRAWL4AI_URL: z.url().default("http://localhost:11235"),
         CRAWL4AI_API_TOKEN: z.string().optional(),
         RESEARCH_MAX_ITERATIONS: z.coerce.number().int().positive().default(3),
@@ -20,6 +28,10 @@ export const serverEnv = createEnv({
         RESEARCH_MAX_PAGES: z.coerce.number().int().positive().default(100),
         RESEARCH_CRAWL_TIMEOUT_MS: z.coerce.number().int().positive().default(60000),
         RESEARCH_AI_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
+        // Per-document evidence extraction makes one LLM call each, so this cap
+        // dominates a job's request budget. Default fits one free-tier OpenRouter
+        // key (50 requests/day); raise it (e.g. 60) when using paid credit.
+        RESEARCH_MAX_EXTRACTION_DOCS: z.coerce.number().int().positive().default(30),
     },
 
     runtimeEnv: process.env,

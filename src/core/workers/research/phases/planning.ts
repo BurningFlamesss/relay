@@ -3,6 +3,7 @@ import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import type { QueryArchitectureResult } from "#/core/types.ts";
 import type { ResearchPlan, SourceCategory, ResearchDepth } from "#/core/research/types.ts";
 import { prisma } from "#/db.ts";
+import { publishProgress } from "#/core/redis.ts";
 import { createHash } from "node:crypto";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
 import { loadResearchPhaseOutput, updateResearchPhase } from "../phase-tracker.ts";
@@ -60,6 +61,13 @@ export async function runResearchPlanning(context: PhaseContext): Promise<Resear
 
     const cacheKey = createHash("sha256").update(`RESEARCH_PLAN:${topicHash}:${JSON.stringify(filters ?? {})}`).digest("hex")
 
+    await publishProgress({
+        type: "AI_CALL_START",
+        jobId,
+        message: "Asking AI to design a research plan and search queries…",
+        timestamp: Date.now(),
+    })
+
     const aiJob = await enqueueAITask({
         jobId,
         task: "QUERY_ARCHITECTURE",
@@ -74,6 +82,13 @@ export async function runResearchPlanning(context: PhaseContext): Promise<Resear
     })
 
     const result = (await aiJob.waitUntilFinished(aiQueueEvents, AI_CALL_TIMEOUT_MS)) as QueryArchitectureResult
+
+    await publishProgress({
+        type: "AI_CALL_DONE",
+        jobId,
+        message: `Generated ${result.queries.length} search queries`,
+        timestamp: Date.now(),
+    })
 
     // Convert QueryArchitectureResult to ResearchPlan
     const job = await prisma.researchJob.findUnique({ where: { id: jobId }, select: { depth: true } })

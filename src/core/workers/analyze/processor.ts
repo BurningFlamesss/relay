@@ -19,7 +19,7 @@ async function processAnalyzeJob(job: { data: AnalyzeJobData; updateProgress: (p
             jobId,
             stage: "confirmed",
             result: `Analyzing: ${topic}`,
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
 
         await new Promise(resolve => setTimeout(resolve, 1000))
@@ -31,7 +31,7 @@ async function processAnalyzeJob(job: { data: AnalyzeJobData; updateProgress: (p
             jobId,
             stage: "thinking",
             result: "Planning analysis structure...",
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
 
         await new Promise(resolve => setTimeout(resolve, 1000))
@@ -43,7 +43,7 @@ async function processAnalyzeJob(job: { data: AnalyzeJobData; updateProgress: (p
             jobId,
             stage: "researching",
             result: "Gathering relevant information...",
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
 
         await new Promise(resolve => setTimeout(resolve, 1500))
@@ -55,7 +55,7 @@ async function processAnalyzeJob(job: { data: AnalyzeJobData; updateProgress: (p
             jobId,
             stage: "evaluating",
             result: "Evaluating findings...",
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
 
         await new Promise(resolve => setTimeout(resolve, 1000))
@@ -67,7 +67,7 @@ async function processAnalyzeJob(job: { data: AnalyzeJobData; updateProgress: (p
             jobId,
             stage: "stitching",
             result: "Compiling final report...",
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
 
         await new Promise(resolve => setTimeout(resolve, 500))
@@ -100,7 +100,7 @@ High (based on multi-source validation)`
             jobId,
             stage: "done",
             result: report,
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
 
         return { report }
@@ -114,7 +114,7 @@ High (based on multi-source validation)`
             jobId,
             stage: "error",
             error: errorMessage,
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
 
         throw error
@@ -142,7 +142,7 @@ export function createAnalyzeWorker(): Worker<AnalyzeJobData, { report: string }
             jobId: job.data.jobId,
             error: error.message,
             message: "Analysis failed",
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
     })
     worker.on("stalled", (id) => console.warn(`[ANALYZE] Job ${id} stalled - will retry`))

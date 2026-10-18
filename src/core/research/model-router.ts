@@ -1,6 +1,6 @@
 import { createAIProvider     } from "#/core/ai/provider.ts"
-import type {AIProvider, AIRequest, AIResponse, ModelRole} from "#/core/ai/provider.ts";
-import type { ModelCapabilities } from "#/core/ai/types.ts"
+import type {AIProvider, AIRequest, AIResponse} from "#/core/ai/provider.ts";
+import type { ModelCapabilities, ModelRole } from "#/core/ai/types.ts"
 
 export interface ModelRouterConfig {
     maxRetries: number
@@ -52,6 +52,17 @@ export class ModelRouter {
                 const startTime = Date.now()
                 const response = await this.provider.complete(modelRequest)
                 const latency = Date.now() - startTime
+
+                // A 200 response with unparseable JSON is a silent failure: callers
+                // would fall back to heuristics. Validate (and lightly repair) here so
+                // we can transparently retry with the next model in the chain instead.
+                if (request.responseFormat?.type === "json_object") {
+                    const json = extractJsonObject(response.content)
+                    if (json === null) {
+                        throw new Error(`Model ${model} returned invalid JSON`)
+                    }
+                    response.content = json
+                }
 
                 this.logInvocation(model, role, request.task ?? "complete", true, latency)
                 return response
@@ -175,4 +186,26 @@ export function createModelRouter(config?: Partial<ModelRouterConfig>): ModelRou
 export function getModelCapabilities(model: string): ModelCapabilities {
     const provider = createAIProvider()
     return provider.getModelCapabilities(model)
+}
+
+/**
+ * Recover a JSON object from a model response, tolerating markdown code fences
+ * and surrounding prose. Returns the extracted JSON string when it parses, or
+ * null when no valid JSON object can be recovered.
+ */
+export function extractJsonObject(content: string): string | null {
+    if (!content) return null
+    const trimmed = content.trim()
+    const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i)
+    const candidate = (fenced ? fenced[1] : trimmed).trim()
+    const start = candidate.indexOf("{")
+    const end = candidate.lastIndexOf("}")
+    if (start === -1 || end === -1 || end <= start) return null
+    const slice = candidate.slice(start, end + 1)
+    try {
+        JSON.parse(slice)
+        return slice
+    } catch {
+        return null
+    }
 }

@@ -87,7 +87,7 @@ export async function runDelivery(context: PhaseContext): Promise<void> {
         type: "DONE",
         jobId,
         message: "Analysis complete",
-        timeStamp: Date.now()
+        timestamp: Date.now()
     })
 }
 
@@ -210,6 +210,6 @@ export async function deliverFromCache(jobId: string, cachedJobId: string): Prom
         type: "DONE",
         jobId,
         message: "Served from cache",
-        timeStamp: Date.now()
+        timestamp: Date.now()
     })
 }

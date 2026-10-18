@@ -1,6 +1,7 @@
 import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
+import { publishProgress } from "#/core/redis.ts";
 import { createHash } from "node:crypto";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
 import { updateResearchPhase } from "../phase-tracker.ts";
@@ -73,6 +74,20 @@ export async function runResearchDiscovery(context: PhaseContext, plan: Research
                 relevanceScore: source.relevanceScore,
                 authorityScore: source.authorityScore,
                 freshnessScore: source.freshnessScore,
+            },
+        })
+
+        await publishProgress({
+            type: "SOURCE_DISCOVERED",
+            jobId,
+            url: source.url,
+            message: `Found source: ${source.domain}`,
+            timestamp: Date.now(),
+            metadata: {
+                name: source.name,
+                domain: source.domain,
+                category: source.category,
+                sourceType: source.sourceType,
             },
         })
     }

@@ -42,7 +42,7 @@ export function createResearchWorker(): Worker {
             jobId: job.data.jobId,
             error: error.message,
             message: "Research failed",
-            timeStamp: Date.now(),
+            timestamp: Date.now(),
         })
     })
 

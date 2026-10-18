@@ -79,7 +79,7 @@ export async function runIterationGate(context: PhaseContext, clusterResult: Clu
             jobId,
             iterationsDone,
             message: `Score ${topScore.toFixed(2)} < ${ITERATION_THRESHOLD} - drilling down (${iterationsDone + 1}/${maxIterations})`,
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
 
         await prisma.analysisJob.update({
@@ -125,7 +125,7 @@ export async function runIterationGate(context: PhaseContext, clusterResult: Clu
             jobId,
             iterationsDone,
             message: `Iteration ${iterationsDone} done - top score: ${topScore.toFixed(2)}`,
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
     }
 

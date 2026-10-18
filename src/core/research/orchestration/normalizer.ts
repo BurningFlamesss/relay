@@ -91,6 +91,12 @@ export class DocumentNormalizer {
             content = this.htmlToText(crawlResult.html)
         }
 
+        // RSS/API payloads frequently arrive as HTML fragments. Strip any tags so
+        // the evidence extractor sees clean prose (markdown has no such tags).
+        if (/<\/?[a-z][^>]*>/i.test(content)) {
+            content = this.htmlToText(content)
+        }
+
         content = this.removeBoilerplate(content)
         content = this.cleanWhitespace(content)
         content = this.truncateContent(content)

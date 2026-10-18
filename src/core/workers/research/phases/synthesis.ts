@@ -1,6 +1,7 @@
 import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
 import { prisma } from "#/db.ts";
+import { publishProgress } from "#/core/redis.ts";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
 import { updateResearchPhase } from "../phase-tracker.ts";
 import { createResearchSynthesizer } from "#/core/research/orchestration/synthesizer.ts";
@@ -44,12 +45,26 @@ export async function runResearchSynthesis(context: PhaseContext): Promise<void>
 
     const sourceRefs = await citationResolver.getSourceReferences(jobId)
 
+    await publishProgress({
+        type: "AI_CALL_START",
+        jobId,
+        message: `Writing report from ${job.evidence.length} evidence items…`,
+        timestamp: Date.now(),
+    })
+
     const report = await synthesizer.synthesize(
         plan,
         job.documents as any,
         job.evidence as any,
         sourceRefs
     )
+
+    await publishProgress({
+        type: "AI_CALL_DONE",
+        jobId,
+        message: "Report draft complete",
+        timestamp: Date.now(),
+    })
 
     const citations = await citationResolver.resolveCitations(job.evidence as any, job.documents as any)
     await citationResolver.persistCitations(jobId, citations)

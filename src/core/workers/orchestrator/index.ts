@@ -48,7 +48,7 @@ export function createOrchestratorWorker(): Worker {
             jobId: job.data.jobId,
             error: error.message,
             message: "Analysis failed - credits will be refunded",
-            timeStamp: Date.now()
+            timestamp: Date.now()
         })
     })
 

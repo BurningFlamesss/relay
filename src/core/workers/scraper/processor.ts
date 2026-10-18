@@ -27,37 +27,70 @@ export async function processScrapeJob(job: Job<ScraperJobData>): Promise<Scrape
         message: `Scraping ${source}...`
     })
 
+    // Publish detailed start event
+    await publishProgress({
+        type: "SCRAPE_SOURCE_START",
+        jobId,
+        source,
+        message: `Starting to scrape ${source}...`,
+        timestamp: Date.now(),
+        metadata: {
+            queries: queries.map(q => q.query),
+            iterationNumber
+        }
+    })
+
     const adapter = getAdapter(source)
     const excludedSet = new Set(excludedDomainHashes)
 
     let rawSignals = []
 
     try {
-        rawSignals = await adapter.scrape(queries, {
-            jobId,
-            maxSignals: MAX_SIGNALS_PER_SOURCE,
-            excludedDomainHashes: excludedSet
-        })
+        // Add timeout wrapper to prevent hanging
+        rawSignals = await Promise.race([
+            adapter.scrape(queries, {
+                jobId,
+                maxSignals: MAX_SIGNALS_PER_SOURCE,
+                excludedDomainHashes: excludedSet
+            }),
+            new Promise<never>((_, reject) => 
+                setTimeout(() => reject(new Error("Scrape timeout")), 85000)
+            )
+        ])
 
         if (rawSignals.length === 0) {
-            console.warn(`[SCRAPER] ${source} returned 0 signals for job ${jobId} - check credentials / rate limits`)
+            console.warn(`[SCRAPER] ${source} returned 0 signals for job ${jobId} - check credentials / rate limits / Crawl4AI health`)
         }
     } catch (error: any) {
+        const errorMessage = error?.message ?? "Unknown error"
+        console.error(`[SCRAPER] ${source} failed for job ${jobId}:`, errorMessage)
+        
+        // Publish failure event
+        await publishProgress({
+            type: "SCRAPE_SOURCE_FAILED",
+            jobId,
+            source,
+            message: `Failed to scrape ${source}`,
+            error: errorMessage,
+            timestamp: Date.now()
+        })
+        
         await prisma.scrapeJob.update({
             where: {
                 id: scrapeJobId
             },
             data: {
                 status: "FAILED",
-                errorMessage: error?.message ?? "",
+                errorMessage,
                 completedAt: new Date()
             }
         })
 
         if (isPermanentError(error)) {
-            throw new UnrecoverableError(`Permanent failure on ${source}: ${error?.message ?? ""}`)
+            throw new UnrecoverableError(`Permanent failure on ${source}: ${errorMessage}`)
         }
 
+        // For transient errors, allow retry
         throw error
     }
 
@@ -90,7 +123,7 @@ export async function processScrapeJob(job: Job<ScraperJobData>): Promise<Scrape
         jobId,
         signalCount: filtered.length,
         message: `${source}: ${filtered.length} signals (${rawSignals.length - filtered.length}) filtered)`,
-        timeStamp: Date.now()
+        timestamp: Date.now()
     })
 
     await prisma.scrapeJob.update({

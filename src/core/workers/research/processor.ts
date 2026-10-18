@@ -40,7 +40,7 @@ export async function processResearchJob(job: Job<OrchestratorJobData>): Promise
                 jobId,
                 phase: phase as any,
                 message,
-                timeStamp: Date.now(),
+                timestamp: Date.now(),
             }),
         ])
     }
@@ -51,7 +51,7 @@ export async function processResearchJob(job: Job<OrchestratorJobData>): Promise
             jobId,
             phase: phase as any,
             message,
-            timeStamp: Date.now(),
+            timestamp: Date.now(),
         })
     }
 
@@ -92,7 +92,7 @@ export async function processResearchJob(job: Job<OrchestratorJobData>): Promise
             type: "DONE",
             jobId,
             message: "Research completed",
-            timeStamp: Date.now(),
+            timestamp: Date.now(),
         })
 
     } catch (error) {
@@ -111,7 +111,7 @@ export async function processResearchJob(job: Job<OrchestratorJobData>): Promise
             jobId,
             error: error instanceof Error ? error.message : "Unknown error",
             message: "Research failed",
-            timeStamp: Date.now(),
+            timestamp: Date.now(),
         })
 
         throw error

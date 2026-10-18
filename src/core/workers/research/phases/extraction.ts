@@ -1,10 +1,16 @@
 import { aiQueueEvents, enqueueAITask } from "#/core/queues.ts";
 import { AI_CALL_TIMEOUT_MS } from "#/core/types.ts";
+import { serverEnv } from "#/env/server.ts";
 import { prisma } from "#/db.ts";
+import { publishProgress } from "#/core/redis.ts";
 import type { PhaseContext } from "#/core/workers/orchestrator/context.ts";
 import { loadResearchPhaseOutput, updateResearchPhase } from "../phase-tracker.ts";
 import { createDocumentNormalizer } from "#/core/research/orchestration/normalizer.ts";
 import { createEvidenceExtractor } from "#/core/research/orchestration/evidence-extractor.ts";
+
+// Bound how many documents a single job extracts so large crawls stay responsive
+// and a job fits within a free-tier OpenRouter request budget (~50/day/key).
+const MAX_EXTRACTION_DOCS = serverEnv.RESEARCH_MAX_EXTRACTION_DOCS
 
 export async function runResearchExtraction(context: PhaseContext): Promise<void> {
     const { jobId, isDone } = context
@@ -23,22 +29,37 @@ export async function runResearchExtraction(context: PhaseContext): Promise<void
     const normalizer = createDocumentNormalizer()
     const extractor = createEvidenceExtractor()
 
-    const documents = await prisma.researchDocument.findMany({
+    const candidates = await prisma.researchDocument.findMany({
         where: { jobId, status: "PENDING" },
         include: { source: true },
+        // Prefer content-rich documents (e.g. dev.to / arXiv / Stack Overflow)
+        // over near-empty API/RSS entries, then scan a wider set than the LLM
+        // budget so short docs don't consume it. Only MAX_EXTRACTION_DOCS *valid*
+        // documents are actually extracted below.
+        orderBy: [{ wordCount: "desc" }, { crawledAt: "asc" }],
+        take: MAX_EXTRACTION_DOCS * 3,
     })
 
-    if (documents.length === 0) {
+    if (candidates.length === 0) {
         await updateResearchPhase(jobId, "RESEARCH_EXTRACTION", "SKIPPED", {
             summary: "No pending documents to process",
         })
         return
     }
 
+    // Load the plan once rather than re-querying it for every document.
+    const job = await prisma.researchJob.findUnique({
+        where: { id: jobId },
+        select: { plan: true },
+    })
+    const plan = job?.plan
+
     let processedCount = 0
     let evidenceCount = 0
 
-    for (const doc of documents) {
+    for (const doc of candidates) {
+        if (processedCount >= MAX_EXTRACTION_DOCS) break
+
         const normalized = normalizer.normalize({
             url: doc.url,
             success: true,
@@ -65,6 +86,12 @@ export async function runResearchExtraction(context: PhaseContext): Promise<void
             continue
         }
 
+        // Reuse the job-scoped identity assigned at crawl time. The contentHash
+        // written during crawling (content + url + jobId) is the value the unique
+        // constraint is built around, so we must NOT overwrite it here with the
+        // normalizer's non-scoped hash - doing so collides across research jobs.
+        normalized.id = doc.id
+
         await prisma.researchDocument.update({
             where: { id: doc.id },
             data: {
@@ -72,19 +99,13 @@ export async function runResearchExtraction(context: PhaseContext): Promise<void
                 markdown: normalized.markdown,
                 headings: normalized.headings,
                 wordCount: normalized.wordCount,
-                contentHash: normalized.contentHash,
                 metadata: normalized.metadata as any,
                 status: "COMPLETED",
             },
         })
 
-        const plan = await prisma.researchJob.findUnique({
-            where: { id: jobId },
-            select: { plan: true },
-        })
-
-        if (plan?.plan) {
-            const evidence = await extractor.extractEvidence(normalized, plan.plan as any)
+        if (plan) {
+            const evidence = await extractor.extractEvidence(normalized, plan as any)
             for (const ev of evidence) {
                 await prisma.evidence.upsert({
                     where: { id: ev.id },
@@ -119,6 +140,20 @@ export async function runResearchExtraction(context: PhaseContext): Promise<void
         }
 
         processedCount++
+
+        await publishProgress({
+            type: "EVIDENCE_EXTRACTED",
+            jobId,
+            url: doc.url,
+            message: `Extracted evidence from ${doc.domain || doc.url}`,
+            signalCount: processedCount,
+            timestamp: Date.now(),
+            metadata: {
+                domain: doc.domain,
+                title: doc.title,
+                evidenceCount,
+            },
+        })
     }
 
     await updateResearchPhase(jobId, "RESEARCH_EXTRACTION", "COMPLETED", {

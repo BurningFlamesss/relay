@@ -4,9 +4,21 @@ import { ResearchJobIdSchema } from "#/schema/research.tsx"
 import { createServerFn } from "@tanstack/react-start"
 
 export interface ResearchStreamEvent {
+    // Human/system modified stage alias (for backwards compatibility)
     stage: string
-    message: string
+    // Raw progress event fields passed through from the worker
+    type?: string
+    jobId?: string
+    phase?: string
+    message?: string
     progress?: number
+    signalCount?: number
+    iterationsDone?: number
+    source?: string
+    url?: string
+    duration?: number
+    error?: string
+    metadata?: Record<string, unknown>
     data?: Record<string, unknown>
     timestamp: number
 }
@@ -34,16 +46,25 @@ const getResearchStreamFn = createServerFn()
 
         const subscriber = createSubscriber()
         const encoder = new TextEncoder()
+        let closed = false
 
         const stream = new ReadableStream({
             async start(controller) {
-                const send = (event: ResearchStreamEvent) => {
-                    if (controller.signal?.aborted) return
-                    controller.enqueue(
-                        encoder.encode(
-                            `id: ${event.stage}\ndata: ${JSON.stringify(event)}\n\n`
+                const send = (event: Record<string, unknown>) => {
+                    if (closed) return
+                    const stage =
+                        (event.stage as string) ??
+                        (event.type as string) ??
+                        "update"
+                    try {
+                        controller.enqueue(
+                            encoder.encode(
+                                `id: ${stage}\ndata: ${JSON.stringify({ ...event, stage })}\n\n`
+                            )
                         )
-                    )
+                    } catch {
+                        // controller already closed
+                    }
                 }
 
                 await subscriber.subscribe(jobChannel(data.jobId))
@@ -51,17 +72,27 @@ const getResearchStreamFn = createServerFn()
                 subscriber.on("message", (_channel, message) => {
                     try {
                         const parsed = JSON.parse(message)
+
+                        // Forward the full progress event so the client can show
+                        // exactly which source/URL is being processed.
                         send({
+                            ...parsed,
                             stage: parsed.stage ?? parsed.type ?? "update",
-                            message: parsed.message ?? "",
-                            progress: parsed.progress,
-                            data: parsed.data,
-                            timestamp: parsed.timestamp ?? Date.now(),
                         })
 
-                        if (parsed.stage === "completed" || parsed.stage === "failed" || parsed.type === "DONE" || parsed.type === "FATAL") {
-                            subscriber.quit()
-                            controller.close()
+                        if (
+                            parsed.stage === "completed" ||
+                            parsed.stage === "failed" ||
+                            parsed.type === "DONE" ||
+                            parsed.type === "FATAL"
+                        ) {
+                            closed = true
+                            subscriber.quit().catch(() => {})
+                            try {
+                                controller.close()
+                            } catch {
+                                // already closed
+                            }
                         }
                     } catch {
                         send({
@@ -72,6 +103,8 @@ const getResearchStreamFn = createServerFn()
                     }
                 })
 
+                // Send the current persisted stage immediately so a reloaded page
+                // shows where the job is without waiting for the next event.
                 const initialJob = await prisma.researchJob.findUnique({
                     where: { id: data.jobId },
                     select: { status: true, currentStage: true, iterationsDone: true },
@@ -80,7 +113,9 @@ const getResearchStreamFn = createServerFn()
                 if (initialJob) {
                     send({
                         stage: initialJob.currentStage?.toLowerCase() ?? "queued",
+                        type: "SNAPSHOT",
                         message: initialJob.currentStage ?? "Starting...",
+                        iterationsDone: initialJob.iterationsDone,
                         data: { iterationsDone: initialJob.iterationsDone },
                         timestamp: Date.now(),
                     })

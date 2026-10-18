@@ -20,7 +20,16 @@ const REGISTRY: Record<string, () => Worker> = {
     research: createResearchWorker
 }
 
+let started = false
+
 export async function start(): Promise<void> {
+    // Prevent double-start from tsx watch hot reloads
+    if (started) {
+        console.log("[WORKERS] Already started, skipping duplicate initialization")
+        return
+    }
+    started = true
+
     const type = serverEnv.WORKER_TYPE ?? "all"
 
     const workers: Array<Worker> = []
@@ -44,13 +53,13 @@ export async function start(): Promise<void> {
         workers.push(factory())
     }
 
-    // TODO: Health check
+    // Health check server
 
     if (serverEnv.WORKER_HEALTH_PORT) {
         const port = parseInt(serverEnv.WORKER_HEALTH_PORT, 10)
         const { createServer } = await import("node:http")
 
-        createServer((req, res) => {
+        const server = createServer((req, res) => {
             if (req.url === "/health" && req.method === "GET") {
                 const ok = workers.every(worker => !worker.closing)
 
@@ -65,7 +74,21 @@ export async function start(): Promise<void> {
             } else {
                 res.writeHead(404).end()
             }
-        }).listen(port, () => console.log(`[WORKERS] Health: http://localhost:${port}/health`))
+        })
+
+        // Handle port-in-use gracefully (tsx watch mode may restart quickly)
+        server.on("error", (err: NodeJS.ErrnoException) => {
+            if (err.code === "EADDRINUSE") {
+                console.warn(`[WORKERS] Port ${port} already in use - another instance may be running`)
+                // Don't exit - worker can still function without health endpoint
+            } else {
+                console.error("[WORKERS] Health server error:", err)
+            }
+        })
+
+        server.listen(port, () => {
+            console.log(`[WORKERS] Health: http://localhost:${port}/health`)
+        })
     }
 
     let stopping = false

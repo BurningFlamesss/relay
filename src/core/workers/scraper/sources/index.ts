@@ -3,6 +3,7 @@ import { readdirSync } from "node:fs";
 import { extname, basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createCrawlerService } from "#/core/crawler/service.ts";
+import { publishProgress } from "#/core/redis.ts";
 
 const registry = new Map<ScrapingSourceType, SourceAdapter>()
 
@@ -17,41 +18,137 @@ function createGenericAdapter(source: ScrapingSourceType): SourceAdapter {
         rateLimit: 10,
         async scrape(queries: Array<{ query: string; intentLabel: string }>, options: ScrapeOptions): Promise<RawSignal[]> {
             const signals: RawSignal[] = []
+            const maxPerQuery = Math.ceil(options.maxSignals / queries.length)
 
-            for (const { query } of queries) {
+            for (const { query, intentLabel } of queries) {
                 try {
+                    // Publish progress for each query
+                    await publishProgress({
+                        type: "CRAWL_URL_START",
+                        jobId: options.jobId,
+                        source,
+                        message: `Crawling "${query}" (${intentLabel})`,
+                        timestamp: Date.now(),
+                        metadata: { query, intentLabel }
+                    })
+
+                    console.log(`[SCRAPER:${source}] Crawling query: "${query}" (${intentLabel})`)
+                    
+                    const startTime = Date.now()
                     const results = await crawler.searchAndCrawl(query, {
-                        maxResults: Math.min(options.maxSignals / queries.length + 5, 50),
+                        maxResults: Math.min(maxPerQuery + 5, 50),
                         timeoutMs: 60000,
                         extractLinks: true,
                         extractMedia: false,
                     })
+                    const duration = Date.now() - startTime
 
+                    let added = 0
+                    const crawledUrls: string[] = []
+                    
                     for (const result of results) {
-                        if (result.success && result.text && result.text.length > 100) {
-                            const encoder = new TextEncoder()
-                            const data = encoder.encode(result.url)
-                            const hashBuffer = await crypto.subtle.digest("SHA-256", data)
-                            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("")
+                        if (result.success && result.text && result.text.length >= 100) {
+                            const urlHash = await hashUrl(result.url)
+                            
+                            // Extract better quote from markdown or text
+                            const quote = extractQualityQuote(result.text, result.markdown)
 
                             signals.push({
                                 url: result.url,
-                                urlHash: hashHex,
+                                urlHash,
                                 title: result.title,
-                                quote: result.text.slice(0, 500),
-                                authorHandle: undefined,
+                                quote,
+                                authorHandle: extractAuthor(result.metadata),
                                 publishedAt: result.publishedAt,
                             })
+                            
+                            crawledUrls.push(result.url)
+                            added++
+                            if (added >= maxPerQuery) break
                         }
                     }
+                    
+                    // Publish completion with details
+                    await publishProgress({
+                        type: "CRAWL_URL_DONE",
+                        jobId: options.jobId,
+                        source,
+                        message: `Found ${added} signals from "${query}"`,
+                        signalCount: added,
+                        duration,
+                        timestamp: Date.now(),
+                        metadata: { 
+                            query, 
+                            intentLabel,
+                            urls: crawledUrls.slice(0, 5) // First 5 URLs
+                        }
+                    })
+                    
+                    console.log(`[SCRAPER:${source}] Found ${added} signals for query "${query}"`)
                 } catch (error) {
-                    console.warn(`[SCRAPER] Crawl4AI search failed for query "${query}":`, error)
+                    const errorMessage = error instanceof Error ? error.message : String(error)
+                    
+                    // Publish failure
+                    await publishProgress({
+                        type: "CRAWL_URL_FAILED",
+                        jobId: options.jobId,
+                        source,
+                        message: `Failed to crawl "${query}": ${errorMessage}`,
+                        error: errorMessage,
+                        timestamp: Date.now(),
+                        metadata: { query, intentLabel }
+                    })
+                    
+                    console.error(`[SCRAPER:${source}] Crawl failed for query "${query}":`, error)
+                    // Continue with other queries instead of failing completely
                 }
             }
 
+            console.log(`[SCRAPER:${source}] Total signals: ${signals.length} from ${queries.length} queries`)
             return signals
         },
     }
+}
+
+async function hashUrl(url: string): Promise<string> {
+    const encoder = new TextEncoder()
+    const data = encoder.encode(url)
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data)
+    return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("")
+}
+
+function extractQualityQuote(text?: string, markdown?: string): string {
+    // Prefer markdown if available as it's usually cleaner
+    const content = markdown ?? text ?? ""
+    
+    // Take first substantial paragraph (up to 500 chars)
+    const paragraphs = content.split(/\n\n+/)
+    for (const para of paragraphs) {
+        const cleaned = para.trim()
+        if (cleaned.length >= 50) {
+            return cleaned.slice(0, 500)
+        }
+    }
+    
+    return content.slice(0, 500)
+}
+
+function extractAuthor(metadata?: Record<string, unknown>): string | undefined {
+    if (!metadata) return undefined
+    
+    // Try common author fields
+    const author = metadata.author as string | undefined
+    if (author) return author
+    
+    const authorName = metadata.author_name as string | undefined
+    if (authorName) return authorName
+    
+    const byline = metadata.byline as string | undefined
+    if (byline) return byline
+    
+    return undefined
 }
 
 async function loadSources() {
